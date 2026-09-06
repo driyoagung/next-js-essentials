@@ -1,0 +1,137 @@
+---
+title: Komposisi Server dan Client
+description: Menggabungkan Server Component dan Client Component dalam satu halaman.
+---
+
+Server Component dan Client Component bisa dipakai bersama. Pola yang umum adalah mengambil data di Server Component, lalu mengirim data serializable ke Client Component untuk interaksi.
+
+## Server Mengambil Data, Client Mengelola Interaksi
+
+```tsx filename="app/products/page.tsx"
+import { FavoriteButton } from "./favorite-button";
+
+const product = {
+  id: 1,
+  name: "Keyboard",
+  favorites: 12,
+};
+
+export default function ProductPage() {
+  return (
+    <main>
+      <h1>{product.name}</h1>
+      <FavoriteButton initialFavorites={product.favorites} />
+    </main>
+  );
+}
+```
+
+```tsx filename="app/products/favorite-button.tsx"
+"use client";
+
+import { useState } from "react";
+
+export function FavoriteButton({
+  initialFavorites,
+}: {
+  initialFavorites: number;
+}) {
+  const [favorites, setFavorites] = useState(initialFavorites);
+
+  return (
+    <button
+      type="button"
+      onClick={() => setFavorites((value) => value + 1)}
+    >
+      Favorite: {favorites}
+    </button>
+  );
+}
+```
+
+Halaman tetap Server Component, tetapi tombol favorite menjadi Client Component karena membutuhkan state dan event handler.
+
+## Server Component sebagai Children Client Component
+
+Client Component juga bisa menerima hasil render Server Component sebagai `children`.
+
+```tsx filename="app/page.tsx"
+import { Modal } from "./modal";
+import { CartSummary } from "./cart-summary";
+
+export default function Page() {
+  return (
+    <Modal>
+      <CartSummary />
+    </Modal>
+  );
+}
+```
+
+```tsx filename="app/modal.tsx"
+"use client";
+
+import { useState, type ReactNode } from "react";
+
+export function Modal({ children }: { children: ReactNode }) {
+  const [open, setOpen] = useState(false);
+
+  return (
+    <section>
+      <button type="button" onClick={() => setOpen(true)}>
+        Open cart
+      </button>
+      {open ? <div role="dialog">{children}</div> : null}
+    </section>
+  );
+}
+```
+
+```tsx filename="app/cart-summary.tsx"
+export function CartSummary() {
+  return <p>Total item: 3</p>;
+}
+```
+
+Pada pola ini, `Modal` mengatur interaksi di browser, sedangkan `CartSummary` tetap bisa dirender sebagai Server Component.
+
+## Hindari Import Server-only ke Client
+
+Jangan impor module yang berisi akses database, filesystem, atau secret ke Client Component.
+
+```tsx filename="app/components/profile.tsx"
+"use client";
+
+import { getUserProfile } from "@/lib/server-data";
+
+export function Profile() {
+  return <p>{getUserProfile().name}</p>;
+}
+```
+
+Pola di atas bermasalah karena Client Component menarik module server ke client graph.
+
+Lebih aman:
+
+```tsx filename="app/profile/page.tsx"
+import { Profile } from "./profile";
+import { getUserProfile } from "@/lib/server-data";
+
+export default async function ProfilePage() {
+  const profile = await getUserProfile();
+
+  return <Profile name={profile.name} />;
+}
+```
+
+```tsx filename="app/profile/profile.tsx"
+"use client";
+
+export function Profile({ name }: { name: string }) {
+  return <p>{name}</p>;
+}
+```
+
+## Ringkasan
+
+Komposisi yang sehat biasanya dimulai dari Server Component sebagai parent. Bagian kecil yang membutuhkan interaksi dipindahkan menjadi Client Component.

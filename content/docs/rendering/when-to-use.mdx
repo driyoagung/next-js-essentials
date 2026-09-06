@@ -1,0 +1,62 @@
+---
+title: Kapan Memakai Masing-masing?
+description: Panduan praktis memilih Server Component atau Client Component.
+---
+
+Mulai dari Server Component sebagai default. Ubah menjadi Client Component hanya jika ada kebutuhan browser yang jelas.
+
+## Gunakan Server Component Jika
+
+| Kebutuhan | Alasan |
+| --- | --- |
+| Mengambil data awal | Bisa fetch langsung di server |
+| Membaca database | Tidak perlu mengekspos akses database ke browser |
+| Membaca secret | Secret tetap berada di server |
+| Menampilkan konten statis | Tidak perlu JavaScript tambahan di browser |
+| Membuat layout umum | Layout sering tidak butuh interaksi langsung |
+
+## Gunakan Client Component Jika
+
+| Kebutuhan | Alasan |
+| --- | --- |
+| `useState` | State berubah di browser |
+| `useEffect` | Effect berjalan setelah render di browser |
+| `onClick` atau `onChange` | Event handler membutuhkan JavaScript client |
+| `window` atau `localStorage` | API hanya tersedia di browser |
+| Controlled form input | Nilai input dikontrol oleh state client |
+| Hook dari `next/navigation` | Hook seperti `useRouter` berjalan di client |
+
+## Checklist Cepat
+
+Tanyakan ini sebelum menambahkan `"use client"`:
+
+1. Apakah komponen ini memakai state?
+2. Apakah komponen ini punya event handler?
+3. Apakah komponen ini memakai browser API?
+4. Apakah komponen ini memakai hook yang hanya berjalan di client?
+
+Jika semua jawabannya tidak, kemungkinan besar komponen tersebut tetap bisa menjadi Server Component.
+
+## Contoh Keputusan
+
+Halaman produk:
+
+```text
+ProductPage: Server Component
+ProductDescription: Server Component
+ProductImage: Server Component
+QuantitySelector: Client Component
+AddToCartButton: Client Component
+```
+
+Alasannya, deskripsi dan gambar hanya ditampilkan. Quantity selector dan tombol add to cart membutuhkan state atau event handler.
+
+## Kesalahan Umum
+
+Kesalahan yang sering terjadi adalah memberi `"use client"` pada file terlalu tinggi, misalnya seluruh page atau layout, padahal hanya satu komponen kecil yang interaktif.
+
+Akibatnya, lebih banyak kode masuk ke client bundle dan sebagian manfaat Server Component hilang.
+
+## Ringkasan
+
+Default ke Server Component. Client Component adalah alat untuk interaksi, bukan pilihan utama untuk semua UI.
