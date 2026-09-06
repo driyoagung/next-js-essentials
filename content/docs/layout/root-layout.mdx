@@ -1,0 +1,56 @@
+---
+title: Root Layout
+description: Memahami layout utama yang membungkus seluruh aplikasi.
+---
+
+Root layout adalah layout paling atas di folder `app`. File ini wajib ada pada App Router dan harus mengembalikan tag `<html>` serta `<body>`.
+
+## Contoh Root Layout
+
+```tsx filename="app/layout.tsx"
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Next.js Essential",
+  description: "Dokumentasi belajar Next.js essential.",
+};
+
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return (
+    <html lang="id">
+      <body>{children}</body>
+    </html>
+  );
+}
+```
+
+## Peran `children`
+
+`children` adalah isi route yang sedang aktif. Jika user membuka `/about`, maka komponen dari `app/about/page.tsx` akan masuk ke posisi `{children}`.
+
+```tsx
+<body>
+  {children}
+</body>
+```
+
+## Apa yang Cocok Ditaruh di Root Layout?
+
+- Provider global
+- Font global
+- Theme provider
+- Struktur HTML utama
+- Metadata global
+- CSS global
+
+## Apa yang Sebaiknya Tidak Ditaruh di Root Layout?
+
+Jangan menaruh semua UI aplikasi di root layout jika hanya dipakai oleh sebagian halaman. Untuk area seperti dashboard atau docs, lebih baik buat nested layout di segment terkait.
+
+## Catatan Metadata
+
+Di App Router, jangan menulis tag `<head>` manual di root layout. Gunakan Metadata API seperti `metadata` atau `generateMetadata`.

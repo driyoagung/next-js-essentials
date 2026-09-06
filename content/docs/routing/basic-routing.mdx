@@ -1,0 +1,56 @@
+---
+title: Basic Routing
+description: Membuat route dasar menggunakan folder dan page.tsx.
+---
+
+Routing di Next.js App Router berbasis folder. Setiap folder di dalam `app` mewakili segmen URL. Route menjadi publik ketika segmen tersebut memiliki `page.tsx`.
+
+## Route Home
+
+File berikut membuat route `/`:
+
+```tsx filename="app/page.tsx"
+export default function HomePage() {
+  return <h1>Home</h1>;
+}
+```
+
+## Route Baru
+
+Untuk membuat route `/about`, buat folder `about` dan file `page.tsx`.
+
+```text
+app/
++-- page.tsx
++-- about/
+    +-- page.tsx
+```
+
+```tsx filename="app/about/page.tsx"
+export default function AboutPage() {
+  return <h1>About</h1>;
+}
+```
+
+## Folder Tidak Selalu Menjadi Route
+
+Folder saja belum membuat route bisa diakses. Contoh ini belum membuat URL `/dashboard`:
+
+```text
+app/
++-- dashboard/
+```
+
+Route `/dashboard` baru ada setelah menambahkan `page.tsx`:
+
+```text
+app/
++-- dashboard/
+    +-- page.tsx
+```
+
+## Ringkasan
+
+- Folder di dalam `app` membentuk segmen URL.
+- `page.tsx` membuat route bisa diakses.
+- Nama file convention seperti `page.tsx` dan `layout.tsx` punya arti khusus di App Router.

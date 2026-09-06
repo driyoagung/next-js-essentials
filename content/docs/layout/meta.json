@@ -1,4 +1,4 @@
 {
   "title": "Bab 3: Layout",
-  "pages": ["index"]
+  "pages": ["index", "root-layout", "nested-layout", "shared-layout"]
 }

@@ -1,0 +1,31 @@
+---
+title: Next.js vs React + Vite
+description: Membandingkan peran Next.js dengan setup React menggunakan Vite.
+---
+
+React + Vite adalah setup yang ringan dan cepat untuk membuat aplikasi React. Vite menangani development server dan bundling, sementara React menangani UI. Namun, routing, data fetching pattern, SEO, dan backend endpoint biasanya perlu kamu susun sendiri dengan library tambahan.
+
+Next.js mengambil pendekatan framework. Banyak keputusan dasar sudah disediakan sebagai convention.
+
+## Perbandingan Singkat
+
+| Kebutuhan | React + Vite | Next.js |
+| --- | --- | --- |
+| Routing | Biasanya memakai React Router | Berbasis folder di `app` |
+| Layout | Dibuat manual dari komponen | Memakai `layout.tsx` |
+| Rendering server | Perlu setup tambahan | Tersedia sebagai default App Router |
+| API sederhana | Perlu server terpisah | Bisa memakai Route Handler |
+| Metadata SEO | Manual atau library tambahan | Metadata API |
+| Optimasi gambar/font | Setup sendiri | Built-in lewat fitur Next.js |
+
+## Kapan Memilih React + Vite?
+
+React + Vite cocok untuk aplikasi client-side yang ringan, prototype cepat, atau project yang tidak membutuhkan SEO dan server rendering sejak awal.
+
+## Kapan Memilih Next.js?
+
+Next.js cocok jika aplikasi akan punya banyak route, membutuhkan performa initial load yang baik, memerlukan halaman SEO-friendly, atau ingin menggabungkan frontend dan sebagian backend dalam satu codebase.
+
+## Kesimpulan
+
+React + Vite memberi kebebasan dan setup minimal. Next.js memberi struktur dan convention yang lebih lengkap. Di seri ini, kita memakai Next.js karena targetnya bukan hanya membuat UI, tetapi memahami fondasi aplikasi web modern dari route sampai production.
