@@ -1,0 +1,54 @@
+---
+title: Nested Layout
+description: Membuat layout khusus untuk kelompok route tertentu.
+---
+
+Nested layout adalah layout yang ditempatkan di dalam route segment. Layout ini hanya membungkus route pada segment tersebut dan turunannya.
+
+## Contoh Struktur
+
+```text
+app/
++-- layout.tsx
++-- dashboard/
+    +-- layout.tsx
+    +-- page.tsx
+    +-- settings/
+        +-- page.tsx
+```
+
+Pada struktur di atas:
+
+- `app/layout.tsx` membungkus semua route.
+- `app/dashboard/layout.tsx` membungkus `/dashboard` dan `/dashboard/settings`.
+- `app/dashboard/page.tsx` menjadi halaman `/dashboard`.
+- `app/dashboard/settings/page.tsx` menjadi halaman `/dashboard/settings`.
+
+## Contoh Nested Layout
+
+```tsx filename="app/dashboard/layout.tsx"
+export default function DashboardLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return (
+    <div>
+      <aside>Dashboard Menu</aside>
+      <main>{children}</main>
+    </div>
+  );
+}
+```
+
+## Kenapa Nested Layout Berguna?
+
+Nested layout membuat UI bersama hanya berlaku di area tertentu. Misalnya sidebar dashboard tidak perlu muncul di halaman landing page.
+
+## Layout Tidak Menerima Data dari Children
+
+Layout membungkus children, tetapi tidak menerima data dari page di bawahnya. Jika layout dan page membutuhkan data yang sama, ambil data tersebut di masing-masing tempat. Next.js dan React dapat membantu dedupe fetch yang sama dalam banyak kasus.
+
+## Ringkasan
+
+Gunakan nested layout ketika beberapa halaman berbagi struktur UI yang sama, tetapi struktur itu tidak berlaku untuk seluruh aplikasi.

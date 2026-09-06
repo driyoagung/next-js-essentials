@@ -1,4 +1,4 @@
 {
   "title": "Bab 1: Pengenalan",
-  "pages": ["index"]
+  "pages": ["index", "what-is-nextjs", "nextjs-vs-react-vite", "project-structure"]
 }

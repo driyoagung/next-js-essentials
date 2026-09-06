@@ -1,0 +1,112 @@
+---
+title: Dynamic Route dan Catch-all Route
+description: Membuat route yang membaca nilai dinamis dari URL.
+---
+
+Dynamic route dipakai ketika sebagian URL berubah berdasarkan data. Contohnya detail produk, detail artikel, atau halaman profile user.
+
+## Dynamic Segment
+
+Folder dengan nama `[id]` membuat satu segment dinamis.
+
+```text
+app/
++-- products/
+    +-- [id]/
+        +-- page.tsx
+```
+
+Route tersebut cocok untuk URL seperti:
+
+```text
+/products/1
+/products/2
+/products/nextjs-book
+```
+
+Di Next.js 16, `params` pada Page adalah Promise, jadi perlu di-`await`.
+
+```tsx filename="app/products/[id]/page.tsx"
+export default async function ProductDetailPage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  const { id } = await params;
+
+  return <h1>Product ID: {id}</h1>;
+}
+```
+
+## Catch-all Segment
+
+Folder `[...slug]` menangkap satu atau lebih segment.
+
+```text
+app/
++-- docs/
+    +-- [...slug]/
+        +-- page.tsx
+```
+
+Contoh URL:
+
+```text
+/docs/routing
+/docs/routing/dynamic-route
+/docs/routing/dynamic-route/example
+```
+
+`slug` akan menjadi array string.
+
+```tsx filename="app/docs/[...slug]/page.tsx"
+export default async function DocsPage({
+  params,
+}: {
+  params: Promise<{ slug: string[] }>;
+}) {
+  const { slug } = await params;
+
+  return <p>{slug.join("/")}</p>;
+}
+```
+
+## Optional Catch-all Segment
+
+Folder `[[...slug]]` menangkap nol, satu, atau lebih segment.
+
+```text
+app/
++-- docs/
+    +-- [[...slug]]/
+        +-- page.tsx
+```
+
+Route ini bisa menangani:
+
+```text
+/docs
+/docs/routing
+/docs/routing/dynamic-route
+```
+
+Karena `slug` bisa kosong, typenya menjadi optional.
+
+```tsx filename="app/docs/[[...slug]]/page.tsx"
+export default async function DocsPage({
+  params,
+}: {
+  params: Promise<{ slug?: string[] }>;
+}) {
+  const { slug } = await params;
+
+  return <p>{slug?.join("/") ?? "index"}</p>;
+}
+```
+
+## Ringkasan
+
+- `[id]` untuk satu segment dinamis.
+- `[...slug]` untuk banyak segment.
+- `[[...slug]]` untuk banyak segment yang juga boleh kosong.
+- Di Next.js 16, `params` perlu diakses secara async.

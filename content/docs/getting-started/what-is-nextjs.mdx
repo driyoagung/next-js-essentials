@@ -1,0 +1,52 @@
+---
+title: Apa Itu Next.js?
+description: Mengenal Next.js sebagai framework React untuk aplikasi web modern.
+---
+
+Next.js adalah framework berbasis React untuk membangun aplikasi web. React berfokus pada pembuatan UI, sedangkan Next.js menyediakan struktur aplikasi yang lebih lengkap: routing, layout, rendering di server, API route, optimasi gambar, metadata, dan mekanisme build.
+
+Dengan Next.js, kamu tidak perlu menyusun semua fondasi aplikasi dari nol. Banyak kebutuhan umum sudah punya convention, sehingga kamu bisa fokus ke fitur aplikasi.
+
+## Posisi Next.js di Atas React
+
+React membantu kita membuat komponen:
+
+```tsx
+export function Greeting() {
+  return <h1>Hello Next.js</h1>;
+}
+```
+
+Next.js menentukan bagaimana komponen itu menjadi halaman yang dapat dibuka lewat URL:
+
+```tsx filename="app/page.tsx"
+export default function Page() {
+  return <h1>Hello Next.js</h1>;
+}
+```
+
+File `app/page.tsx` membuat route `/`. Jadi, perbedaan besarnya bukan hanya di sintaks komponen, tetapi di cara project diorganisasi menjadi aplikasi.
+
+## Kapan Next.js Cocok Dipakai?
+
+Next.js cocok saat aplikasi membutuhkan routing, SEO, rendering awal yang baik, pengambilan data di server, API sederhana, atau struktur project yang lebih siap berkembang.
+
+Contoh use case:
+
+- Dokumentasi
+- Dashboard
+- Aplikasi CRUD
+- Website marketing
+- E-commerce
+- Aplikasi dengan halaman publik dan halaman protected
+
+## Mental Model
+
+Pikirkan Next.js sebagai lapisan aplikasi di atas React:
+
+```text
+React: membuat komponen UI
+Next.js: mengatur route, render, data, build, dan deployment
+```
+
+Saat belajar Next.js, jangan hanya menghafal nama file. Pahami juga alasan convention-nya: folder menjadi route, `page.tsx` membuka URL, dan `layout.tsx` membungkus halaman.

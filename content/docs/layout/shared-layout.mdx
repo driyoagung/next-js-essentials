@@ -1,0 +1,88 @@
+---
+title: Shared Layout
+description: Menyusun navbar, sidebar, dan area konten dengan layout yang reusable.
+---
+
+Shared layout adalah pola untuk menaruh UI yang sama di beberapa halaman. Di Next.js, pola ini biasanya dibuat dengan `layout.tsx` pada segment route tertentu.
+
+## Contoh Navbar Sederhana
+
+```tsx filename="app/(site)/layout.tsx"
+import Link from "next/link";
+
+export default function SiteLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return (
+    <div>
+      <nav>
+        <Link href="/">Home</Link>
+        <Link href="/about">About</Link>
+        <Link href="/contact">Contact</Link>
+      </nav>
+      <main>{children}</main>
+    </div>
+  );
+}
+```
+
+Folder `(site)` adalah route group. Namanya tidak masuk ke URL, tetapi bisa dipakai untuk mengelompokkan halaman yang memakai layout yang sama.
+
+## Contoh Sidebar
+
+```tsx filename="app/dashboard/layout.tsx"
+import Link from "next/link";
+
+export default function DashboardLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return (
+    <div>
+      <aside>
+        <Link href="/dashboard">Overview</Link>
+        <Link href="/dashboard/settings">Settings</Link>
+      </aside>
+      <main>{children}</main>
+    </div>
+  );
+}
+```
+
+## Active Link
+
+Jika perlu menandai menu aktif berdasarkan URL, gunakan Client Component karena pembacaan pathname memakai hook browser.
+
+```tsx filename="app/dashboard/nav-link.tsx"
+"use client";
+
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+
+export function NavLink({
+  href,
+  children,
+}: {
+  href: string;
+  children: React.ReactNode;
+}) {
+  const pathname = usePathname();
+  const isActive = pathname === href;
+
+  return (
+    <Link aria-current={isActive ? "page" : undefined} href={href}>
+      {children}
+    </Link>
+  );
+}
+```
+
+## Prinsip Praktis
+
+- Taruh UI global di root layout.
+- Taruh UI area tertentu di nested layout.
+- Pakai route group jika ingin mengelompokkan layout tanpa mengubah URL.
+- Pindahkan logic interaktif seperti active link ke Client Component.

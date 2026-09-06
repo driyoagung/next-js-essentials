@@ -1,0 +1,85 @@
+---
+title: Struktur Project Next.js
+description: Membaca folder dan file penting pada project Next.js App Router.
+---
+
+Project Next.js punya beberapa folder dan file penting di root project. Tidak semuanya harus kamu ubah setiap hari, tetapi kamu perlu tahu perannya.
+
+## Struktur Umum
+
+```text
+.
++-- app/
++-- content/
++-- lib/
++-- public/
++-- next.config.ts
++-- package.json
++-- tsconfig.json
++-- eslint.config.mjs
+```
+
+## Folder `app`
+
+Folder `app` adalah pusat App Router. Folder di dalamnya dapat menjadi URL, tetapi route baru benar-benar bisa diakses jika ada file `page.tsx` atau `route.ts`.
+
+Contoh:
+
+```text
+app/
++-- page.tsx
++-- about/
+    +-- page.tsx
+```
+
+Route yang terbentuk:
+
+```text
+/
+/about
+```
+
+## File `page.tsx`
+
+File `page.tsx` mendefinisikan UI unik untuk sebuah route. Di App Router, page adalah leaf dari route subtree.
+
+```tsx filename="app/about/page.tsx"
+export default function AboutPage() {
+  return <h1>Tentang Kami</h1>;
+}
+```
+
+File di atas membuat halaman `/about`.
+
+## File `layout.tsx`
+
+File `layout.tsx` membungkus halaman dan route di bawahnya. Root layout wajib memiliki tag `<html>` dan `<body>`.
+
+```tsx filename="app/layout.tsx"
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return (
+    <html lang="id">
+      <body>{children}</body>
+    </html>
+  );
+}
+```
+
+## Folder Pendukung
+
+Folder seperti `lib`, `components`, atau `content` bukan convention khusus Next.js untuk route. Folder tersebut biasanya dipakai untuk menyimpan helper, komponen, atau konten.
+
+Di project ini:
+
+- `app` berisi route aplikasi dan layout docs.
+- `content/docs` berisi materi dokumentasi MDX.
+- `lib/source.ts` menghubungkan Fumadocs dengan konten docs.
+- `.source` adalah hasil generate Fumadocs dan tidak perlu diedit manual.
+
+## Catatan Praktis
+
+Saat membuat halaman baru, mulai dari pertanyaan sederhana: URL apa yang ingin dibuat? Dari URL itu, buat struktur folder di `app`, lalu tambahkan `page.tsx`.

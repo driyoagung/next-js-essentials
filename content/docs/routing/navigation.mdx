@@ -1,0 +1,90 @@
+---
+title: Navigasi
+description: Berpindah halaman dengan Link dan hook navigasi App Router.
+---
+
+Next.js menyediakan beberapa cara navigasi. Untuk link antar halaman, gunakan komponen `Link`. Untuk navigasi dari event handler, gunakan `useRouter` di Client Component.
+
+## Navigasi dengan Link
+
+`Link` dipakai untuk navigasi deklaratif.
+
+```tsx filename="app/page.tsx"
+import Link from "next/link";
+
+export default function HomePage() {
+  return (
+    <main>
+      <h1>Home</h1>
+      <Link href="/products">Lihat Produk</Link>
+    </main>
+  );
+}
+```
+
+`Link` membantu Next.js melakukan client-side transition dan prefetch ketika memungkinkan. Ini membuat perpindahan halaman terasa lebih cepat dibanding navigasi penuh memakai tag `<a>` untuk route internal.
+
+## Navigasi dengan useRouter
+
+`useRouter` dipakai ketika navigasi terjadi setelah interaksi, misalnya setelah tombol diklik atau form berhasil disimpan. Karena hook ini berjalan di browser, komponennya harus memakai `"use client"`.
+
+```tsx filename="app/products/create/submit-button.tsx"
+"use client";
+
+import { useRouter } from "next/navigation";
+
+export function SubmitButton() {
+  const router = useRouter();
+
+  return (
+    <button type="button" onClick={() => router.push("/products")}>
+      Simpan
+    </button>
+  );
+}
+```
+
+## Membaca Params dengan useParams
+
+`useParams` dipakai di Client Component untuk membaca dynamic segment.
+
+```tsx filename="app/products/[id]/product-client.tsx"
+"use client";
+
+import { useParams } from "next/navigation";
+
+export function ProductClient() {
+  const params = useParams<{ id: string }>();
+
+  return <p>Product ID: {params.id}</p>;
+}
+```
+
+## Membaca Query dengan useSearchParams
+
+`useSearchParams` dipakai untuk membaca query string seperti `?page=2&search=phone`.
+
+```tsx filename="app/products/product-filter.tsx"
+"use client";
+
+import { useSearchParams } from "next/navigation";
+
+export function ProductFilter() {
+  const searchParams = useSearchParams();
+  const search = searchParams.get("search") ?? "";
+
+  return <p>Keyword: {search}</p>;
+}
+```
+
+## Kapan Memakai Masing-masing?
+
+| Kebutuhan | Gunakan |
+| --- | --- |
+| Link biasa ke halaman lain | `Link` |
+| Redirect dari Server Component | `redirect` |
+| Navigasi setelah klik/event | `useRouter` |
+| Membaca dynamic segment di Client Component | `useParams` |
+| Membaca query string di Client Component | `useSearchParams` |
+
+Untuk Page Server Component, `params` dan `searchParams` biasanya lebih baik dibaca dari props page, lalu di-`await`.

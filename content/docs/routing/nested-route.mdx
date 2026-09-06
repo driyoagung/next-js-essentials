@@ -1,0 +1,55 @@
+---
+title: Nested Route
+description: Membuat route bertingkat dari struktur folder bertingkat.
+---
+
+Nested route dibuat dengan menaruh folder di dalam folder lain. Struktur folder akan mengikuti struktur URL.
+
+## Contoh Struktur
+
+```text
+app/
++-- products/
+    +-- page.tsx
+    +-- categories/
+        +-- page.tsx
+```
+
+Route yang terbentuk:
+
+```text
+/products
+/products/categories
+```
+
+## Contoh Halaman
+
+```tsx filename="app/products/page.tsx"
+export default function ProductsPage() {
+  return <h1>Products</h1>;
+}
+```
+
+```tsx filename="app/products/categories/page.tsx"
+export default function ProductCategoriesPage() {
+  return <h1>Product Categories</h1>;
+}
+```
+
+## Kapan Nested Route Dipakai?
+
+Nested route cocok ketika sebuah halaman punya konteks induk yang jelas.
+
+Contoh:
+
+```text
+/dashboard
+/dashboard/settings
+/dashboard/billing
+```
+
+Ketiga route tersebut berada dalam area `dashboard`, jadi secara struktur folder juga masuk akal jika dikelompokkan di bawah `app/dashboard`.
+
+## Catatan
+
+Nested route sering dipasangkan dengan nested layout. Dengan begitu, route seperti `/dashboard/settings` dapat memakai sidebar dashboard yang sama tanpa menulis ulang UI di setiap halaman.

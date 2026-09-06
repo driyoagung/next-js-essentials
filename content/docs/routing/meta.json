@@ -1,4 +1,4 @@
 {
   "title": "Bab 2: Routing",
-  "pages": ["index"]
+  "pages": ["index", "basic-routing", "nested-route", "dynamic-route", "navigation"]
 }
