@@ -1,0 +1,77 @@
+---
+title: Client Component
+description: Memahami komponen client untuk state, event, effect, dan browser API.
+---
+
+Client Component adalah komponen yang dapat berjalan di browser. Komponen ini dibutuhkan ketika UI harus merespons interaksi user setelah halaman tampil.
+
+Untuk membuat Client Component, tambahkan directive `"use client"` di baris paling atas file.
+
+```tsx filename="app/components/counter.tsx"
+"use client";
+
+import { useState } from "react";
+
+export function Counter() {
+  const [count, setCount] = useState(0);
+
+  return (
+    <button type="button" onClick={() => setCount((value) => value + 1)}>
+      Count: {count}
+    </button>
+  );
+}
+```
+
+## Kapan Client Component Dibutuhkan?
+
+Gunakan Client Component ketika komponen membutuhkan:
+
+- `useState`
+- `useEffect`
+- Event handler seperti `onClick` atau `onChange`
+- Browser API seperti `window`, `document`, atau `localStorage`
+- Hook navigasi client seperti `useRouter`, `useParams`, atau `useSearchParams`
+- Controlled input
+
+## Contoh Browser API
+
+```tsx filename="app/components/theme-toggle.tsx"
+"use client";
+
+import { useEffect, useState } from "react";
+
+export function ThemeToggle() {
+  const [theme, setTheme] = useState("light");
+
+  useEffect(() => {
+    const savedTheme = window.localStorage.getItem("theme");
+
+    if (savedTheme) {
+      setTheme(savedTheme);
+    }
+  }, []);
+
+  function toggleTheme() {
+    const nextTheme = theme === "light" ? "dark" : "light";
+    setTheme(nextTheme);
+    window.localStorage.setItem("theme", nextTheme);
+  }
+
+  return (
+    <button type="button" onClick={toggleTheme}>
+      Current theme: {theme}
+    </button>
+  );
+}
+```
+
+Kode ini harus menjadi Client Component karena memakai `useState`, `useEffect`, dan `window.localStorage`.
+
+## Catatan Penting
+
+Client Component tetap dapat dirender menjadi HTML pada request awal. Namun, kode Client Component juga dikirim ke browser agar React bisa melakukan hydration dan membuat UI interaktif.
+
+## Ringkasan
+
+Client Component bukan berarti semua render hanya terjadi di browser. Istilah client berarti kode komponen juga dikirim dan dijalankan di browser untuk interaksi.

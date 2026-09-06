@@ -1,4 +1,11 @@
 {
   "title": "Bab 4: Rendering",
-  "pages": ["index"]
+  "pages": [
+    "index",
+    "server-component",
+    "client-component",
+    "use-client-boundary",
+    "composition-pattern",
+    "when-to-use"
+  ]
 }

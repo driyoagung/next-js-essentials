@@ -5,15 +5,25 @@ description: Memahami boundary antara komponen server dan komponen client.
 
 Bab ini membahas model rendering React yang dipakai Next.js App Router.
 
-## Fokus Pembelajaran
+Secara default, page dan layout di App Router adalah Server Component. Ini membuat Next.js dapat merender UI di server, mengambil data dekat dengan sumbernya, dan mengurangi JavaScript yang dikirim ke browser. Ketika UI membutuhkan state, event handler, effect, atau browser API, bagian itu dipindahkan ke Client Component.
 
-- Apa itu Server Component
-- Apa itu Client Component
-- Kapan menggunakan Server Component
-- Kapan menggunakan Client Component
-- Directive `"use client"`
-- State dan event pada Client Component
+## Alur Bab Ini
+
+1. Memahami Server Component
+2. Memahami Client Component
+3. Menentukan boundary dengan `"use client"`
+4. Menggabungkan Server Component dan Client Component
+5. Memilih jenis komponen berdasarkan kebutuhan
 
 ## Hasil yang Diharapkan
 
 Setelah bab ini selesai, kamu dapat menentukan komponen mana yang tetap di server dan komponen mana yang perlu berjalan di browser.
+
+## Mental Model
+
+Gunakan Server Component sebagai default. Tambahkan Client Component hanya pada bagian yang benar-benar membutuhkan interaksi browser.
+
+```text
+Server Component: data, secrets, rendering awal, konten statis
+Client Component: state, event, effect, browser API
+```

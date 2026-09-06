@@ -1,0 +1,118 @@
+---
+title: Boundary use client
+description: Menentukan batas antara module server dan module client.
+---
+
+Directive `"use client"` adalah penanda boundary antara Server Component dan Client Component.
+
+Directive ini ditulis di baris paling atas file, sebelum import.
+
+```tsx filename="app/components/search-box.tsx"
+"use client";
+
+import { useState } from "react";
+
+export function SearchBox() {
+  const [keyword, setKeyword] = useState("");
+
+  return (
+    <input
+      value={keyword}
+      onChange={(event) => setKeyword(event.target.value)}
+      placeholder="Cari produk"
+    />
+  );
+}
+```
+
+## Tidak Perlu di Semua File
+
+Kamu tidak perlu menambahkan `"use client"` ke setiap file. Cukup letakkan di entry point komponen yang akan di-render langsung dari Server Component.
+
+```text
+app/components/search-box.tsx
+app/components/search-icon.tsx
+```
+
+Jika `search-box.tsx` memakai `"use client"` dan mengimpor `search-icon.tsx`, maka `search-icon.tsx` ikut masuk client module graph.
+
+## Efek ke Bundle Browser
+
+Semua module yang diimpor oleh Client Component akan menjadi bagian dari client bundle. Karena itu, jangan menaruh `"use client"` terlalu tinggi seperti di root layout jika hanya satu tombol kecil yang butuh interaksi.
+
+Kurang ideal:
+
+```tsx filename="app/layout.tsx"
+"use client";
+
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return (
+    <html lang="id">
+      <body>{children}</body>
+    </html>
+  );
+}
+```
+
+Lebih baik:
+
+```tsx filename="app/layout.tsx"
+import { ThemeToggle } from "./components/theme-toggle";
+
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return (
+    <html lang="id">
+      <body>
+        <ThemeToggle />
+        {children}
+      </body>
+    </html>
+  );
+}
+```
+
+```tsx filename="app/components/theme-toggle.tsx"
+"use client";
+
+export function ThemeToggle() {
+  return <button type="button">Toggle theme</button>;
+}
+```
+
+## Props Harus Serializable
+
+Data dari Server Component ke Client Component dikirim lewat props. Props tersebut harus serializable, misalnya string, number, boolean, array, dan object sederhana.
+
+Contoh aman:
+
+```tsx filename="app/page.tsx"
+import { ProductCard } from "./components/product-card";
+
+export default function Page() {
+  return <ProductCard product={{ id: 1, name: "Keyboard" }} />;
+}
+```
+
+Contoh bermasalah:
+
+```tsx filename="app/page.tsx"
+import { ProductCard } from "./components/product-card";
+
+export default function Page() {
+  return <ProductCard onSelect={() => console.log("selected")} />;
+}
+```
+
+Function biasa seperti `onSelect` tidak bisa dikirim dari Server Component ke Client Component sebagai props.
+
+## Ringkasan
+
+Letakkan `"use client"` sedekat mungkin dengan bagian yang membutuhkan interaksi. Dengan begitu, mayoritas UI tetap bisa menjadi Server Component dan JavaScript yang dikirim ke browser tetap lebih kecil.

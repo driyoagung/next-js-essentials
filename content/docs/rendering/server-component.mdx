@@ -1,0 +1,78 @@
+---
+title: Server Component
+description: Memahami komponen server sebagai default di Next.js App Router.
+---
+
+Server Component adalah komponen React yang berjalan di server. Di Next.js App Router, file `page.tsx` dan `layout.tsx` adalah Server Component secara default selama file tersebut tidak diberi directive `"use client"`.
+
+## Contoh Server Component
+
+```tsx filename="app/products/page.tsx"
+type Product = {
+  id: number;
+  name: string;
+};
+
+async function getProducts(): Promise<Product[]> {
+  return [
+    { id: 1, name: "Keyboard" },
+    { id: 2, name: "Mouse" },
+  ];
+}
+
+export default async function ProductsPage() {
+  const products = await getProducts();
+
+  return (
+    <main>
+      <h1>Products</h1>
+      <ul>
+        {products.map((product) => (
+          <li key={product.id}>{product.name}</li>
+        ))}
+      </ul>
+    </main>
+  );
+}
+```
+
+Komponen di atas dapat memakai `async` karena berjalan di server. Ini cocok untuk mengambil data sebelum UI dikirim ke browser.
+
+## Kelebihan Server Component
+
+- Bisa mengambil data dari database atau API di server.
+- Bisa membaca secret seperti API key tanpa mengirimkannya ke browser.
+- Mengurangi ukuran JavaScript client bundle.
+- Cocok untuk konten yang tidak membutuhkan interaksi browser.
+
+## Batasan Server Component
+
+Server Component tidak bisa memakai fitur yang membutuhkan browser runtime.
+
+Contoh yang tidak bisa dilakukan langsung di Server Component:
+
+```tsx
+import { useState } from "react";
+
+export default function Page() {
+  const [count, setCount] = useState(0);
+
+  return <button onClick={() => setCount(count + 1)}>{count}</button>;
+}
+```
+
+Kode di atas membutuhkan state dan event handler, jadi harus dipindahkan ke Client Component.
+
+## Kapan Menggunakan Server Component?
+
+Gunakan Server Component untuk:
+
+- Halaman yang hanya menampilkan konten.
+- Komponen yang mengambil data awal.
+- Komponen yang membaca file, database, atau secret.
+- Layout statis seperti wrapper halaman.
+- Komponen yang tidak membutuhkan `useState`, `useEffect`, atau event handler.
+
+## Ringkasan
+
+Server Component adalah pilihan default di App Router. Mulai dari Server Component, lalu pindahkan bagian interaktif ke Client Component hanya saat dibutuhkan.
