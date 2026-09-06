@@ -1,0 +1,17 @@
+{
+  "title": "Next.js Essential",
+  "pages": [
+    "index",
+    "getting-started",
+    "routing",
+    "layout",
+    "rendering",
+    "data-fetching",
+    "api",
+    "crud",
+    "forms",
+    "database",
+    "authentication",
+    "production"
+  ]
+}
