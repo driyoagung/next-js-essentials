@@ -1,0 +1,86 @@
+---
+title: Loading UI
+description: Membuat tampilan loading dengan loading.tsx dan Suspense.
+---
+
+Loading UI memberi sinyal bahwa aplikasi sedang memproses route atau komponen yang membutuhkan data.
+
+Next.js menyediakan dua pendekatan umum:
+
+- `loading.tsx` untuk route segment.
+- `<Suspense>` untuk bagian UI yang lebih kecil.
+
+## Loading Route Segment
+
+Buat file `loading.tsx` di folder route.
+
+```text
+app/
++-- users/
+    +-- page.tsx
+    +-- loading.tsx
+```
+
+```tsx filename="app/users/loading.tsx"
+export default function Loading() {
+  return <p>Loading users...</p>;
+}
+```
+
+Saat user berpindah ke `/users`, Next.js dapat menampilkan loading UI sementara `page.tsx` sedang dirender.
+
+## Loading dengan Skeleton
+
+Fallback yang baik biasanya memberi gambaran bentuk konten berikutnya.
+
+```tsx filename="app/users/loading.tsx"
+export default function Loading() {
+  return (
+    <main>
+      <h1>Users</h1>
+      <div aria-label="Loading users">
+        <div className="h-4 w-48 rounded bg-zinc-200" />
+        <div className="mt-3 h-4 w-64 rounded bg-zinc-200" />
+        <div className="mt-3 h-4 w-56 rounded bg-zinc-200" />
+      </div>
+    </main>
+  );
+}
+```
+
+## Suspense untuk Bagian Kecil
+
+Jika hanya sebagian halaman yang lambat, bungkus bagian itu dengan `<Suspense>`.
+
+```tsx filename="app/dashboard/page.tsx"
+import { Suspense } from "react";
+
+export default function DashboardPage() {
+  return (
+    <main>
+      <h1>Dashboard</h1>
+
+      <Suspense fallback={<p>Loading activity...</p>}>
+        <RecentActivity />
+      </Suspense>
+    </main>
+  );
+}
+
+async function RecentActivity() {
+  const response = await fetch("https://example.com/api/activity", {
+    cache: "no-store",
+  });
+  const activity = await response.json();
+
+  return <pre>{JSON.stringify(activity, null, 2)}</pre>;
+}
+```
+
+## Catatan Layout
+
+`loading.tsx` membungkus page dan nested route di bawah segment yang sama, tetapi tidak membungkus `layout.tsx` pada segment tersebut. Jika data lambat berada di layout, pindahkan ke page atau bungkus bagian layout tersebut dengan `<Suspense>`.
+
+## Ringkasan
+
+Gunakan `loading.tsx` untuk fallback route. Gunakan `<Suspense>` saat hanya bagian tertentu dari halaman yang perlu menunggu data.

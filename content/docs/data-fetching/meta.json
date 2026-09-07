@@ -1,4 +1,14 @@
 {
   "title": "Bab 5-6: Data dan Error",
-  "pages": ["index"]
+  "pages": [
+    "index",
+    "fetch-api",
+    "async-server-component",
+    "caching",
+    "revalidation",
+    "dynamic-data",
+    "loading-ui",
+    "error-handling",
+    "not-found"
+  ]
 }
