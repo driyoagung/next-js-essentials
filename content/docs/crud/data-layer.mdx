@@ -1,0 +1,119 @@
+---
+title: Data Layer Sementara
+description: Membuat function data agar halaman tidak langsung bergantung pada detail penyimpanan.
+---
+
+Data layer adalah tempat halaman membaca dan mengubah data. Walaupun pada awalnya data masih sederhana, data layer membuat kode lebih mudah diganti ke database nanti.
+
+## Type Employee
+
+```ts filename="app/employees/types.ts"
+export type Employee = {
+  id: string;
+  name: string;
+  email: string;
+  position: string;
+  department: string;
+};
+```
+
+## Data Dummy
+
+```ts filename="app/employees/data.ts"
+import type { Employee } from "./types";
+
+const employees: Employee[] = [
+  {
+    id: "1",
+    name: "Alya Pratama",
+    email: "alya@example.com",
+    position: "Frontend Developer",
+    department: "Engineering",
+  },
+  {
+    id: "2",
+    name: "Bima Santoso",
+    email: "bima@example.com",
+    position: "Product Designer",
+    department: "Product",
+  },
+];
+```
+
+## Membaca List
+
+```ts filename="app/employees/data.ts"
+export async function getEmployees() {
+  return employees;
+}
+```
+
+Pada implementasi database nanti, isi function ini bisa diganti menjadi query.
+
+```ts
+export async function getEmployees() {
+  return db.employee.findMany();
+}
+```
+
+Halaman yang memakai `getEmployees()` tidak perlu tahu detail penyimpanannya.
+
+## Membaca Detail
+
+```ts filename="app/employees/data.ts"
+export async function getEmployeeById(id: string) {
+  return employees.find((employee) => employee.id === id) ?? null;
+}
+```
+
+Return `null` dipakai ketika data tidak ditemukan. Halaman detail bisa mengubah `null` menjadi `notFound()`.
+
+## Menyiapkan Input
+
+Buat type input terpisah dari type entity.
+
+```ts filename="app/employees/types.ts"
+export type EmployeeInput = {
+  name: string;
+  email: string;
+  position: string;
+  department: string;
+};
+```
+
+Type `EmployeeInput` tidak punya `id` karena `id` biasanya dibuat oleh database.
+
+## Validasi Sederhana
+
+```ts filename="app/employees/validation.ts"
+import type { EmployeeInput } from "./types";
+
+export function parseEmployeeInput(formData: FormData): EmployeeInput {
+  const name = formData.get("name");
+  const email = formData.get("email");
+  const position = formData.get("position");
+  const department = formData.get("department");
+
+  if (
+    typeof name !== "string" ||
+    typeof email !== "string" ||
+    typeof position !== "string" ||
+    typeof department !== "string"
+  ) {
+    throw new Error("Invalid employee input");
+  }
+
+  return {
+    name,
+    email,
+    position,
+    department,
+  };
+}
+```
+
+Untuk aplikasi production, validasi sebaiknya memakai schema validator seperti Zod. Pada bab ini, validasi manual cukup untuk memahami alurnya.
+
+## Ringkasan
+
+Pisahkan pembacaan dan perubahan data ke data layer. Dengan begitu, halaman CRUD tetap rapi dan siap diganti dari data dummy ke database.

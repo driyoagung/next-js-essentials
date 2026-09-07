@@ -1,0 +1,95 @@
+---
+title: Create Employee
+description: Membuat form tambah employee dengan Server Action.
+---
+
+Create adalah proses menambahkan data baru. Pada App Router, form bisa langsung memanggil Server Action melalui prop `action`.
+
+## Struktur File
+
+```text
+app/
++-- employees/
+    +-- actions.ts
+    +-- create/
+        +-- page.tsx
+```
+
+## Server Action Create
+
+```ts filename="app/employees/actions.ts"
+"use server";
+
+import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
+import { parseEmployeeInput } from "./validation";
+
+export async function createEmployee(formData: FormData) {
+  const input = parseEmployeeInput(formData);
+
+  await saveEmployee(input);
+
+  revalidatePath("/employees");
+  redirect("/employees");
+}
+```
+
+Pada contoh di atas, `saveEmployee()` mewakili proses menyimpan data. Nanti function ini bisa diganti dengan query database.
+
+`redirect()` sebaiknya dipanggil setelah mutation dan revalidation selesai. Karena `redirect()` menghentikan alur function, jangan letakkan kode penting setelahnya.
+
+## Halaman Create
+
+```tsx filename="app/employees/create/page.tsx"
+import Link from "next/link";
+import { createEmployee } from "../actions";
+
+export default function CreateEmployeePage() {
+  return (
+    <main>
+      <Link href="/employees">Back to employees</Link>
+      <h1>Create employee</h1>
+
+      <form action={createEmployee}>
+        <label htmlFor="name">Name</label>
+        <input id="name" name="name" required />
+
+        <label htmlFor="email">Email</label>
+        <input id="email" name="email" type="email" required />
+
+        <label htmlFor="position">Position</label>
+        <input id="position" name="position" required />
+
+        <label htmlFor="department">Department</label>
+        <input id="department" name="department" required />
+
+        <button type="submit">Create</button>
+      </form>
+    </main>
+  );
+}
+```
+
+Form ini tetap bisa bekerja sebagai HTML form. Next.js akan mengirim `FormData` ke Server Action.
+
+## Progressive Enhancement
+
+Form yang memakai Server Action dapat tetap submit walaupun JavaScript belum selesai dimuat. Setelah hydration, submit bisa berjalan tanpa full page refresh.
+
+Ini membuat Server Action cocok untuk form CRUD dasar.
+
+## Validasi Dasar
+
+Minimal, validasi field wajib dilakukan di server.
+
+```ts
+if (!input.name || !input.email) {
+  throw new Error("Name and email are required");
+}
+```
+
+Validasi client seperti `required` membantu pengalaman user, tetapi validasi server tetap wajib karena request bisa dikirim langsung ke action.
+
+## Ringkasan
+
+Create flow terdiri dari form, Server Action, validasi server, mutation, revalidation, lalu redirect kembali ke halaman list atau detail.

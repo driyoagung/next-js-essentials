@@ -1,0 +1,141 @@
+---
+title: List dan Detail Employee
+description: Menampilkan daftar employee dan halaman detail berdasarkan id.
+---
+
+Setelah route dan data layer siap, langkah pertama CRUD adalah read. Kita mulai dari halaman list dan detail.
+
+## Halaman List
+
+Route:
+
+```text
+/employees
+```
+
+File:
+
+```text
+app/employees/page.tsx
+```
+
+Contoh:
+
+```tsx filename="app/employees/page.tsx"
+import Link from "next/link";
+import { getEmployees } from "./data";
+
+export default async function EmployeesPage() {
+  const employees = await getEmployees();
+
+  return (
+    <main>
+      <div>
+        <h1>Employees</h1>
+        <Link href="/employees/create">Create employee</Link>
+      </div>
+
+      <ul>
+        {employees.map((employee) => (
+          <li key={employee.id}>
+            <Link href={`/employees/${employee.id}`}>
+              {employee.name}
+            </Link>
+            <p>{employee.position}</p>
+          </li>
+        ))}
+      </ul>
+    </main>
+  );
+}
+```
+
+Karena data diambil di Server Component, halaman ini tidak perlu `useEffect` atau state client hanya untuk load data awal.
+
+## Empty State
+
+Jika list kosong, tampilkan pesan yang jelas.
+
+```tsx
+if (employees.length === 0) {
+  return (
+    <main>
+      <h1>Employees</h1>
+      <p>No employees yet.</p>
+      <Link href="/employees/create">Create first employee</Link>
+    </main>
+  );
+}
+```
+
+## Halaman Detail
+
+Route:
+
+```text
+/employees/[id]
+```
+
+File:
+
+```text
+app/employees/[id]/page.tsx
+```
+
+Contoh:
+
+```tsx filename="app/employees/[id]/page.tsx"
+import Link from "next/link";
+import { notFound } from "next/navigation";
+import { getEmployeeById } from "../data";
+
+export default async function EmployeeDetailPage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  const { id } = await params;
+  const employee = await getEmployeeById(id);
+
+  if (!employee) {
+    notFound();
+  }
+
+  return (
+    <main>
+      <Link href="/employees">Back to employees</Link>
+
+      <h1>{employee.name}</h1>
+      <p>{employee.email}</p>
+      <p>{employee.position}</p>
+      <p>{employee.department}</p>
+
+      <Link href={`/employees/${employee.id}/edit`}>
+        Edit employee
+      </Link>
+    </main>
+  );
+}
+```
+
+## Not Found
+
+Buat UI khusus ketika employee tidak ditemukan.
+
+```tsx filename="app/employees/[id]/not-found.tsx"
+import Link from "next/link";
+
+export default function EmployeeNotFound() {
+  return (
+    <main>
+      <h1>Employee not found</h1>
+      <p>The employee you are looking for does not exist.</p>
+      <Link href="/employees">Back to employees</Link>
+    </main>
+  );
+}
+```
+
+## Ringkasan
+
+List dan detail adalah bagian read pada CRUD. Gunakan Server Component untuk mengambil data awal dan `notFound()` ketika detail tidak ditemukan.

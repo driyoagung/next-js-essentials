@@ -1,0 +1,115 @@
+---
+title: Delete Employee
+description: Menghapus employee dengan Server Action dan form kecil.
+---
+
+Delete adalah mutation yang menghapus data. Walaupun terlihat seperti tombol biasa, aksi delete tetap sebaiknya dikirim sebagai request server.
+
+## Server Action Delete
+
+```ts filename="app/employees/actions.ts"
+"use server";
+
+import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
+
+export async function deleteEmployee(formData: FormData) {
+  const id = formData.get("id");
+
+  if (typeof id !== "string") {
+    throw new Error("Invalid employee id");
+  }
+
+  await removeEmployee(id);
+
+  revalidatePath("/employees");
+  redirect("/employees");
+}
+```
+
+Action ini membaca `id` dari hidden input.
+
+## Form Delete
+
+```tsx filename="app/employees/[id]/delete-button.tsx"
+import { deleteEmployee } from "../actions";
+
+export function DeleteEmployeeButton({
+  employeeId,
+}: {
+  employeeId: string;
+}) {
+  return (
+    <form action={deleteEmployee}>
+      <input type="hidden" name="id" value={employeeId} />
+      <button type="submit">Delete employee</button>
+    </form>
+  );
+}
+```
+
+Komponen ini tidak perlu menjadi Client Component selama tidak membutuhkan dialog konfirmasi custom.
+
+## Menampilkan di Detail Page
+
+```tsx filename="app/employees/[id]/page.tsx"
+import { DeleteEmployeeButton } from "./delete-button";
+
+export default async function EmployeeDetailPage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  const { id } = await params;
+  const employee = await getEmployeeById(id);
+
+  if (!employee) {
+    notFound();
+  }
+
+  return (
+    <main>
+      <h1>{employee.name}</h1>
+      <DeleteEmployeeButton employeeId={employee.id} />
+    </main>
+  );
+}
+```
+
+## Dengan Konfirmasi
+
+Jika butuh konfirmasi sebelum delete, buat tombol sebagai Client Component.
+
+```tsx filename="app/employees/[id]/delete-button.tsx"
+"use client";
+
+import { deleteEmployee } from "../actions";
+
+export function DeleteEmployeeButton({
+  employeeId,
+}: {
+  employeeId: string;
+}) {
+  return (
+    <form
+      action={deleteEmployee}
+      onSubmit={(event) => {
+        const confirmed = window.confirm("Delete this employee?");
+
+        if (!confirmed) {
+          event.preventDefault();
+        }
+      }}
+    >
+      <input type="hidden" name="id" value={employeeId} />
+      <button type="submit">Delete employee</button>
+    </form>
+  );
+}
+```
+
+Pindahkan ke Client Component hanya saat interaksi browser memang dibutuhkan.
+
+## Ringkasan
+
+Delete flow membutuhkan `id`, Server Action, revalidation list, lalu redirect. Tambahkan Client Component hanya jika butuh konfirmasi atau interaksi client lain.

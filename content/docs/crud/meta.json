@@ -1,4 +1,14 @@
 {
   "title": "Bab 8: CRUD",
-  "pages": ["index"]
+  "pages": [
+    "index",
+    "employee-case-study",
+    "route-design",
+    "data-layer",
+    "list-and-detail",
+    "create-employee",
+    "edit-employee",
+    "delete-employee",
+    "loading-error-state"
+  ]
 }

@@ -1,0 +1,71 @@
+---
+title: Studi Kasus Employee Management
+description: Menentukan fitur dan bentuk data untuk CRUD employee.
+---
+
+Studi kasus pada bab ini adalah Employee Management. Aplikasi kecil ini cukup sederhana untuk dipahami, tetapi sudah mewakili alur CRUD yang umum ditemukan di aplikasi nyata.
+
+## Fitur Utama
+
+Fitur yang akan dibangun:
+
+- Melihat daftar employee.
+- Melihat detail employee.
+- Menambahkan employee baru.
+- Mengubah data employee.
+- Menghapus employee.
+- Menampilkan loading state.
+- Menangani data tidak ditemukan dan error.
+
+## Bentuk Data
+
+Kita mulai dari type sederhana.
+
+```ts filename="app/employees/types.ts"
+export type Employee = {
+  id: string;
+  name: string;
+  email: string;
+  position: string;
+  department: string;
+};
+```
+
+Field yang dipakai:
+
+| Field | Fungsi |
+| --- | --- |
+| `id` | Identifier unik employee |
+| `name` | Nama employee |
+| `email` | Email kerja |
+| `position` | Jabatan |
+| `department` | Divisi |
+
+## Alur User
+
+Alur user yang ingin didukung:
+
+```text
+Membuka /employees
+Melihat daftar employee
+Membuka detail employee
+Menambah employee dari halaman create
+Mengubah employee dari halaman edit
+Menghapus employee dari detail atau list
+Kembali melihat data terbaru
+```
+
+## Batasan Bab Ini
+
+Bab ini fokus pada pola CRUD di Next.js. Karena database dibahas pada Bab 10, contoh data layer akan dibuat sederhana dan bisa diganti dengan database nanti.
+
+Pola yang penting:
+
+- Halaman tetap membaca data dari function data layer.
+- Mutation diletakkan di Server Action atau Route Handler.
+- Setelah mutation, halaman yang menampilkan data direvalidasi.
+- Setelah create atau update, user diarahkan ke halaman yang relevan.
+
+## Ringkasan
+
+Studi kasus Employee Management membantu menyatukan routing, data fetching, form, mutation, loading, dan error handling dalam satu alur kecil yang realistis.
