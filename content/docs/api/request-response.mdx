@@ -1,0 +1,103 @@
+---
+title: Request dan Response
+description: Membaca request masuk dan mengirim response dari Route Handler.
+---
+
+Route Handler memakai Web API standar. Karena itu, kamu akan sering bertemu `Request`, `Response`, `Headers`, dan method seperti `request.json()`.
+
+Next.js juga menyediakan `NextRequest` dan `NextResponse` dari `next/server`.
+
+## Response JSON
+
+Cara paling umum mengirim data adalah `Response.json()`.
+
+```ts filename="app/api/health/route.ts"
+export async function GET() {
+  return Response.json({
+    status: "ok",
+  });
+}
+```
+
+Kamu juga bisa mengatur status code.
+
+```ts filename="app/api/health/route.ts"
+export async function GET() {
+  return Response.json(
+    {
+      status: "ok",
+    },
+    { status: 200 },
+  );
+}
+```
+
+## Response Manual
+
+Gunakan `new Response()` jika perlu mengirim text, HTML, XML, atau header khusus.
+
+```ts filename="app/api/version/route.ts"
+export async function GET() {
+  return new Response("v1.0.0", {
+    status: 200,
+    headers: {
+      "Content-Type": "text/plain",
+    },
+  });
+}
+```
+
+## Membaca Header
+
+Header bisa dibaca dari object `request`.
+
+```ts filename="app/api/debug/route.ts"
+export async function GET(request: Request) {
+  const userAgent = request.headers.get("user-agent");
+
+  return Response.json({
+    userAgent,
+  });
+}
+```
+
+## NextRequest
+
+`NextRequest` memperluas Web `Request` dengan helper tambahan. Salah satu yang sering dipakai adalah `nextUrl`.
+
+```ts filename="app/api/search/route.ts"
+import type { NextRequest } from "next/server";
+
+export async function GET(request: NextRequest) {
+  const query = request.nextUrl.searchParams.get("q");
+
+  return Response.json({
+    query,
+  });
+}
+```
+
+## NextResponse
+
+`NextResponse` berguna ketika kamu butuh helper dari Next.js.
+
+```ts filename="app/api/login/route.ts"
+import { NextResponse } from "next/server";
+
+export async function POST() {
+  const response = NextResponse.json({
+    message: "Logged in",
+  });
+
+  response.cookies.set("session", "example-token", {
+    httpOnly: true,
+    path: "/",
+  });
+
+  return response;
+}
+```
+
+## Ringkasan
+
+Pakai `Response.json()` untuk endpoint JSON sederhana. Gunakan `new Response()` atau `NextResponse` ketika perlu kontrol lebih atas header, cookie, atau format response.

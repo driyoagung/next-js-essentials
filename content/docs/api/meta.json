@@ -1,4 +1,13 @@
 {
   "title": "Bab 7: API",
-  "pages": ["index"]
+  "pages": [
+    "index",
+    "route-handler",
+    "http-method",
+    "request-response",
+    "dynamic-query",
+    "request-body",
+    "status-error",
+    "caching-cors"
+  ]
 }

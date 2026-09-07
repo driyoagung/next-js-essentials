@@ -1,0 +1,106 @@
+---
+title: HTTP Method
+description: Membuat GET, POST, PUT, PATCH, DELETE, HEAD, dan OPTIONS.
+---
+
+Route Handler bekerja berdasarkan HTTP method. Nama function yang diekspor harus sesuai method yang ingin ditangani.
+
+Next.js mendukung:
+
+- `GET`
+- `POST`
+- `PUT`
+- `PATCH`
+- `DELETE`
+- `HEAD`
+- `OPTIONS`
+
+## GET
+
+`GET` digunakan untuk membaca data.
+
+```ts filename="app/api/users/route.ts"
+const users = [
+  { id: 1, name: "Alya" },
+  { id: 2, name: "Bima" },
+];
+
+export async function GET() {
+  return Response.json(users);
+}
+```
+
+## POST
+
+`POST` digunakan untuk membuat data baru.
+
+```ts filename="app/api/users/route.ts"
+export async function POST(request: Request) {
+  const body = (await request.json()) as {
+    name?: string;
+  };
+
+  if (!body.name) {
+    return Response.json(
+      { message: "Name is required" },
+      { status: 400 },
+    );
+  }
+
+  return Response.json(
+    {
+      id: 3,
+      name: body.name,
+    },
+    { status: 201 },
+  );
+}
+```
+
+## PUT dan PATCH
+
+`PUT` biasanya dipakai untuk mengganti data secara penuh. `PATCH` biasanya dipakai untuk mengubah sebagian data.
+
+```ts filename="app/api/users/[id]/route.ts"
+export async function PATCH(
+  request: Request,
+  { params }: { params: Promise<{ id: string }> },
+) {
+  const { id } = await params;
+  const body = (await request.json()) as {
+    name?: string;
+  };
+
+  return Response.json({
+    id,
+    name: body.name,
+  });
+}
+```
+
+## DELETE
+
+`DELETE` digunakan untuk menghapus data.
+
+```ts filename="app/api/users/[id]/route.ts"
+export async function DELETE(
+  _request: Request,
+  { params }: { params: Promise<{ id: string }> },
+) {
+  const { id } = await params;
+
+  return Response.json({
+    message: `User ${id} deleted`,
+  });
+}
+```
+
+## Method yang Tidak Ada
+
+Jika method tidak didefinisikan, Next.js akan mengembalikan response `405 Method Not Allowed`.
+
+Jika `OPTIONS` tidak dibuat manual, Next.js dapat membuat response `OPTIONS` otomatis berdasarkan method yang tersedia.
+
+## Ringkasan
+
+Export function berdasarkan HTTP method. Gunakan `GET` untuk membaca, `POST` untuk membuat, `PATCH` atau `PUT` untuk update, dan `DELETE` untuk menghapus.

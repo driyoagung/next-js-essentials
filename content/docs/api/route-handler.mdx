@@ -1,0 +1,105 @@
+---
+title: Route Handler
+description: Mengenal file route.ts sebagai endpoint API di App Router.
+---
+
+Route Handler adalah file khusus bernama `route.ts` atau `route.js` yang berada di dalam folder `app`.
+
+File ini tidak merender UI. Tugasnya adalah menerima request HTTP dan mengembalikan response.
+
+## Struktur Dasar
+
+```text
+app/
++-- api/
+    +-- users/
+        +-- route.ts
+```
+
+Route di atas menghasilkan endpoint:
+
+```text
+/api/users
+```
+
+Contoh paling sederhana:
+
+```ts filename="app/api/users/route.ts"
+export async function GET() {
+  return Response.json({
+    message: "Hello from Next.js API",
+  });
+}
+```
+
+Ketika user membuka `/api/users`, Next.js menjalankan function `GET`.
+
+## Hanya di App Directory
+
+Route Handler hanya tersedia di dalam folder `app`. Jika project lama masih memakai Pages Router, endpoint API lama biasanya berada di `pages/api`.
+
+Pada App Router, gunakan Route Handler. Kamu tidak perlu memakai `pages/api` dan `app/api` bersamaan untuk endpoint yang sama.
+
+## Tidak Bisa Satu Segment dengan Page
+
+`route.ts` tidak bisa berada di level segment yang sama dengan `page.tsx`.
+
+```text
+app/
++-- users/
+    +-- page.tsx
+    +-- route.ts
+```
+
+Struktur di atas konflik karena `page.tsx` dan `route.ts` sama-sama mengambil alih route `/users`.
+
+Pola yang umum:
+
+```text
+app/
++-- users/
+|   +-- page.tsx
++-- api/
+    +-- users/
+        +-- route.ts
+```
+
+Halaman UI berada di `/users`, sedangkan endpoint API berada di `/api/users`.
+
+## Kapan Menggunakan Route Handler?
+
+Gunakan Route Handler untuk:
+
+- Membuat endpoint JSON.
+- Menerima webhook dari service eksternal.
+- Membuat endpoint download atau file non-UI.
+- Menyembunyikan token atau secret dari browser.
+- Menjadi backend-for-frontend untuk Client Component.
+
+## Hindari Request Internal dari Server Component
+
+Jika data sudah bisa diambil langsung dari Server Component, tidak perlu memanggil Route Handler internal dari server.
+
+Lebih baik:
+
+```tsx filename="app/users/page.tsx"
+import { getUsers } from "@/lib/users";
+
+export default async function UsersPage() {
+  const users = await getUsers();
+
+  return (
+    <ul>
+      {users.map((user) => (
+        <li key={user.id}>{user.name}</li>
+      ))}
+    </ul>
+  );
+}
+```
+
+Route Handler lebih berguna ketika request datang dari browser, webhook, atau client eksternal.
+
+## Ringkasan
+
+Route Handler adalah endpoint API di App Router. Letakkan di `app/**/route.ts`, export function sesuai HTTP method, lalu return `Response`.

@@ -1,0 +1,124 @@
+---
+title: Dynamic Route dan Query
+description: Mengambil params dan query string pada Route Handler.
+---
+
+Route Handler bisa membaca dynamic segment dan query string.
+
+Dynamic segment berasal dari nama folder seperti `[id]`. Query string berasal dari URL seperti `?q=nextjs`.
+
+## Dynamic Segment
+
+Contoh struktur:
+
+```text
+app/
++-- api/
+    +-- users/
+        +-- [id]/
+            +-- route.ts
+```
+
+Endpoint yang terbentuk:
+
+```text
+/api/users/1
+/api/users/2
+```
+
+Di Next.js 16, `params` pada Route Handler adalah Promise.
+
+```ts filename="app/api/users/[id]/route.ts"
+export async function GET(
+  _request: Request,
+  { params }: { params: Promise<{ id: string }> },
+) {
+  const { id } = await params;
+
+  return Response.json({
+    id,
+    name: "Alya",
+  });
+}
+```
+
+## RouteContext
+
+Next.js juga menyediakan helper global `RouteContext` untuk type params berdasarkan path route.
+
+```ts filename="app/api/users/[id]/route.ts"
+import type { NextRequest } from "next/server";
+
+export async function GET(
+  _request: NextRequest,
+  context: RouteContext<"/api/users/[id]">,
+) {
+  const { id } = await context.params;
+
+  return Response.json({ id });
+}
+```
+
+Type `RouteContext` tersedia setelah type generation berjalan melalui `next dev`, `next build`, atau `next typegen`.
+
+## Catch-All Segment
+
+Catch-all route memakai folder `[...slug]`.
+
+```text
+app/
++-- api/
+    +-- docs/
+        +-- [...slug]/
+            +-- route.ts
+```
+
+```ts filename="app/api/docs/[...slug]/route.ts"
+export async function GET(
+  _request: Request,
+  { params }: { params: Promise<{ slug: string[] }> },
+) {
+  const { slug } = await params;
+
+  return Response.json({
+    path: slug.join("/"),
+  });
+}
+```
+
+## Query String
+
+Untuk membaca query string, gunakan `NextRequest`.
+
+```ts filename="app/api/search/route.ts"
+import type { NextRequest } from "next/server";
+
+export async function GET(request: NextRequest) {
+  const q = request.nextUrl.searchParams.get("q") ?? "";
+  const page = request.nextUrl.searchParams.get("page") ?? "1";
+
+  return Response.json({
+    q,
+    page,
+  });
+}
+```
+
+Request:
+
+```text
+/api/search?q=nextjs&page=2
+```
+
+Response:
+
+```json
+{
+  "q": "nextjs",
+  "page": "2"
+}
+```
+
+## Ringkasan
+
+Gunakan `params` untuk mengambil nilai dari folder dynamic route. Gunakan `request.nextUrl.searchParams` untuk membaca query string.
