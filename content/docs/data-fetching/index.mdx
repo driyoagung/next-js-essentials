@@ -5,18 +5,31 @@ description: Mengambil data, memahami caching, serta menangani loading dan error
 
 Bab ini menggabungkan data fetching dengan state UI yang muncul saat data sedang dimuat, gagal dimuat, atau tidak ditemukan.
 
-## Fokus Pembelajaran
+Di App Router, data biasanya diambil dari Server Component. Pendekatan ini membuat halaman bisa membaca data di server, mengurangi kebutuhan API internal yang tidak perlu, dan menjaga secret tetap tidak dikirim ke browser.
 
-- Fetch API
-- Async Server Component
-- Fetch data dari API
-- Caching
-- Revalidation
-- Dynamic data
-- `loading.tsx`
-- `error.tsx`
-- `not-found.tsx`
+Namun data fetching tidak berdiri sendiri. Setelah mengambil data, kamu perlu memikirkan apakah data perlu cache, kapan data harus diperbarui, bagaimana UI saat loading, apa yang terjadi ketika request gagal, dan bagaimana menampilkan halaman not found.
+
+## Alur Bab Ini
+
+1. Mengambil data dengan Fetch API
+2. Membuat async Server Component
+3. Memahami caching dan revalidation
+4. Menangani dynamic data
+5. Membuat loading UI
+6. Membuat error boundary route
+7. Menangani data tidak ditemukan
 
 ## Hasil yang Diharapkan
 
 Setelah bab ini selesai, kamu dapat mengambil data di halaman Next.js dan menyediakan pengalaman loading, error, serta not found yang jelas.
+
+## Mental Model
+
+```text
+Data dibutuhkan
+Fetch di server
+Tentukan cache atau dynamic
+Sediakan loading state
+Tangani error dan not found
+Render UI
+```

@@ -1,0 +1,138 @@
+---
+title: Error Handling
+description: Menangani expected error dan unexpected error pada route.
+---
+
+Error handling membantu aplikasi tetap memberi UI yang jelas ketika request gagal atau terjadi bug saat render.
+
+Secara sederhana:
+
+- Expected error ditangani sebagai return value atau kondisi UI.
+- Unexpected error bisa dilempar dengan `throw` dan ditangkap oleh `error.tsx`.
+
+## Expected Error
+
+Expected error adalah error yang memang mungkin terjadi, misalnya response API gagal.
+
+```tsx filename="app/users/page.tsx"
+type User = {
+  id: number;
+  name: string;
+};
+
+async function getUsers(): Promise<User[] | null> {
+  const response = await fetch("https://example.com/api/users");
+
+  if (!response.ok) {
+    return null;
+  }
+
+  return response.json();
+}
+
+export default async function UsersPage() {
+  const users = await getUsers();
+
+  if (!users) {
+    return <p>Users could not be loaded.</p>;
+  }
+
+  return (
+    <ul>
+      {users.map((user) => (
+        <li key={user.id}>{user.name}</li>
+      ))}
+    </ul>
+  );
+}
+```
+
+Pola ini cocok ketika error adalah bagian normal dari alur aplikasi.
+
+## Unexpected Error
+
+Untuk error yang tidak bisa dipulihkan di tempat tersebut, lempar error.
+
+```tsx filename="app/users/page.tsx"
+async function getUsers() {
+  const response = await fetch("https://example.com/api/users");
+
+  if (!response.ok) {
+    throw new Error("Failed to fetch users");
+  }
+
+  return response.json();
+}
+```
+
+Next.js akan mencari `error.tsx` terdekat di route hierarchy.
+
+## File error.tsx
+
+`error.tsx` harus menjadi Client Component karena error boundary membutuhkan interaksi client untuk recovery.
+
+```tsx filename="app/users/error.tsx"
+"use client";
+
+import { useEffect } from "react";
+
+export default function Error({
+  error,
+  retry,
+}: {
+  error: Error & { digest?: string };
+  retry: () => void;
+}) {
+  useEffect(() => {
+    console.error(error);
+  }, [error]);
+
+  return (
+    <main>
+      <h1>Something went wrong</h1>
+      <p>Users could not be loaded.</p>
+      <button type="button" onClick={() => retry()}>
+        Try again
+      </button>
+    </main>
+  );
+}
+```
+
+Di Next.js 16, prop untuk mencoba ulang render segment adalah `retry`.
+
+## Error Boundary Tidak Menangkap Semua Hal
+
+Error boundary menangkap error saat rendering. Error di event handler perlu ditangani manual.
+
+```tsx
+"use client";
+
+import { useState } from "react";
+
+export function SaveButton() {
+  const [message, setMessage] = useState("");
+
+  async function handleClick() {
+    try {
+      await saveData();
+      setMessage("Saved");
+    } catch {
+      setMessage("Failed to save");
+    }
+  }
+
+  return (
+    <>
+      <button type="button" onClick={handleClick}>
+        Save
+      </button>
+      {message ? <p>{message}</p> : null}
+    </>
+  );
+}
+```
+
+## Ringkasan
+
+Gunakan return value untuk expected error. Gunakan `throw` dan `error.tsx` untuk error yang membuat segment tidak bisa dirender dengan benar.
