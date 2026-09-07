@@ -5,18 +5,30 @@ description: Membuat endpoint API menggunakan Route Handler di App Router.
 
 Bab ini membahas cara membuat endpoint API langsung dari project Next.js.
 
-## Fokus Pembelajaran
+Route Handler adalah cara App Router membuat endpoint non-UI. File ini cocok untuk kebutuhan seperti endpoint JSON, webhook, proxy ke service internal, download file, atau integrasi yang perlu menjaga secret tetap berada di server.
 
-- Route Handler
-- HTTP method
-- `GET`
-- `POST`
-- `PUT`
-- `PATCH`
-- `DELETE`
-- `Request`
-- `Response`
+Di Next.js, Route Handler memakai Web API standar seperti `Request` dan `Response`. Next.js juga menyediakan `NextRequest` dan `NextResponse` untuk helper tambahan seperti membaca query, cookie, dan URL dengan lebih nyaman.
+
+## Alur Bab Ini
+
+1. Memahami fungsi `route.ts`
+2. Membuat endpoint dengan HTTP method
+3. Membaca request dan mengirim response
+4. Mengambil dynamic params dan query string
+5. Membaca JSON body dan `FormData`
+6. Menangani status code dan error
+7. Memahami caching dan CORS dasar
 
 ## Hasil yang Diharapkan
 
 Setelah bab ini selesai, kamu dapat membuat endpoint API sederhana dan memahami cara menangani request serta response.
+
+## Mental Model
+
+```text
+Request masuk
+Next.js mencocokkan route.ts
+Handler method dijalankan
+Data dibaca atau diproses
+Response dikirim
+```

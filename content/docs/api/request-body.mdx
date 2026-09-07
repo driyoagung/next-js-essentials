@@ -1,0 +1,120 @@
+---
+title: Request Body
+description: Membaca JSON body, FormData, dan text payload.
+---
+
+Route Handler dapat membaca body request menggunakan method Web API.
+
+Method yang sering dipakai:
+
+- `request.json()`
+- `request.formData()`
+- `request.text()`
+
+## JSON Body
+
+JSON body umum dipakai untuk endpoint dari `fetch()`.
+
+```ts filename="app/api/users/route.ts"
+type CreateUserInput = {
+  name?: string;
+  email?: string;
+};
+
+export async function POST(request: Request) {
+  const body = (await request.json()) as CreateUserInput;
+
+  if (!body.name || !body.email) {
+    return Response.json(
+      {
+        message: "Name and email are required",
+      },
+      { status: 400 },
+    );
+  }
+
+  return Response.json(
+    {
+      id: 1,
+      name: body.name,
+      email: body.email,
+    },
+    { status: 201 },
+  );
+}
+```
+
+Contoh memanggil endpoint dari Client Component:
+
+```tsx
+"use client";
+
+export function CreateUserButton() {
+  async function handleClick() {
+    await fetch("/api/users", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        name: "Alya",
+        email: "alya@example.com",
+      }),
+    });
+  }
+
+  return (
+    <button type="button" onClick={handleClick}>
+      Create user
+    </button>
+  );
+}
+```
+
+## FormData
+
+`FormData` cocok untuk form HTML biasa atau upload file.
+
+```ts filename="app/api/contact/route.ts"
+export async function POST(request: Request) {
+  const formData = await request.formData();
+  const name = formData.get("name");
+  const message = formData.get("message");
+
+  if (typeof name !== "string" || typeof message !== "string") {
+    return Response.json(
+      {
+        message: "Invalid form data",
+      },
+      { status: 400 },
+    );
+  }
+
+  return Response.json({
+    name,
+    message,
+  });
+}
+```
+
+## Text Body
+
+Webhook kadang membutuhkan raw text body, misalnya untuk validasi signature.
+
+```ts filename="app/api/webhook/route.ts"
+export async function POST(request: Request) {
+  const payload = await request.text();
+
+  return Response.json({
+    received: payload.length,
+  });
+}
+```
+
+## Body Hanya Bisa Dibaca Sekali
+
+Body request adalah stream. Setelah dibaca dengan `json()`, `formData()`, atau `text()`, body tidak bisa dibaca ulang dengan method lain.
+
+## Ringkasan
+
+Gunakan `request.json()` untuk API JSON, `request.formData()` untuk form, dan `request.text()` untuk payload mentah seperti webhook.

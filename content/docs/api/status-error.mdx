@@ -1,0 +1,125 @@
+---
+title: Status Code dan Error
+description: Mengirim status code yang tepat dan menangani error pada Route Handler.
+---
+
+Endpoint API perlu mengirim status code yang jelas agar client tahu hasil request.
+
+Response sukses dan gagal sebaiknya konsisten. Ini membuat Client Component, aplikasi mobile, atau service lain lebih mudah memakai endpoint tersebut.
+
+## Status Code Dasar
+
+Beberapa status code yang sering dipakai:
+
+| Status | Arti | Contoh |
+| --- | --- | --- |
+| `200` | OK | Data berhasil dibaca |
+| `201` | Created | Data berhasil dibuat |
+| `400` | Bad Request | Input tidak valid |
+| `401` | Unauthorized | User belum login |
+| `403` | Forbidden | User tidak punya akses |
+| `404` | Not Found | Data tidak ditemukan |
+| `500` | Internal Server Error | Error tidak terduga |
+
+## Validasi Input
+
+```ts filename="app/api/tasks/route.ts"
+export async function POST(request: Request) {
+  const body = (await request.json()) as {
+    title?: string;
+  };
+
+  if (!body.title) {
+    return Response.json(
+      {
+        message: "Title is required",
+      },
+      { status: 400 },
+    );
+  }
+
+  return Response.json(
+    {
+      id: 1,
+      title: body.title,
+    },
+    { status: 201 },
+  );
+}
+```
+
+## Data Tidak Ditemukan
+
+```ts filename="app/api/tasks/[id]/route.ts"
+const tasks = [
+  { id: "1", title: "Learn Next.js" },
+];
+
+export async function GET(
+  _request: Request,
+  { params }: { params: Promise<{ id: string }> },
+) {
+  const { id } = await params;
+  const task = tasks.find((item) => item.id === id);
+
+  if (!task) {
+    return Response.json(
+      {
+        message: "Task not found",
+      },
+      { status: 404 },
+    );
+  }
+
+  return Response.json(task);
+}
+```
+
+## Try Catch
+
+Gunakan `try...catch` untuk operasi yang bisa gagal, seperti request ke service eksternal atau query database.
+
+```ts filename="app/api/report/route.ts"
+export async function GET() {
+  try {
+    const response = await fetch("https://example.com/api/report", {
+      cache: "no-store",
+    });
+
+    if (!response.ok) {
+      return Response.json(
+        {
+          message: "Report service is unavailable",
+        },
+        { status: 502 },
+      );
+    }
+
+    const report = await response.json();
+    return Response.json(report);
+  } catch {
+    return Response.json(
+      {
+        message: "Unexpected server error",
+      },
+      { status: 500 },
+    );
+  }
+}
+```
+
+## Jangan Bocorkan Detail Internal
+
+Untuk response production, hindari mengirim stack trace, query database, token, atau detail secret ke client.
+
+Lebih aman mengirim pesan umum:
+
+```json
+{
+  "message": "Unexpected server error"
+}
+```
+
+## Ringkasan
+
+Gunakan status code yang sesuai, validasi input sebelum memproses data, dan jangan membocorkan detail internal ketika terjadi error.
