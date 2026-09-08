@@ -1,4 +1,13 @@
 {
   "title": "Bab 11: Authentication",
-  "pages": ["index"]
+  "pages": [
+    "index",
+    "auth-overview",
+    "register-login",
+    "session-management",
+    "protected-routes",
+    "authorization",
+    "logout",
+    "auth-security"
+  ]
 }

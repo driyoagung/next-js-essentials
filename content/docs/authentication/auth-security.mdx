@@ -1,0 +1,101 @@
+---
+title: Auth Security
+description: Checklist keamanan untuk authentication di Next.js.
+---
+
+Authentication adalah area sensitif. Kesalahan kecil bisa membuat data private terbuka.
+
+Gunakan checklist ini sebagai baseline.
+
+## Gunakan Library Jika Memungkinkan
+
+Auth custom membutuhkan banyak keputusan security:
+
+- Password hashing.
+- Session signing atau encryption.
+- CSRF protection.
+- Reset password.
+- Email verification.
+- Multi-factor authentication.
+- Session revocation.
+
+Untuk production, pertimbangkan auth library atau provider yang sudah matang.
+
+## Validasi Input di Server
+
+Jangan percaya data dari form.
+
+```ts
+const email = formData.get("email");
+
+if (typeof email !== "string" || !email.includes("@")) {
+  return {
+    message: "Invalid email",
+  };
+}
+```
+
+## Hash Password
+
+Jangan menyimpan plain text password.
+
+```ts
+const passwordHash = await hashPassword(password);
+```
+
+Gunakan library hashing yang dirancang untuk password.
+
+## Cookie Aman
+
+Cookie session sebaiknya memakai:
+
+- `httpOnly`
+- `secure`
+- `sameSite`
+- `path`
+
+```ts
+cookieStore.set("session", token, {
+  httpOnly: true,
+  secure: true,
+  sameSite: "lax",
+  path: "/",
+});
+```
+
+## Jangan Bocorkan Pesan Login
+
+Pesan seperti `Email not found` bisa membantu attacker. Gunakan pesan umum.
+
+```text
+Invalid credentials
+```
+
+## Cek Auth di Action dan Route Handler
+
+Server Action dan Route Handler harus mengecek auth sendiri.
+
+```ts
+const session = await verifySession();
+
+if (!session) {
+  throw new Error("Unauthorized");
+}
+```
+
+UI check saja tidak cukup.
+
+## Return Data Minimal
+
+Jangan return field sensitif dari Server Action atau DAL.
+
+Hindari mengirim:
+
+- Password hash.
+- Session token.
+- Secret key.
+- Internal role detail yang tidak perlu.
+
+## Ringkasan
+
+Auth yang aman membutuhkan validasi server, cookie aman, password hashing, authorization dekat data, dan return value yang minimal.

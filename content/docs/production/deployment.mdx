@@ -1,0 +1,87 @@
+---
+title: Deployment
+description: Menjalankan build dan memilih strategi deployment Next.js.
+---
+
+Deployment adalah proses merilis aplikasi agar bisa diakses user.
+
+Next.js dapat dideploy sebagai Node.js server, Docker container, static export, atau melalui platform yang menyediakan adapter.
+
+## Script Dasar
+
+Pastikan `package.json` punya script:
+
+```json filename="package.json"
+{
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start"
+  }
+}
+```
+
+## Local Production Check
+
+Sebelum deploy, jalankan:
+
+```bash
+npm run build
+npm run start
+```
+
+`npm run build` membuat production build. `npm run start` menjalankan server production lokal.
+
+## Node.js Server
+
+Node.js server mendukung semua fitur Next.js.
+
+Cocok untuk:
+
+- Server Components.
+- Route Handlers.
+- Server Actions.
+- Dynamic rendering.
+- Image optimization.
+
+## Docker
+
+Docker cocok jika deployment environment memakai container.
+
+Untuk image yang lebih kecil, Next.js dapat memakai standalone output jika dikonfigurasi.
+
+```ts filename="next.config.ts"
+import type { NextConfig } from "next";
+
+const nextConfig: NextConfig = {
+  output: "standalone",
+};
+
+export default nextConfig;
+```
+
+## Static Export
+
+Static export cocok untuk halaman static, tetapi fitur yang membutuhkan server menjadi terbatas.
+
+Hindari static export jika aplikasi membutuhkan:
+
+- Server Actions.
+- Route Handler dynamic.
+- Authentication berbasis server.
+- Dynamic rendering.
+
+## Deployment Checklist
+
+Sebelum merge atau deploy:
+
+- Pastikan build hijau.
+- Pastikan environment variable production sudah diisi.
+- Pastikan migration database sudah siap.
+- Pastikan auth secret berbeda dari local.
+- Pastikan error monitoring aktif.
+- Pastikan domain dan HTTPS aktif.
+
+## Ringkasan
+
+Pilih deployment sesuai fitur yang dipakai. Untuk aplikasi App Router dengan auth, database, dan Server Actions, Node.js server atau platform full-stack Next.js biasanya paling aman.

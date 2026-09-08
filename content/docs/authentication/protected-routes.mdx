@@ -1,0 +1,84 @@
+---
+title: Protected Routes
+description: Melindungi halaman dari user yang belum login.
+---
+
+Protected route adalah route yang hanya boleh diakses user tertentu.
+
+Di App Router, pengecekan auth bisa dilakukan di Server Component, DAL, Route Handler, dan Server Action. Untuk halaman, cara paling langsung adalah memanggil `verifySession()` sebelum render konten protected.
+
+## Protected Page
+
+```tsx filename="app/dashboard/page.tsx"
+import { verifySession } from "@/auth/dal";
+
+export default async function DashboardPage() {
+  const session = await verifySession();
+
+  return (
+    <main>
+      <h1>Dashboard</h1>
+      <p>User ID: {session.userId}</p>
+    </main>
+  );
+}
+```
+
+Jika tidak ada session, `verifySession()` melakukan redirect ke `/login`.
+
+## Protected Data
+
+Lebih aman lagi, lakukan auth check dekat dengan data.
+
+```ts filename="data/profile.ts"
+import "server-only";
+
+import { verifySession } from "@/auth/dal";
+
+export async function getProfile() {
+  const session = await verifySession();
+
+  return db.user.findUnique({
+    where: {
+      id: session.userId,
+    },
+    select: {
+      id: true,
+      name: true,
+      email: true,
+    },
+  });
+}
+```
+
+Dengan pola ini, data profile tidak bisa dibaca tanpa session walaupun dipanggil dari halaman lain.
+
+## Hati-Hati Auth di Layout
+
+Layout tidak selalu re-render pada setiap navigasi client. Karena itu, jangan hanya mengandalkan layout untuk semua auth check.
+
+Gunakan layout untuk shell UI, tetapi tetap cek session di halaman, DAL, Server Action, atau Route Handler yang membutuhkan data protected.
+
+## Proxy untuk Optimistic Check
+
+Proxy bisa dipakai untuk redirect awal berdasarkan cookie, tetapi jangan jadikan satu-satunya lapisan security.
+
+```ts filename="proxy.ts"
+import { NextResponse, type NextRequest } from "next/server";
+
+export function proxy(request: NextRequest) {
+  const session = request.cookies.get("session")?.value;
+
+  if (!session && request.nextUrl.pathname.startsWith("/dashboard")) {
+    return NextResponse.redirect(new URL("/login", request.url));
+  }
+
+  return NextResponse.next();
+}
+```
+
+Security utama tetap harus berada dekat dengan data dan mutation.
+
+## Ringkasan
+
+Protected route membutuhkan session check di server. Jangan hanya menyembunyikan UI; lindungi data dan action yang sebenarnya.

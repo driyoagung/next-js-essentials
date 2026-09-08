@@ -1,0 +1,97 @@
+---
+title: Error dan Observability
+description: Menyiapkan error UI, not found UI, logging, dan monitoring.
+---
+
+Production harus siap menghadapi error. User perlu mendapat UI yang jelas, dan developer perlu mendapat informasi untuk debugging.
+
+## Route Error UI
+
+Gunakan `error.tsx` untuk segment penting.
+
+```tsx filename="app/dashboard/error.tsx"
+"use client";
+
+import { useEffect } from "react";
+
+export default function DashboardError({
+  error,
+  retry,
+}: {
+  error: Error & { digest?: string };
+  retry: () => void;
+}) {
+  useEffect(() => {
+    console.error(error);
+  }, [error]);
+
+  return (
+    <main>
+      <h1>Dashboard could not be loaded</h1>
+      <button type="button" onClick={() => retry()}>
+        Try again
+      </button>
+    </main>
+  );
+}
+```
+
+Di Next.js 16, error boundary memakai prop `retry`.
+
+## Not Found UI
+
+Gunakan `not-found.tsx` untuk resource yang tidak ada.
+
+```tsx filename="app/products/[id]/not-found.tsx"
+import Link from "next/link";
+
+export default function ProductNotFound() {
+  return (
+    <main>
+      <h1>Product not found</h1>
+      <Link href="/products">Back to products</Link>
+    </main>
+  );
+}
+```
+
+## Global Error
+
+Untuk fallback paling atas, tambahkan `app/global-error.tsx`.
+
+```tsx filename="app/global-error.tsx"
+"use client";
+
+export default function GlobalError({
+  retry,
+}: {
+  retry: () => void;
+}) {
+  return (
+    <html lang="en">
+      <body>
+        <h1>Something went wrong</h1>
+        <button type="button" onClick={() => retry()}>
+          Try again
+        </button>
+      </body>
+    </html>
+  );
+}
+```
+
+## Logging dan Monitoring
+
+Minimal, pastikan error production dikirim ke platform monitoring atau logging.
+
+Yang perlu dipantau:
+
+- Error rate.
+- Response time.
+- Failed Server Actions.
+- Failed Route Handlers.
+- Core Web Vitals.
+
+## Ringkasan
+
+Siapkan `error.tsx`, `not-found.tsx`, dan logging production. Error UI menjaga user tetap punya jalan keluar, observability membantu developer memperbaiki masalah.

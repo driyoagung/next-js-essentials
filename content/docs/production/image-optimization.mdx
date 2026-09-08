@@ -1,0 +1,90 @@
+---
+title: Image Optimization
+description: Mengoptimalkan gambar dengan next/image.
+---
+
+Image yang tidak optimal bisa memperlambat halaman dan membuat layout shift. Next.js menyediakan komponen `Image` dari `next/image`.
+
+## Basic Usage
+
+```tsx filename="app/page.tsx"
+import Image from "next/image";
+
+export default function Page() {
+  return (
+    <Image
+      src="/profile.png"
+      width={500}
+      height={500}
+      alt="Profile photo"
+    />
+  );
+}
+```
+
+`width` dan `height` membantu browser menyediakan ruang sebelum gambar selesai dimuat.
+
+## Static Import
+
+```tsx
+import Image from "next/image";
+import heroImage from "./hero.png";
+
+export function Hero() {
+  return <Image src={heroImage} alt="Dashboard preview" />;
+}
+```
+
+Static import membuat Next.js mengetahui ukuran gambar.
+
+## Fill
+
+Gunakan `fill` jika ukuran gambar mengikuti parent.
+
+```tsx
+import Image from "next/image";
+
+export function CoverImage() {
+  return (
+    <div style={{ position: "relative", height: 320 }}>
+      <Image
+        src="/cover.jpg"
+        alt="Cover"
+        fill
+        style={{ objectFit: "cover" }}
+      />
+    </div>
+  );
+}
+```
+
+Parent harus punya `position: relative`, `fixed`, atau `absolute`.
+
+## Remote Image
+
+Untuk gambar remote, konfigurasi domain atau `remotePatterns` di `next.config`.
+
+```ts filename="next.config.ts"
+import type { NextConfig } from "next";
+
+const nextConfig: NextConfig = {
+  images: {
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "images.example.com",
+      },
+    ],
+  },
+};
+
+export default nextConfig;
+```
+
+## Alt Text
+
+`alt` wajib dan harus menjelaskan fungsi gambar. Jika gambar dekoratif, gunakan `alt=""`.
+
+## Ringkasan
+
+Gunakan `next/image`, tentukan dimensi atau `fill`, konfigurasi remote image, dan tulis alt text yang bermakna.

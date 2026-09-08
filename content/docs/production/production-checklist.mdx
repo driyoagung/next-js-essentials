@@ -1,0 +1,60 @@
+---
+title: Production Checklist
+description: Daftar pemeriksaan sebelum aplikasi Next.js dirilis.
+---
+
+Checklist membantu memastikan hal penting tidak terlewat sebelum deploy.
+
+## Build dan Type Safety
+
+Jalankan:
+
+```bash
+npm run lint
+npx tsc --noEmit
+npm run build
+```
+
+Jika salah satu gagal, selesaikan sebelum deploy.
+
+## Routing dan UI
+
+Pastikan:
+
+- Route utama bisa dibuka.
+- Dynamic route menangani data tidak ditemukan.
+- `loading.tsx` tersedia untuk halaman yang lambat.
+- `error.tsx` tersedia untuk segment penting.
+- Navigasi memakai `Link` untuk route internal.
+
+## Data dan Security
+
+Pastikan:
+
+- Secret tidak memakai prefix `NEXT_PUBLIC_`.
+- Server Action melakukan validasi input.
+- Route Handler private mengecek session.
+- DAL memakai `server-only`.
+- Data yang dikirim ke Client Component sudah minimal.
+
+## Performance
+
+Pastikan:
+
+- Komponen interaktif diberi `"use client"` hanya saat perlu.
+- Query independen dijalankan paralel.
+- Image memakai `next/image`.
+- Font memakai `next/font`.
+- Data yang stabil punya strategi cache.
+
+## Metadata dan SEO
+
+Pastikan:
+
+- Setiap halaman penting punya title dan description.
+- Open Graph image tersedia untuk halaman publik.
+- Sitemap dan robots disiapkan jika aplikasi perlu SEO.
+
+## Ringkasan
+
+Production checklist membantu memeriksa build, route, data, security, performance, dan SEO sebelum aplikasi dirilis.

@@ -1,4 +1,14 @@
 {
   "title": "Bab 12: Production",
-  "pages": ["index"]
+  "pages": [
+    "index",
+    "production-checklist",
+    "environment-config",
+    "metadata-seo",
+    "image-optimization",
+    "font-optimization",
+    "rendering-caching",
+    "error-observability",
+    "deployment"
+  ]
 }
