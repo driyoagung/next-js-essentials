@@ -1,0 +1,123 @@
+---
+title: Directive use server
+description: Memahami posisi dan fungsi directive use server.
+---
+
+Directive `"use server"` memberi tahu React dan Next.js bahwa function tertentu harus berjalan di server.
+
+Ada dua cara umum memakai directive ini.
+
+## Di Level File
+
+Jika `"use server"` ditulis di bagian paling atas file, semua export async function di file tersebut menjadi Server Function.
+
+```ts filename="app/tasks/actions.ts"
+"use server";
+
+export async function createTask(formData: FormData) {
+  const title = formData.get("title");
+  console.log(title);
+}
+
+export async function deleteTask(formData: FormData) {
+  const id = formData.get("id");
+  console.log(id);
+}
+```
+
+Pola ini bagus untuk file `actions.ts` yang berisi kumpulan mutation.
+
+## Di Dalam Function
+
+Directive juga bisa ditulis di awal body function.
+
+```tsx filename="app/tasks/page.tsx"
+export default function TasksPage() {
+  async function createTask(formData: FormData) {
+    "use server";
+
+    const title = formData.get("title");
+    console.log(title);
+  }
+
+  return (
+    <form action={createTask}>
+      <input name="title" required />
+      <button type="submit">Create</button>
+    </form>
+  );
+}
+```
+
+Pola ini cocok untuk action yang sangat dekat dengan satu halaman.
+
+## File Action Terpisah
+
+Untuk aplikasi yang mulai besar, file terpisah biasanya lebih rapi.
+
+```text
+app/
++-- tasks/
+    +-- actions.ts
+    +-- page.tsx
+    +-- task-form.tsx
+```
+
+`page.tsx` dan component form tinggal import action.
+
+```tsx filename="app/tasks/page.tsx"
+import { createTask } from "./actions";
+
+export default function TasksPage() {
+  return (
+    <form action={createTask}>
+      <input name="title" required />
+      <button type="submit">Create</button>
+    </form>
+  );
+}
+```
+
+## Jangan Campur dengan use client
+
+Satu file tidak bisa menjadi Client Component dan file Server Action sekaligus.
+
+Jika form butuh interaksi client, pecah menjadi dua file:
+
+```text
+app/
++-- tasks/
+    +-- actions.ts
+    +-- task-form.tsx
+```
+
+`actions.ts`:
+
+```ts
+"use server";
+
+export async function createTask(formData: FormData) {
+  console.log(formData.get("title"));
+}
+```
+
+`task-form.tsx`:
+
+```tsx
+"use client";
+
+import { createTask } from "./actions";
+
+export function TaskForm() {
+  return (
+    <form action={createTask}>
+      <input name="title" />
+      <button type="submit">Create</button>
+    </form>
+  );
+}
+```
+
+## Ringkasan
+
+Gunakan `"use server"` di level file untuk kumpulan action, atau di body function untuk action inline. Pisahkan file server dan client agar boundary tetap jelas.

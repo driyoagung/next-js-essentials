@@ -1,0 +1,131 @@
+---
+title: Revalidation, Redirect, dan Security
+description: Menyegarkan data setelah mutation dan mengamankan Server Action.
+---
+
+Setelah Server Action mengubah data, UI perlu menampilkan data terbaru. Next.js menyediakan beberapa API untuk menyegarkan route atau cache.
+
+Bagian ini juga penting untuk security, karena Server Action tetap bisa dipanggil melalui request langsung.
+
+## Revalidate Path
+
+Gunakan `revalidatePath` ketika mutation memengaruhi satu route tertentu.
+
+```ts filename="app/tasks/actions.ts"
+"use server";
+
+import { revalidatePath } from "next/cache";
+
+export async function createTask(formData: FormData) {
+  const title = formData.get("title");
+
+  if (typeof title !== "string" || title.trim() === "") {
+    return;
+  }
+
+  await saveTask({
+    title: title.trim(),
+  });
+
+  revalidatePath("/tasks");
+}
+```
+
+Ketika action memanggil `revalidatePath`, Next.js dapat mengirim hasil action dan render UI terbaru dalam satu response.
+
+## Redirect Setelah Mutation
+
+Gunakan `redirect` ketika user perlu dipindah setelah mutation.
+
+```ts filename="app/tasks/actions.ts"
+"use server";
+
+import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
+
+export async function createTask(formData: FormData) {
+  const title = formData.get("title");
+  const task = await saveTask({
+    title: String(title),
+  });
+
+  revalidatePath("/tasks");
+  redirect(`/tasks/${task.id}`);
+}
+```
+
+`redirect()` menghentikan alur function. Letakkan `revalidatePath()` sebelum `redirect()` jika halaman tujuan membutuhkan data terbaru.
+
+## Refresh Current Route
+
+Jika kamu hanya perlu memuat ulang current route tanpa mengubah cache tag atau path, gunakan `refresh` dari `next/cache`.
+
+```ts filename="app/preferences/actions.ts"
+"use server";
+
+import { refresh } from "next/cache";
+
+export async function updatePreference(formData: FormData) {
+  await savePreference(formData);
+  refresh();
+}
+```
+
+`refresh()` hanya bisa dipanggil dari Server Action.
+
+## Update Tag dan Revalidate Tag
+
+Jika data memakai cache tag, pilih API berdasarkan kebutuhan.
+
+| API | Tempat | Perilaku |
+| --- | --- | --- |
+| `updateTag` | Server Action | Expire segera untuk read-your-own-writes |
+| `revalidateTag` | Server Action dan Route Handler | Refresh dengan stale-while-revalidate |
+| `revalidatePath` | Server Action dan Route Handler | Invalidate berdasarkan path |
+| `refresh` | Server Action | Refetch current route |
+
+## Security Checklist
+
+Server Action bukan hanya function lokal. Action bisa dipanggil melalui request `POST`.
+
+Checklist dasar:
+
+- Cek session di dalam action.
+- Cek authorization untuk resource yang diubah.
+- Validasi semua input dari `FormData`.
+- Jangan percaya `userId`, `role`, atau ownership dari client.
+- Jangan return raw database record jika berisi data sensitif.
+- Batasi ukuran payload jika form menerima file besar.
+
+## Contoh Authorization
+
+```ts filename="app/tasks/actions.ts"
+"use server";
+
+import { auth } from "@/lib/auth";
+
+export async function completeTask(taskId: string) {
+  const session = await auth();
+
+  if (!session?.user) {
+    throw new Error("Unauthorized");
+  }
+
+  const task = await getTaskForUser({
+    taskId,
+    userId: session.user.id,
+  });
+
+  if (!task) {
+    throw new Error("Forbidden");
+  }
+
+  await markTaskAsComplete(task.id);
+}
+```
+
+Client boleh mengirim `taskId`, tetapi server tetap harus memastikan task tersebut memang milik user yang sedang login.
+
+## Ringkasan
+
+Setelah mutation, panggil revalidation atau redirect sesuai flow. Di setiap Server Action, validasi input dan lakukan authorization karena action bisa dipanggil langsung dari luar UI.

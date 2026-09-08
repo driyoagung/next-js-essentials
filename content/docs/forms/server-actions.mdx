@@ -1,0 +1,99 @@
+---
+title: Server Actions
+description: Membuat action untuk menangani mutation dari form.
+---
+
+Server Action adalah Server Function yang dipanggil melalui mekanisme action React, seperti `<form action>`, `<button formAction>`, atau event handler client yang dibungkus `startTransition`.
+
+Server Action cocok untuk mutation, bukan untuk data fetching awal halaman.
+
+## Membuat Action
+
+```ts filename="app/contact/actions.ts"
+"use server";
+
+export async function sendMessage(formData: FormData) {
+  const name = formData.get("name");
+  const message = formData.get("message");
+
+  console.log({ name, message });
+}
+```
+
+Action harus async karena dipanggil melalui request ke server.
+
+## Memanggil dari Form
+
+```tsx filename="app/contact/page.tsx"
+import { sendMessage } from "./actions";
+
+export default function ContactPage() {
+  return (
+    <form action={sendMessage}>
+      <input name="name" required />
+      <textarea name="message" required />
+      <button type="submit">Send</button>
+    </form>
+  );
+}
+```
+
+Function `sendMessage` tidak dikirim ke browser sebagai source code asli. Client hanya mendapat reference yang bisa memanggil action tersebut.
+
+## Action Menggunakan POST
+
+Di balik layar, Server Action dipanggil sebagai request `POST`. Karena itu, Server Action harus diperlakukan seperti endpoint mutation.
+
+Selalu lakukan:
+
+- Validasi input.
+- Cek authentication jika data private.
+- Cek authorization untuk data milik user tertentu.
+- Batasi data yang dikembalikan ke client.
+
+## Inline Server Action
+
+Action juga bisa ditulis langsung di Server Component.
+
+```tsx filename="app/tasks/page.tsx"
+export default function TasksPage() {
+  async function createTask(formData: FormData) {
+    "use server";
+
+    const title = formData.get("title");
+    console.log(title);
+  }
+
+  return (
+    <form action={createTask}>
+      <input name="title" required />
+      <button type="submit">Create</button>
+    </form>
+  );
+}
+```
+
+Pola inline cocok untuk action kecil yang hanya dipakai oleh satu halaman.
+
+## Action dari Client Component
+
+Client Component tidak bisa mendefinisikan Server Action di dalam component. Namun Client Component bisa mengimpor action dari file yang memiliki directive `"use server"`.
+
+```tsx filename="app/tasks/create-task-form.tsx"
+"use client";
+
+import { createTask } from "./actions";
+
+export function CreateTaskForm() {
+  return (
+    <form action={createTask}>
+      <input name="title" required />
+      <button type="submit">Create</button>
+    </form>
+  );
+}
+```
+
+## Ringkasan
+
+Server Action adalah cara ringkas menangani mutation dari form. Action berjalan di server, dipanggil melalui request POST, dan tetap perlu validasi serta authorization.
