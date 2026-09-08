@@ -1,0 +1,62 @@
+---
+title: Environment Variables
+description: Menyimpan database URL dan secret dengan aman.
+---
+
+Database membutuhkan credential. Di Next.js, credential disimpan di environment variable agar tidak hardcode di source code.
+
+## DATABASE_URL
+
+Nama variable yang umum dipakai:
+
+```text filename=".env"
+DATABASE_URL="postgresql://user:password@localhost:5432/nextjs_essential"
+```
+
+Jangan commit file `.env` yang berisi secret asli.
+
+## Akses dari Server
+
+Environment variable tanpa prefix `NEXT_PUBLIC_` hanya tersedia di server.
+
+```ts filename="lib/env.ts"
+export const databaseUrl = process.env.DATABASE_URL;
+
+if (!databaseUrl) {
+  throw new Error("DATABASE_URL is not configured");
+}
+```
+
+Kode seperti ini aman jika hanya diimpor oleh server-only module.
+
+## Hindari NEXT_PUBLIC untuk Secret
+
+Variable dengan prefix `NEXT_PUBLIC_` akan masuk ke client bundle.
+
+Jangan lakukan ini:
+
+```text
+NEXT_PUBLIC_DATABASE_URL="postgresql://user:password@localhost:5432/app"
+```
+
+Gunakan `NEXT_PUBLIC_` hanya untuk nilai yang memang boleh diketahui browser, seperti public analytics key atau public site URL.
+
+## File Contoh
+
+Sediakan `.env.example` untuk dokumentasi konfigurasi.
+
+```text filename=".env.example"
+DATABASE_URL=""
+```
+
+File ini boleh dicommit karena tidak berisi secret asli.
+
+## Runtime dan Deployment
+
+Saat deploy, isi environment variable di dashboard hosting atau secret manager. Jangan mengandalkan file `.env` lokal di production.
+
+Untuk beberapa database serverless, pastikan connection string sesuai runtime deployment dan memakai SSL jika dibutuhkan.
+
+## Ringkasan
+
+Simpan credential database di environment variable server. Jangan gunakan `NEXT_PUBLIC_` untuk secret, dan sediakan `.env.example` sebagai panduan konfigurasi.

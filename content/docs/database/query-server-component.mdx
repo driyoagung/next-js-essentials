@@ -1,0 +1,112 @@
+---
+title: Query dari Server Component
+description: Membaca data database langsung dari Server Component melalui DAL.
+---
+
+Server Component dapat membaca database karena berjalan di server. Namun halaman sebaiknya tidak langsung berisi detail query. Panggil function dari Data Access Layer.
+
+## List Page
+
+```tsx filename="app/employees/page.tsx"
+import Link from "next/link";
+import { getEmployees } from "@/data/employees";
+
+export default async function EmployeesPage() {
+  const employees = await getEmployees();
+
+  return (
+    <main>
+      <div>
+        <h1>Employees</h1>
+        <Link href="/employees/create">Create employee</Link>
+      </div>
+
+      <ul>
+        {employees.map((employee) => (
+          <li key={employee.id}>
+            <Link href={`/employees/${employee.id}`}>
+              {employee.name}
+            </Link>
+            <p>{employee.position}</p>
+          </li>
+        ))}
+      </ul>
+    </main>
+  );
+}
+```
+
+## Detail Page
+
+```tsx filename="app/employees/[id]/page.tsx"
+import { notFound } from "next/navigation";
+import { getEmployeeById } from "@/data/employees";
+
+export default async function EmployeeDetailPage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  const { id } = await params;
+  const employee = await getEmployeeById(id);
+
+  if (!employee) {
+    notFound();
+  }
+
+  return (
+    <main>
+      <h1>{employee.name}</h1>
+      <p>{employee.email}</p>
+      <p>{employee.position}</p>
+      <p>{employee.department}</p>
+    </main>
+  );
+}
+```
+
+Di Next.js 16, `params` perlu di-`await` karena berupa Promise.
+
+## Empty State
+
+Tetap tangani list kosong.
+
+```tsx
+if (employees.length === 0) {
+  return (
+    <main>
+      <h1>Employees</h1>
+      <p>No employees found.</p>
+    </main>
+  );
+}
+```
+
+## Parallel Query
+
+Jika ada beberapa query yang tidak saling bergantung, jalankan paralel.
+
+```tsx
+export default async function DashboardPage() {
+  const employeesPromise = getEmployees();
+  const departmentsPromise = getDepartments();
+
+  const [employees, departments] = await Promise.all([
+    employeesPromise,
+    departmentsPromise,
+  ]);
+
+  return (
+    <Dashboard
+      employees={employees}
+      departments={departments}
+    />
+  );
+}
+```
+
+Ini menghindari waterfall yang tidak perlu.
+
+## Ringkasan
+
+Baca database dari Server Component melalui DAL. Tangani empty state dan `notFound()`, lalu jalankan query paralel jika data tidak saling bergantung.

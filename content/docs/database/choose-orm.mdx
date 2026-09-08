@@ -1,0 +1,87 @@
+---
+title: Memilih ORM
+description: Mengenal pilihan ORM seperti Prisma dan Drizzle.
+---
+
+ORM membantu aplikasi berkomunikasi dengan database menggunakan API TypeScript yang lebih nyaman daripada menulis SQL mentah di seluruh aplikasi.
+
+Di ekosistem Next.js, dua pilihan populer adalah Prisma dan Drizzle.
+
+## Prisma
+
+Prisma menggunakan schema file untuk mendeskripsikan model database.
+
+Contoh schema:
+
+```prisma filename="prisma/schema.prisma"
+model Employee {
+  id         String   @id @default(cuid())
+  name       String
+  email      String   @unique
+  position   String
+  department String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+```
+
+Query dengan Prisma:
+
+```ts
+const employees = await prisma.employee.findMany({
+  orderBy: {
+    createdAt: "desc",
+  },
+});
+```
+
+Prisma cocok jika kamu ingin developer experience yang kuat, migration yang jelas, dan client query yang mudah dibaca.
+
+## Drizzle
+
+Drizzle mendeskripsikan schema langsung di TypeScript.
+
+```ts filename="db/schema.ts"
+import { pgTable, text, timestamp } from "drizzle-orm/pg-core";
+
+export const employees = pgTable("employees", {
+  id: text("id").primaryKey(),
+  name: text("name").notNull(),
+  email: text("email").notNull().unique(),
+  position: text("position").notNull(),
+  department: text("department").notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+```
+
+Query dengan Drizzle:
+
+```ts
+const result = await db.select().from(employees);
+```
+
+Drizzle cocok jika kamu ingin schema TypeScript, query yang dekat dengan SQL, dan kontrol yang lebih eksplisit.
+
+## Perbandingan Singkat
+
+| Aspek | Prisma | Drizzle |
+| --- | --- | --- |
+| Schema | File Prisma | TypeScript |
+| Query style | ORM client | SQL-like query builder |
+| Migration | Prisma Migrate | Drizzle Kit |
+| Cocok untuk | DX yang matang | Kontrol TypeScript dekat SQL |
+
+## Pilihan untuk Pembelajaran
+
+Untuk belajar Next.js Essential, pilih salah satu ORM dan gunakan konsisten. Yang paling penting adalah memahami:
+
+- Model data.
+- Migration.
+- Query read.
+- Mutation.
+- Relasi.
+- Security data access.
+
+## Ringkasan
+
+Prisma dan Drizzle sama-sama bisa dipakai di Next.js. Pilih satu sesuai kebutuhan project, lalu letakkan akses database di server dan Data Access Layer.

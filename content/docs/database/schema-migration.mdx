@@ -1,0 +1,87 @@
+---
+title: Schema dan Migration
+description: Mendesain model data dan mengubah struktur database secara bertahap.
+---
+
+Schema mendeskripsikan bentuk data. Migration mencatat perubahan struktur database dari waktu ke waktu.
+
+Tanpa migration, perubahan tabel mudah tidak sinkron antara local, staging, dan production.
+
+## Model Employee
+
+Untuk melanjutkan studi kasus CRUD, kita buat model `Employee`.
+
+Field yang dibutuhkan:
+
+| Field | Type | Catatan |
+| --- | --- | --- |
+| `id` | string | Primary key |
+| `name` | string | Wajib |
+| `email` | string | Unik |
+| `position` | string | Wajib |
+| `department` | string | Wajib |
+| `createdAt` | date | Waktu dibuat |
+| `updatedAt` | date | Waktu diperbarui |
+
+## Contoh Prisma Schema
+
+```prisma filename="prisma/schema.prisma"
+model Employee {
+  id         String   @id @default(cuid())
+  name       String
+  email      String   @unique
+  position   String
+  department String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+```
+
+Migration:
+
+```bash
+npx prisma migrate dev --name create_employee
+```
+
+## Contoh Drizzle Schema
+
+```ts filename="db/schema.ts"
+import { pgTable, text, timestamp } from "drizzle-orm/pg-core";
+
+export const employees = pgTable("employees", {
+  id: text("id").primaryKey(),
+  name: text("name").notNull(),
+  email: text("email").notNull().unique(),
+  position: text("position").notNull(),
+  department: text("department").notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+```
+
+Generate migration:
+
+```bash
+npx drizzle-kit generate
+```
+
+Jalankan migration:
+
+```bash
+npx drizzle-kit migrate
+```
+
+## Migration Harus Direview
+
+Sebelum menjalankan migration ke production, review SQL yang dihasilkan.
+
+Perhatikan:
+
+- Apakah migration menghapus kolom?
+- Apakah migration mengubah type data?
+- Apakah ada data lama yang perlu dipindahkan?
+- Apakah index unik bisa gagal karena data duplikat?
+
+## Ringkasan
+
+Schema mendefinisikan struktur data. Migration menjaga perubahan database tetap tercatat dan bisa dijalankan konsisten di banyak environment.

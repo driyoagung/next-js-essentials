@@ -5,16 +5,34 @@ description: Menghubungkan aplikasi Next.js dengan database menggunakan ORM.
 
 Bab ini membahas cara menghubungkan aplikasi dengan database agar data tidak hanya hidup di memory atau file sementara.
 
-## Fokus Pembelajaran
+Pada bab CRUD sebelumnya, data layer masih bersifat sementara. Di bab ini, data layer tersebut mulai diarahkan ke database sungguhan dengan ORM seperti Prisma atau Drizzle.
 
-- Setup database
-- ORM
-- Schema
-- Migration
-- Query database
-- Relasi data
-- CRUD menggunakan database
+Fokus utamanya bukan memilih satu ORM saja, tetapi memahami pola integrasi database di Next.js App Router: tempat menyimpan koneksi, cara membaca data dari Server Component, cara melakukan mutation dari Server Action, serta cara menjaga data private tetap berada di server.
+
+## Alur Bab Ini
+
+1. Memahami peran database di aplikasi Next.js
+2. Memilih ORM atau database client
+3. Menyimpan connection string di environment variable
+4. Membuat schema dan migration
+5. Menyusun Data Access Layer
+6. Query database dari Server Component
+7. Menghubungkan CRUD ke database
+8. Membaca relasi data
+9. Menjaga security dan performa query
 
 ## Hasil yang Diharapkan
 
 Setelah bab ini selesai, kamu dapat membuat model data, menjalankan query, dan menghubungkan CRUD ke database.
+
+## Mental Model
+
+```text
+Database menyimpan data
+ORM mendeskripsikan schema
+Migration mengubah struktur tabel
+Data Access Layer membungkus query
+Server Component membaca data
+Server Action mengubah data
+Revalidation menyegarkan UI
+```

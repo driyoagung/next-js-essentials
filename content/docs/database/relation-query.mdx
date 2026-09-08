@@ -1,0 +1,119 @@
+---
+title: Relasi Data
+description: Membaca data yang saling berhubungan seperti department dan employee.
+---
+
+Relasi data muncul ketika satu tabel berhubungan dengan tabel lain. Contoh: satu department memiliki banyak employee.
+
+## Contoh Model
+
+Dengan Prisma:
+
+```prisma filename="prisma/schema.prisma"
+model Department {
+  id        String     @id @default(cuid())
+  name      String
+  employees Employee[]
+}
+
+model Employee {
+  id           String     @id @default(cuid())
+  name         String
+  email        String     @unique
+  position     String
+  departmentId String
+  department   Department @relation(fields: [departmentId], references: [id])
+}
+```
+
+## Membaca Relasi
+
+```ts filename="data/employees.ts"
+export async function getEmployeeById(id: string) {
+  return db.employee.findUnique({
+    where: { id },
+    select: {
+      id: true,
+      name: true,
+      email: true,
+      position: true,
+      department: {
+        select: {
+          id: true,
+          name: true,
+        },
+      },
+    },
+  });
+}
+```
+
+Return value hanya berisi field yang dibutuhkan UI.
+
+## Membaca Department dengan Employee
+
+```ts filename="data/departments.ts"
+export async function getDepartmentsWithEmployees() {
+  return db.department.findMany({
+    select: {
+      id: true,
+      name: true,
+      employees: {
+        select: {
+          id: true,
+          name: true,
+          position: true,
+        },
+      },
+    },
+  });
+}
+```
+
+## Hindari N+1 Query
+
+N+1 terjadi ketika aplikasi membaca list, lalu menjalankan query tambahan untuk setiap item.
+
+Contoh yang perlu dihindari:
+
+```ts
+const departments = await getDepartments();
+
+for (const department of departments) {
+  department.employees = await getEmployeesByDepartmentId(department.id);
+}
+```
+
+Lebih baik ambil relasi sekaligus jika ORM mendukung.
+
+## Tampilkan di Halaman
+
+```tsx filename="app/departments/page.tsx"
+import { getDepartmentsWithEmployees } from "@/data/departments";
+
+export default async function DepartmentsPage() {
+  const departments = await getDepartmentsWithEmployees();
+
+  return (
+    <main>
+      <h1>Departments</h1>
+      {departments.map((department) => (
+        <section key={department.id}>
+          <h2>{department.name}</h2>
+          <ul>
+            {department.employees.map((employee) => (
+              <li key={employee.id}>
+                {employee.name} - {employee.position}
+              </li>
+            ))}
+          </ul>
+        </section>
+      ))}
+    </main>
+  );
+}
+```
+
+## Ringkasan
+
+Relasi data membantu membaca entity yang saling berhubungan. Ambil hanya field yang dibutuhkan UI dan hindari pola N+1 query.
