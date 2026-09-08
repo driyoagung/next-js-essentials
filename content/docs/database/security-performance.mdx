@@ -1,0 +1,117 @@
+---
+title: Security dan Performance
+description: Menjaga query database tetap aman, minim data, dan efisien.
+---
+
+Database sering berisi data sensitif. Karena itu, integrasi database bukan hanya soal query berhasil, tetapi juga soal siapa yang boleh membaca dan mengubah data.
+
+## Gunakan server-only
+
+Tandai module database dan DAL sebagai server-only.
+
+```ts filename="data/employees.ts"
+import "server-only";
+
+import { db } from "@/lib/db";
+```
+
+Jika module ini tidak sengaja diimpor ke Client Component, Next.js dapat memberi error saat build.
+
+## Jangan Kirim Raw Record
+
+Raw database record bisa berisi field internal.
+
+Hindari:
+
+```ts
+return db.user.findUnique({
+  where: { id },
+});
+```
+
+Lebih aman:
+
+```ts
+return db.user.findUnique({
+  where: { id },
+  select: {
+    id: true,
+    name: true,
+    email: true,
+  },
+});
+```
+
+Kirim hanya data yang memang dibutuhkan UI.
+
+## Authorization di DAL atau Action
+
+Untuk data milik user tertentu, cek ownership di server.
+
+```ts filename="data/tasks.ts"
+import "server-only";
+
+export async function getTaskForUser({
+  taskId,
+  userId,
+}: {
+  taskId: string;
+  userId: string;
+}) {
+  return db.task.findFirst({
+    where: {
+      id: taskId,
+      ownerId: userId,
+    },
+  });
+}
+```
+
+Jangan percaya `userId` dari form. Ambil identity user dari session di server.
+
+## Hindari Waterfall Query
+
+Jika dua query tidak saling bergantung, jalankan paralel.
+
+```ts
+const employeesPromise = getEmployees();
+const departmentsPromise = getDepartments();
+
+const [employees, departments] = await Promise.all([
+  employeesPromise,
+  departmentsPromise,
+]);
+```
+
+## Gunakan Pagination
+
+Jangan menampilkan semua record jika jumlah data bisa besar.
+
+```ts
+export async function getEmployeesPage(page: number) {
+  const limit = 20;
+  const offset = (page - 1) * limit;
+
+  return db.employee.findMany({
+    take: limit,
+    skip: offset,
+    orderBy: {
+      createdAt: "desc",
+    },
+  });
+}
+```
+
+## Index untuk Query Penting
+
+Kolom yang sering dipakai untuk filter, sort, atau relasi biasanya membutuhkan index.
+
+Contoh:
+
+- `email` untuk login atau pencarian user.
+- `departmentId` untuk employee per department.
+- `createdAt` untuk list terbaru.
+
+## Ringkasan
+
+Jaga module database tetap server-only, kirim DTO yang minimal, cek authorization di server, hindari waterfall query, dan gunakan pagination serta index untuk data besar.

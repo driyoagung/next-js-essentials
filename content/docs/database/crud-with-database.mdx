@@ -1,0 +1,122 @@
+---
+title: CRUD dengan Database
+description: Menghubungkan create, update, dan delete ke database melalui Server Action.
+---
+
+Setelah read memakai database, langkah berikutnya adalah mutation. Mutation form di App Router biasanya memakai Server Action.
+
+Server Action sebaiknya tipis: validasi input, panggil DAL, revalidate, lalu redirect jika perlu.
+
+## Create
+
+```ts filename="app/employees/actions.ts"
+"use server";
+
+import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
+import { createEmployee } from "@/data/employees";
+import { parseEmployeeInput } from "./validation";
+
+export async function createEmployeeAction(formData: FormData) {
+  const input = parseEmployeeInput(formData);
+
+  const employee = await createEmployee(input);
+
+  revalidatePath("/employees");
+  redirect(`/employees/${employee.id}`);
+}
+```
+
+DAL:
+
+```ts filename="data/employees.ts"
+export async function createEmployee(input: EmployeeInput) {
+  return db.employee.create({
+    data: input,
+    select: {
+      id: true,
+    },
+  });
+}
+```
+
+## Update
+
+```ts filename="app/employees/actions.ts"
+"use server";
+
+import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
+import { updateEmployee } from "@/data/employees";
+import { parseEmployeeInput } from "./validation";
+
+export async function updateEmployeeAction(
+  id: string,
+  formData: FormData,
+) {
+  const input = parseEmployeeInput(formData);
+
+  await updateEmployee(id, input);
+
+  revalidatePath("/employees");
+  revalidatePath(`/employees/${id}`);
+  redirect(`/employees/${id}`);
+}
+```
+
+DAL:
+
+```ts filename="data/employees.ts"
+export async function updateEmployee(
+  id: string,
+  input: EmployeeInput,
+) {
+  await db.employee.update({
+    where: { id },
+    data: input,
+  });
+}
+```
+
+## Delete
+
+```ts filename="app/employees/actions.ts"
+"use server";
+
+import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
+import { deleteEmployee } from "@/data/employees";
+
+export async function deleteEmployeeAction(formData: FormData) {
+  const id = formData.get("id");
+
+  if (typeof id !== "string") {
+    throw new Error("Invalid employee id");
+  }
+
+  await deleteEmployee(id);
+
+  revalidatePath("/employees");
+  redirect("/employees");
+}
+```
+
+DAL:
+
+```ts filename="data/employees.ts"
+export async function deleteEmployee(id: string) {
+  await db.employee.delete({
+    where: { id },
+  });
+}
+```
+
+## Error dari Database
+
+Database bisa gagal karena constraint, koneksi, atau data tidak ditemukan.
+
+Untuk expected error seperti email duplikat, return state ke form. Untuk error tidak terduga, biarkan `error.tsx` menangani.
+
+## Ringkasan
+
+Mutation database sebaiknya melalui Server Action yang memanggil DAL. Setelah mutation, panggil `revalidatePath()` sebelum `redirect()`.

@@ -1,4 +1,15 @@
 {
   "title": "Bab 10: Database",
-  "pages": ["index"]
+  "pages": [
+    "index",
+    "database-overview",
+    "choose-orm",
+    "environment-variables",
+    "schema-migration",
+    "data-access-layer",
+    "query-server-component",
+    "crud-with-database",
+    "relation-query",
+    "security-performance"
+  ]
 }
