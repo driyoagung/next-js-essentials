@@ -1,0 +1,102 @@
+---
+title: Metadata dan SEO
+description: Menambahkan title, description, Open Graph, robots, dan sitemap.
+---
+
+Metadata membantu browser, search engine, dan social platform memahami halaman.
+
+Di App Router, metadata dibuat dengan export `metadata` atau function `generateMetadata`.
+
+## Static Metadata
+
+```tsx filename="app/layout.tsx"
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: {
+    default: "Next.js Essential",
+    template: "%s | Next.js Essential",
+  },
+  description: "Dokumentasi belajar Next.js dari dasar.",
+};
+```
+
+## Page Metadata
+
+```tsx filename="app/docs/page.tsx"
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Docs",
+  description: "Kumpulan materi Next.js Essential.",
+};
+
+export default function DocsPage() {
+  return <h1>Docs</h1>;
+}
+```
+
+## Dynamic Metadata
+
+Pada dynamic route, `params` adalah Promise di Next.js 16.
+
+```tsx filename="app/blog/[slug]/page.tsx"
+import type { Metadata } from "next";
+import { getPost } from "@/data/posts";
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
+  const { slug } = await params;
+  const post = await getPost(slug);
+
+  return {
+    title: post?.title ?? "Post not found",
+    description: post?.excerpt,
+  };
+}
+```
+
+## Open Graph Image
+
+Tambahkan `opengraph-image.jpg` di folder `app` atau route tertentu.
+
+```text
+app/
++-- opengraph-image.jpg
++-- blog/
+    +-- opengraph-image.jpg
+```
+
+Image yang lebih dekat dengan route akan dipakai untuk route tersebut.
+
+## Robots dan Sitemap
+
+Untuk SEO, siapkan:
+
+```text
+app/
++-- robots.ts
++-- sitemap.ts
+```
+
+Contoh sitemap:
+
+```ts filename="app/sitemap.ts"
+import type { MetadataRoute } from "next";
+
+export default function sitemap(): MetadataRoute.Sitemap {
+  return [
+    {
+      url: "https://example.com",
+      lastModified: new Date(),
+    },
+  ];
+}
+```
+
+## Ringkasan
+
+Gunakan Metadata API untuk title, description, dan social preview. Tambahkan Open Graph image, robots, dan sitemap untuk halaman publik yang perlu SEO.

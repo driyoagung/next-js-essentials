@@ -1,0 +1,66 @@
+---
+title: Logout
+description: Menghapus session dan mengarahkan user keluar dari area protected.
+---
+
+Logout adalah mutation yang menghapus session user. Karena session biasanya disimpan di cookie, logout berarti menghapus cookie session atau mencabut session di database.
+
+## Delete Session
+
+```ts filename="auth/session.ts"
+import "server-only";
+
+import { cookies } from "next/headers";
+
+export async function deleteSession() {
+  const cookieStore = await cookies();
+  cookieStore.delete("session");
+}
+```
+
+Jika memakai database session, hapus atau revoke session di database terlebih dahulu, lalu hapus cookie.
+
+## Logout Action
+
+```ts filename="app/logout/actions.ts"
+"use server";
+
+import { redirect } from "next/navigation";
+import { deleteSession } from "@/auth/session";
+
+export async function logout() {
+  await deleteSession();
+  redirect("/login");
+}
+```
+
+`redirect()` dipanggil setelah session dihapus.
+
+## Logout Button
+
+```tsx filename="app/dashboard/logout-button.tsx"
+import { logout } from "@/app/logout/actions";
+
+export function LogoutButton() {
+  return (
+    <form action={logout}>
+      <button type="submit">Logout</button>
+    </form>
+  );
+}
+```
+
+Logout tidak perlu Client Component jika hanya submit form.
+
+## Setelah Logout
+
+Setelah logout:
+
+- Cookie session hilang.
+- Protected route akan redirect ke login.
+- Data user tidak boleh lagi tampil dari DAL.
+- Client state sensitif sebaiknya tidak menjadi sumber kebenaran.
+
+## Ringkasan
+
+Logout menghapus session di server, menghapus cookie, lalu redirect user ke halaman publik seperti login.

@@ -1,0 +1,53 @@
+---
+title: Environment Config
+description: Mengatur environment variable untuk development dan production.
+---
+
+Environment variable memisahkan konfigurasi dari source code. Ini penting untuk database URL, auth secret, token API, dan URL service eksternal.
+
+## File Lokal
+
+Contoh:
+
+```txt filename=".env.local"
+DATABASE_URL="postgresql://user:password@localhost:5432/app"
+AUTH_SECRET="local-secret"
+```
+
+File `.env.local` tidak boleh dicommit.
+
+## File Example
+
+Commit `.env.example` untuk memberi tahu variable apa saja yang dibutuhkan.
+
+```txt filename=".env.example"
+DATABASE_URL=""
+AUTH_SECRET=""
+NEXT_PUBLIC_APP_URL=""
+```
+
+## Server vs Public Variable
+
+Variable tanpa prefix `NEXT_PUBLIC_` hanya tersedia di server.
+
+```ts
+const secret = process.env.AUTH_SECRET;
+```
+
+Variable dengan prefix `NEXT_PUBLIC_` akan di-inline ke client bundle saat build.
+
+```ts
+const appUrl = process.env.NEXT_PUBLIC_APP_URL;
+```
+
+Jangan menyimpan secret di variable public.
+
+## Runtime Value
+
+Public env dibaca saat build. Jika nilainya berubah setelah build, client bundle tidak otomatis berubah.
+
+Untuk nilai yang harus dibaca runtime, ambil dari server, Route Handler, atau dynamic rendering sesuai kebutuhan.
+
+## Ringkasan
+
+Simpan secret sebagai server env, sediakan `.env.example`, dan pahami bahwa `NEXT_PUBLIC_` berarti nilai boleh dibaca browser.

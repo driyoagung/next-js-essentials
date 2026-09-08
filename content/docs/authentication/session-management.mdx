@@ -1,0 +1,91 @@
+---
+title: Session Management
+description: Menyimpan dan memverifikasi session user.
+---
+
+Session management menjaga user tetap dikenali setelah login.
+
+Di Next.js, session biasanya disimpan lewat cookie. Cookie dikirim browser pada request berikutnya sehingga server bisa memverifikasi user.
+
+## Session Cookie
+
+Contoh membuat session sederhana:
+
+```ts filename="auth/session.ts"
+import "server-only";
+
+import { cookies } from "next/headers";
+
+export async function createSession(userId: string) {
+  const cookieStore = await cookies();
+
+  cookieStore.set("session", userId, {
+    httpOnly: true,
+    secure: true,
+    sameSite: "lax",
+    path: "/",
+  });
+}
+```
+
+Contoh ini sengaja sederhana. Untuk production, nilai cookie harus berupa session token yang aman, bukan raw `userId`.
+
+## Membaca Session
+
+```ts filename="auth/session.ts"
+export async function getSession() {
+  const cookieStore = await cookies();
+  const session = cookieStore.get("session")?.value;
+
+  if (!session) {
+    return null;
+  }
+
+  return {
+    userId: session,
+  };
+}
+```
+
+## Verifikasi Session
+
+Buat function yang memverifikasi session dan bisa dipakai ulang.
+
+```ts filename="auth/dal.ts"
+import "server-only";
+
+import { cache } from "react";
+import { redirect } from "next/navigation";
+import { getSession } from "./session";
+
+export const verifySession = cache(async () => {
+  const session = await getSession();
+
+  if (!session) {
+    redirect("/login");
+  }
+
+  return session;
+});
+```
+
+`cache()` membantu memoization per request, sehingga beberapa pemanggilan `verifySession()` dalam render yang sama tidak perlu mengulang pekerjaan yang sama.
+
+## Cookie Options Penting
+
+| Option | Fungsi |
+| --- | --- |
+| `httpOnly` | Cookie tidak bisa dibaca JavaScript browser |
+| `secure` | Cookie hanya dikirim lewat HTTPS |
+| `sameSite` | Membantu mengurangi risiko CSRF |
+| `path` | Menentukan path yang menerima cookie |
+
+## Stateless vs Database Session
+
+Stateless session menyimpan token di cookie dan memverifikasi token tersebut di server. Database session menyimpan session ID di cookie, lalu server mengecek session di database.
+
+Untuk aplikasi yang butuh logout semua device atau mencabut session tertentu, database session lebih fleksibel.
+
+## Ringkasan
+
+Session menjaga status login antar request. Simpan session di cookie yang aman, verifikasi di server, dan gunakan DAL agar pengecekan session konsisten.

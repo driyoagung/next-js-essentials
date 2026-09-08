@@ -5,16 +5,33 @@ description: Memahami login, session, protected route, dan authorization.
 
 Bab ini membahas identitas user dan pembatasan akses di aplikasi Next.js.
 
-## Fokus Pembelajaran
+Authentication menjawab pertanyaan: siapa user ini? Setelah itu, session management menjaga status login antar request, dan authorization menentukan apa yang boleh dilakukan user tersebut.
 
-- Register
-- Login
-- Logout
-- Session
-- Protected route
-- Authorization
-- Role dan permission
+Di App Router, auth biasanya melibatkan Server Actions untuk login/register/logout, cookie untuk session, Server Component untuk membaca session, dan Data Access Layer untuk membatasi akses data.
+
+## Alur Bab Ini
+
+1. Memahami authentication, session, dan authorization
+2. Membuat flow register dan login
+3. Menyimpan session
+4. Melindungi route
+5. Mengecek role dan permission
+6. Membuat logout
+7. Menjaga security auth di Server Action dan DAL
 
 ## Hasil yang Diharapkan
 
 Setelah bab ini selesai, kamu dapat membangun alur authentication dasar dan melindungi halaman tertentu dari user yang belum berhak mengaksesnya.
+
+## Mental Model
+
+```text
+User mengirim credentials
+Server memvalidasi input
+Server mengecek user
+Session dibuat
+Cookie dikirim ke browser
+Request berikutnya membawa cookie
+Server memverifikasi session
+Authorization menentukan akses
+```

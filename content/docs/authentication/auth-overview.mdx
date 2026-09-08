@@ -1,0 +1,59 @@
+---
+title: Authentication Overview
+description: Memahami perbedaan authentication, session, dan authorization.
+---
+
+Authentication sering dianggap hanya login. Padahal auth terdiri dari beberapa bagian yang saling terkait.
+
+## Tiga Konsep Utama
+
+| Konsep | Pertanyaan | Contoh |
+| --- | --- | --- |
+| Authentication | Siapa user ini? | Login dengan email dan password |
+| Session management | Apakah user masih login? | Cookie session pada setiap request |
+| Authorization | Apa yang boleh dilakukan user? | Admin boleh menghapus user |
+
+## Authentication
+
+Authentication memverifikasi identitas user. Contoh paling umum adalah email dan password.
+
+Flow sederhana:
+
+```text
+User submit login form
+Server mencari user
+Server membandingkan password
+Jika valid, server membuat session
+```
+
+Untuk aplikasi production, pertimbangkan auth library seperti Auth.js, Better Auth, Clerk, Supabase Auth, atau provider lain. Implementasi custom auth cepat menjadi kompleks karena harus menangani password hashing, session, CSRF, reset password, MFA, dan edge case keamanan lain.
+
+## Session Management
+
+Session membuat server bisa mengenali user pada request berikutnya.
+
+Strategi umum:
+
+- Stateless session: data session atau token disimpan di cookie.
+- Database session: cookie hanya menyimpan session ID, data session disimpan di database.
+
+Database session biasanya lebih mudah dicabut dari server, sedangkan stateless session lebih sederhana.
+
+## Authorization
+
+Authorization dilakukan setelah user diketahui.
+
+Contoh:
+
+```text
+User sudah login
+Server membaca role user
+Jika role admin, tampilkan dashboard admin
+Jika bukan admin, tolak akses
+```
+
+Authorization harus dicek dekat dengan data atau action yang dilindungi. Menyembunyikan tombol di UI bukan security boundary.
+
+## Ringkasan
+
+Authentication memverifikasi identitas, session menjaga status login, dan authorization menentukan akses. Ketiganya dibutuhkan untuk auth yang benar.

@@ -1,0 +1,74 @@
+---
+title: Font Optimization
+description: Mengoptimalkan font dengan next/font.
+---
+
+Font dapat memengaruhi performa dan layout shift. Next.js menyediakan `next/font` untuk mengoptimalkan font dan self-host asset font.
+
+## Google Font
+
+```tsx filename="app/layout.tsx"
+import type { ReactNode } from "react";
+import { Geist } from "next/font/google";
+
+const geist = Geist({
+  subsets: ["latin"],
+  display: "swap",
+});
+
+export default function RootLayout({
+  children,
+}: {
+  children: ReactNode;
+}) {
+  return (
+    <html lang="en" className={geist.className}>
+      <body>{children}</body>
+    </html>
+  );
+}
+```
+
+Google Fonts diunduh saat build dan di-self-host bersama asset aplikasi. Browser tidak perlu request langsung ke Google.
+
+## Local Font
+
+```tsx filename="app/layout.tsx"
+import localFont from "next/font/local";
+
+const brandFont = localFont({
+  src: "./fonts/brand.woff2",
+  display: "swap",
+});
+```
+
+Local font cocok jika kamu punya file font sendiri atau ingin build tidak bergantung pada network untuk mengunduh Google Fonts.
+
+## Variable CSS
+
+```tsx
+const geist = Geist({
+  subsets: ["latin"],
+  variable: "--font-geist",
+});
+```
+
+Lalu gunakan di CSS:
+
+```css
+body {
+  font-family: var(--font-geist), sans-serif;
+}
+```
+
+## Catatan Build
+
+Jika build production tidak punya akses ke Google Fonts, `next/font/google` bisa gagal saat build. Solusinya:
+
+- Pastikan build environment punya akses network.
+- Gunakan proxy jika environment membutuhkannya.
+- Gunakan `next/font/local` untuk self-host font sepenuhnya dari repository.
+
+## Ringkasan
+
+Gunakan `next/font` untuk mengurangi layout shift dan menghindari request font dari browser. Pertimbangkan local font jika build environment sering offline.

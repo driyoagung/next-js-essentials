@@ -1,0 +1,138 @@
+---
+title: Register dan Login
+description: Membuat flow register dan login dengan Server Actions.
+---
+
+Register dan login adalah mutation. Di App Router, flow ini cocok ditangani oleh Server Actions karena credentials diproses di server.
+
+## Register Form
+
+```tsx filename="app/register/register-form.tsx"
+"use client";
+
+import { useActionState } from "react";
+import { register, type AuthFormState } from "./actions";
+
+const initialState: AuthFormState = {};
+
+export function RegisterForm() {
+  const [state, action, pending] = useActionState(
+    register,
+    initialState,
+  );
+
+  return (
+    <form action={action}>
+      <label htmlFor="name">Name</label>
+      <input id="name" name="name" required />
+
+      <label htmlFor="email">Email</label>
+      <input id="email" name="email" type="email" required />
+
+      <label htmlFor="password">Password</label>
+      <input id="password" name="password" type="password" required />
+
+      {state.message ? <p>{state.message}</p> : null}
+
+      <button type="submit" disabled={pending}>
+        {pending ? "Creating..." : "Create account"}
+      </button>
+    </form>
+  );
+}
+```
+
+## Register Action
+
+```ts filename="app/register/actions.ts"
+"use server";
+
+import { redirect } from "next/navigation";
+import { createSession } from "@/auth/session";
+import { createUser, findUserByEmail } from "@/data/users";
+
+export type AuthFormState = {
+  message?: string;
+};
+
+export async function register(
+  _state: AuthFormState,
+  formData: FormData,
+): Promise<AuthFormState> {
+  const name = formData.get("name");
+  const email = formData.get("email");
+  const password = formData.get("password");
+
+  if (
+    typeof name !== "string" ||
+    typeof email !== "string" ||
+    typeof password !== "string"
+  ) {
+    return { message: "Invalid form data" };
+  }
+
+  const existingUser = await findUserByEmail(email);
+
+  if (existingUser) {
+    return { message: "Email already registered" };
+  }
+
+  const user = await createUser({
+    name,
+    email,
+    password,
+  });
+
+  await createSession(user.id);
+  redirect("/dashboard");
+}
+```
+
+Sebelum menyimpan password, password harus di-hash dengan library yang tepat. Jangan menyimpan plain text password.
+
+## Login Action
+
+```ts filename="app/login/actions.ts"
+"use server";
+
+import { redirect } from "next/navigation";
+import { createSession } from "@/auth/session";
+import { findUserByEmail, verifyPassword } from "@/data/users";
+
+export type LoginFormState = {
+  message?: string;
+};
+
+export async function login(
+  _state: LoginFormState,
+  formData: FormData,
+): Promise<LoginFormState> {
+  const email = formData.get("email");
+  const password = formData.get("password");
+
+  if (typeof email !== "string" || typeof password !== "string") {
+    return { message: "Invalid credentials" };
+  }
+
+  const user = await findUserByEmail(email);
+
+  if (!user) {
+    return { message: "Invalid credentials" };
+  }
+
+  const isValid = await verifyPassword(password, user.passwordHash);
+
+  if (!isValid) {
+    return { message: "Invalid credentials" };
+  }
+
+  await createSession(user.id);
+  redirect("/dashboard");
+}
+```
+
+Gunakan pesan error umum seperti `Invalid credentials` agar tidak memberi tahu attacker apakah email terdaftar atau password salah.
+
+## Ringkasan
+
+Register dan login diproses di Server Action. Validasi input di server, hash password, buat session, lalu redirect setelah sukses.

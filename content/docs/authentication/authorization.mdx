@@ -1,0 +1,111 @@
+---
+title: Authorization
+description: Mengecek role, permission, dan ownership data.
+---
+
+Authorization menentukan apa yang boleh dilakukan user setelah mereka login.
+
+Contoh sederhana: semua user boleh melihat profile sendiri, tetapi hanya admin yang boleh menghapus user lain.
+
+## Role Based Access
+
+Role adalah label besar seperti `admin`, `editor`, atau `user`.
+
+```ts filename="auth/authorization.ts"
+export function canAccessAdmin(role: string) {
+  return role === "admin";
+}
+```
+
+Pemakaian di halaman:
+
+```tsx filename="app/admin/page.tsx"
+import { redirect } from "next/navigation";
+import { getCurrentUser } from "@/data/users";
+import { canAccessAdmin } from "@/auth/authorization";
+
+export default async function AdminPage() {
+  const user = await getCurrentUser();
+
+  if (!user || !canAccessAdmin(user.role)) {
+    redirect("/dashboard");
+  }
+
+  return <h1>Admin</h1>;
+}
+```
+
+## Permission Based Access
+
+Permission lebih spesifik daripada role.
+
+```ts
+type Permission = "employee:create" | "employee:update" | "employee:delete";
+
+export function hasPermission(
+  permissions: Permission[],
+  permission: Permission,
+) {
+  return permissions.includes(permission);
+}
+```
+
+Permission cocok ketika aplikasi mulai punya banyak aturan akses.
+
+## Ownership Check
+
+Ownership memastikan user hanya mengakses data miliknya.
+
+```ts filename="data/tasks.ts"
+import "server-only";
+
+import { verifySession } from "@/auth/dal";
+
+export async function getTaskById(taskId: string) {
+  const session = await verifySession();
+
+  return db.task.findFirst({
+    where: {
+      id: taskId,
+      ownerId: session.userId,
+    },
+  });
+}
+```
+
+Jika query tidak menemukan data, user tidak berhak melihat task tersebut atau task memang tidak ada.
+
+## Authorization di Server Action
+
+Server Action tetap bisa dipanggil langsung. Cek permission di dalam action atau DAL.
+
+```ts filename="app/employees/actions.ts"
+"use server";
+
+import { verifySession } from "@/auth/dal";
+import { canDeleteEmployee } from "@/auth/authorization";
+
+export async function deleteEmployeeAction(formData: FormData) {
+  const session = await verifySession();
+  const employeeId = formData.get("id");
+
+  if (typeof employeeId !== "string") {
+    throw new Error("Invalid employee id");
+  }
+
+  const allowed = await canDeleteEmployee({
+    userId: session.userId,
+    employeeId,
+  });
+
+  if (!allowed) {
+    throw new Error("Forbidden");
+  }
+
+  await deleteEmployee(employeeId);
+}
+```
+
+## Ringkasan
+
+Authorization bisa berbasis role, permission, atau ownership. Lakukan pengecekan di server, sedekat mungkin dengan data dan mutation.
