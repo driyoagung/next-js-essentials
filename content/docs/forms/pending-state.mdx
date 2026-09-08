@@ -1,0 +1,93 @@
+---
+title: Pending State
+description: Menampilkan status loading saat form sedang submit.
+---
+
+Pending state memberi feedback saat form sedang dikirim. Tanpa pending state, user bisa mengira tombol tidak bekerja dan menekan submit berkali-kali.
+
+Untuk form sederhana, gunakan `useFormStatus` di Client Component kecil.
+
+## Submit Button
+
+```tsx filename="app/tasks/submit-button.tsx"
+"use client";
+
+import { useFormStatus } from "react-dom";
+
+export function SubmitButton() {
+  const { pending } = useFormStatus();
+
+  return (
+    <button type="submit" disabled={pending}>
+      {pending ? "Saving..." : "Save"}
+    </button>
+  );
+}
+```
+
+`useFormStatus` membaca status form terdekat di atasnya.
+
+## Menggunakan Submit Button
+
+```tsx filename="app/tasks/task-form.tsx"
+import { createTask } from "./actions";
+import { SubmitButton } from "./submit-button";
+
+export function TaskForm() {
+  return (
+    <form action={createTask}>
+      <label htmlFor="title">Title</label>
+      <input id="title" name="title" required />
+
+      <SubmitButton />
+    </form>
+  );
+}
+```
+
+`SubmitButton` harus berada di dalam `<form>` agar `useFormStatus` bisa membaca status submit.
+
+## Data dari useFormStatus
+
+Pada React 19, `useFormStatus` menyediakan informasi tambahan seperti:
+
+- `pending`
+- `data`
+- `method`
+- `action`
+
+Yang paling sering dipakai pada tahap awal adalah `pending`.
+
+## Kenapa Client Component Kecil?
+
+Halaman dan form bisa tetap menjadi Server Component. Hanya tombol pending yang menjadi Client Component.
+
+Pola ini menjaga JavaScript client tetap kecil.
+
+## Banyak Tombol Submit
+
+Jika satu form punya beberapa aksi, gunakan `formAction` pada button.
+
+```tsx filename="app/posts/post-actions.tsx"
+import { publishPost, saveDraft } from "./actions";
+
+export function PostActionsForm() {
+  return (
+    <form>
+      <input name="title" />
+      <button type="submit" formAction={saveDraft}>
+        Save draft
+      </button>
+      <button type="submit" formAction={publishPost}>
+        Publish
+      </button>
+    </form>
+  );
+}
+```
+
+`formAction` menimpa `action` form untuk tombol tertentu.
+
+## Ringkasan
+
+Gunakan `useFormStatus` untuk pending state form. Buat Client Component kecil seperti `SubmitButton` agar halaman utama tetap bisa menjadi Server Component.

@@ -1,0 +1,89 @@
+---
+title: Form Basics
+description: Memahami form HTML sebagai dasar Server Actions.
+---
+
+Sebelum memakai Server Actions, pahami dulu form HTML biasa. Next.js tidak mengganti konsep dasar form. Next.js menambahkan cara agar form dapat memanggil function server dengan lebih langsung.
+
+## Form HTML Biasa
+
+Form HTML mengirim data berdasarkan atribut `name`.
+
+```tsx
+export function ContactForm() {
+  return (
+    <form>
+      <label htmlFor="name">Name</label>
+      <input id="name" name="name" />
+
+      <label htmlFor="message">Message</label>
+      <textarea id="message" name="message" />
+
+      <button type="submit">Send</button>
+    </form>
+  );
+}
+```
+
+Yang penting:
+
+- `name` menentukan key di `FormData`.
+- `type="submit"` mengirim form.
+- `required`, `type="email"`, dan atribut HTML lain membantu validasi awal di browser.
+
+## Form dengan Server Action
+
+Pada React dan Next.js, prop `action` pada `<form>` bisa menerima function server.
+
+```tsx filename="app/contact/page.tsx"
+import { sendMessage } from "./actions";
+
+export default function ContactPage() {
+  return (
+    <main>
+      <h1>Contact</h1>
+
+      <form action={sendMessage}>
+        <label htmlFor="name">Name</label>
+        <input id="name" name="name" required />
+
+        <label htmlFor="message">Message</label>
+        <textarea id="message" name="message" required />
+
+        <button type="submit">Send</button>
+      </form>
+    </main>
+  );
+}
+```
+
+Ketika form disubmit, Next.js mengirim `FormData` ke action `sendMessage`.
+
+## Progressive Enhancement
+
+Form dengan Server Action dapat tetap bekerja saat JavaScript belum selesai dimuat. Setelah hydration, submit bisa berjalan tanpa full page refresh.
+
+Ini berguna karena form tetap punya fondasi HTML yang kuat.
+
+## Kapan Pakai next/form?
+
+Next.js juga menyediakan komponen `Form` dari `next/form`. Komponen ini berguna saat form dipakai untuk navigasi berbasis URL, misalnya search form yang mengubah query string.
+
+```tsx filename="app/search-form.tsx"
+import Form from "next/form";
+
+export function SearchForm() {
+  return (
+    <Form action="/search">
+      <input name="query" />
+      <button type="submit">Search</button>
+    </Form>
+  );
+}
+```
+
+Jika `action` berupa string, form akan melakukan navigasi GET ke URL tersebut. Jika `action` berupa function, form akan memanggil Server Action.
+
+## Ringkasan
+
+Form di Next.js tetap berangkat dari HTML form. Gunakan `<form action={serverAction}>` untuk mutation, dan pertimbangkan `next/form` untuk search atau navigasi berbasis query string.

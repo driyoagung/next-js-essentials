@@ -1,4 +1,13 @@
 {
   "title": "Bab 9: Forms",
-  "pages": ["index"]
+  "pages": [
+    "index",
+    "form-basics",
+    "server-actions",
+    "use-server-directive",
+    "validation",
+    "pending-state",
+    "use-action-state",
+    "revalidation-redirect-security"
+  ]
 }

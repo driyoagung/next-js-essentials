@@ -1,0 +1,122 @@
+---
+title: Validation
+description: Memvalidasi FormData di server sebelum mutation.
+---
+
+Validasi form tidak boleh hanya mengandalkan browser. Atribut seperti `required` dan `type="email"` membantu user, tetapi request tetap bisa dikirim langsung ke Server Action.
+
+Karena itu, validasi utama harus berada di server.
+
+## Membaca FormData
+
+```ts filename="app/profile/actions.ts"
+"use server";
+
+export async function updateProfile(formData: FormData) {
+  const name = formData.get("name");
+  const email = formData.get("email");
+
+  console.log({ name, email });
+}
+```
+
+Nilai dari `formData.get()` bisa berupa `FormDataEntryValue` atau `null`. Untuk input text, pastikan nilainya string.
+
+## Validasi Manual
+
+```ts filename="app/profile/validation.ts"
+export type ProfileInput = {
+  name: string;
+  email: string;
+};
+
+export function parseProfileInput(formData: FormData): ProfileInput {
+  const name = formData.get("name");
+  const email = formData.get("email");
+
+  if (typeof name !== "string" || name.trim() === "") {
+    throw new Error("Name is required");
+  }
+
+  if (typeof email !== "string" || !email.includes("@")) {
+    throw new Error("Email is invalid");
+  }
+
+  return {
+    name: name.trim(),
+    email: email.trim(),
+  };
+}
+```
+
+Lalu pakai di action:
+
+```ts filename="app/profile/actions.ts"
+"use server";
+
+import { parseProfileInput } from "./validation";
+
+export async function updateProfile(formData: FormData) {
+  const input = parseProfileInput(formData);
+
+  await saveProfile(input);
+}
+```
+
+## Return Error untuk Expected Validation
+
+Untuk validasi yang memang bisa terjadi, lebih baik return state daripada `throw`.
+
+```ts filename="app/profile/actions.ts"
+"use server";
+
+export type ProfileFormState = {
+  message?: string;
+};
+
+export async function updateProfile(
+  _state: ProfileFormState,
+  formData: FormData,
+): Promise<ProfileFormState> {
+  const name = formData.get("name");
+
+  if (typeof name !== "string" || name.trim() === "") {
+    return {
+      message: "Name is required",
+    };
+  }
+
+  await saveProfile({
+    name: name.trim(),
+  });
+
+  return {
+    message: "Profile updated",
+  };
+}
+```
+
+`throw` lebih cocok untuk unexpected error, sedangkan validation error lebih cocok dikembalikan ke form.
+
+## Dengan Schema Validator
+
+Di aplikasi production, gunakan schema validator seperti Zod, Valibot, atau Yup. Schema membuat validasi lebih konsisten dan mudah dites.
+
+Contoh bentuk umumnya:
+
+```ts
+const result = schema.safeParse({
+  name: formData.get("name"),
+  email: formData.get("email"),
+});
+
+if (!result.success) {
+  return {
+    message: "Invalid input",
+  };
+}
+```
+
+## Ringkasan
+
+Validasi client membantu pengalaman user, tetapi validasi server tetap wajib. Untuk expected validation error, return state agar pesan bisa ditampilkan di form.
