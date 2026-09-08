@@ -1,0 +1,88 @@
+---
+title: Desain Route CRUD
+description: Merancang struktur route untuk list, detail, create, dan edit employee.
+---
+
+Sebelum menulis kode CRUD, tentukan dulu route yang akan dipakai. Route yang jelas membuat user flow lebih mudah dipahami.
+
+## Route yang Dibutuhkan
+
+Untuk Employee Management, route utama yang dibutuhkan:
+
+| Route | Fungsi |
+| --- | --- |
+| `/employees` | Menampilkan daftar employee |
+| `/employees/create` | Form tambah employee |
+| `/employees/[id]` | Detail employee |
+| `/employees/[id]/edit` | Form edit employee |
+
+## Struktur Folder
+
+Struktur App Router:
+
+```text
+app/
++-- employees/
+    +-- page.tsx
+    +-- loading.tsx
+    +-- error.tsx
+    +-- create/
+    |   +-- page.tsx
+    +-- [id]/
+        +-- page.tsx
+        +-- not-found.tsx
+        +-- edit/
+            +-- page.tsx
+```
+
+## Kenapa Create Dipisah?
+
+Route `/employees/create` dibuat terpisah supaya form tambah data punya halaman sendiri. Ini cocok untuk flow yang sederhana dan mudah dipahami.
+
+Alternatifnya, form create bisa dibuat sebagai modal di `/employees`. Namun untuk pembelajaran dasar, halaman terpisah lebih jelas.
+
+## Kenapa Edit di Dalam Dynamic Route?
+
+Route `/employees/[id]/edit` menunjukkan bahwa halaman edit selalu terkait dengan satu employee tertentu.
+
+Contoh:
+
+```text
+/employees/1/edit
+/employees/2/edit
+```
+
+Pada route ini, `id` dibaca dari `params`.
+
+```tsx filename="app/employees/[id]/edit/page.tsx"
+export default async function EditEmployeePage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  const { id } = await params;
+
+  return <h1>Edit employee {id}</h1>;
+}
+```
+
+Di Next.js 16, `params` adalah Promise, jadi perlu di-`await`.
+
+## API Route Opsional
+
+Jika butuh endpoint JSON, kamu bisa menambahkan Route Handler:
+
+```text
+app/
++-- api/
+    +-- employees/
+        +-- route.ts
+        +-- [id]/
+            +-- route.ts
+```
+
+Namun untuk form internal Next.js, Server Actions sering lebih ringkas. Bab ini memakai pola Server Action agar transisi menuju Bab 9 terasa natural.
+
+## Ringkasan
+
+Desain route CRUD yang rapi dimulai dari list, create, detail, dan edit. Route tersebut cukup untuk membangun mayoritas flow data sederhana.

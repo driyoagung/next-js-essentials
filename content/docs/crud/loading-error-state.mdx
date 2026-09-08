@@ -1,0 +1,135 @@
+---
+title: Loading dan Error State CRUD
+description: Menyiapkan loading, not found, dan error boundary untuk alur CRUD.
+---
+
+CRUD yang baik tidak hanya berjalan saat semua lancar. User juga perlu melihat UI yang jelas saat data sedang dimuat, tidak ditemukan, atau gagal diproses.
+
+## Loading List
+
+Buat `loading.tsx` di segment `/employees`.
+
+```tsx filename="app/employees/loading.tsx"
+export default function EmployeesLoading() {
+  return (
+    <main>
+      <h1>Employees</h1>
+      <p>Loading employees...</p>
+    </main>
+  );
+}
+```
+
+File ini otomatis dipakai saat route segment sedang menunggu data.
+
+## Error Boundary
+
+Buat `error.tsx` untuk error yang tidak tertangani.
+
+```tsx filename="app/employees/error.tsx"
+"use client";
+
+import { useEffect } from "react";
+
+export default function EmployeesError({
+  error,
+  retry,
+}: {
+  error: Error & { digest?: string };
+  retry: () => void;
+}) {
+  useEffect(() => {
+    console.error(error);
+  }, [error]);
+
+  return (
+    <main>
+      <h1>Employees could not be loaded</h1>
+      <p>Please try again.</p>
+      <button type="button" onClick={() => retry()}>
+        Try again
+      </button>
+    </main>
+  );
+}
+```
+
+Di Next.js 16, error boundary menerima prop `retry` untuk mencoba render segment lagi.
+
+## Not Found Detail
+
+Jika employee tidak ada, gunakan `notFound()`.
+
+```tsx filename="app/employees/[id]/page.tsx"
+import { notFound } from "next/navigation";
+import { getEmployeeById } from "../data";
+
+export default async function EmployeeDetailPage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  const { id } = await params;
+  const employee = await getEmployeeById(id);
+
+  if (!employee) {
+    notFound();
+  }
+
+  return <h1>{employee.name}</h1>;
+}
+```
+
+Lalu siapkan file `not-found.tsx`.
+
+```tsx filename="app/employees/[id]/not-found.tsx"
+import Link from "next/link";
+
+export default function EmployeeNotFound() {
+  return (
+    <main>
+      <h1>Employee not found</h1>
+      <Link href="/employees">Back to employees</Link>
+    </main>
+  );
+}
+```
+
+## Pending State Form
+
+Untuk pending state form yang lebih detail, gunakan Client Component kecil dengan `useFormStatus`.
+
+```tsx filename="app/employees/submit-button.tsx"
+"use client";
+
+import { useFormStatus } from "react-dom";
+
+export function SubmitButton() {
+  const { pending } = useFormStatus();
+
+  return (
+    <button type="submit" disabled={pending}>
+      {pending ? "Saving..." : "Save"}
+    </button>
+  );
+}
+```
+
+Lalu pakai di form:
+
+```tsx
+<form action={createEmployee}>
+  <input name="name" required />
+  <SubmitButton />
+</form>
+```
+
+Client Component hanya dipakai untuk tombol pending, bukan seluruh halaman.
+
+## Error pada Action
+
+Untuk pembelajaran awal, error bisa dilempar dan ditangani oleh `error.tsx`. Namun untuk validasi form yang expected, lebih baik mengembalikan state error ke form. Pola ini akan dibahas lebih lengkap pada Bab 9.
+
+## Ringkasan
+
+Tambahkan `loading.tsx`, `error.tsx`, dan `not-found.tsx` agar CRUD punya pengalaman gagal dan menunggu yang jelas. Gunakan Client Component kecil untuk pending state form ketika dibutuhkan.
