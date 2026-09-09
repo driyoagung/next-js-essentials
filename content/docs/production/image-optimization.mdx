@@ -3,9 +3,13 @@ title: Image Optimization
 description: Mengoptimalkan gambar dengan next/image.
 ---
 
+<Callout type="info" title="Kenapa image penting?">
+Gambar sering menjadi asset terbesar di halaman. Optimasi image membantu performa, Core Web Vitals, dan pengalaman user.
+</Callout>
+
 Image yang tidak optimal bisa memperlambat halaman dan membuat layout shift. Next.js menyediakan komponen `Image` dari `next/image`.
 
-## Basic Usage
+## 💻 Basic Usage
 
 ```tsx filename="app/page.tsx"
 import Image from "next/image";
@@ -24,7 +28,7 @@ export default function Page() {
 
 `width` dan `height` membantu browser menyediakan ruang sebelum gambar selesai dimuat.
 
-## Static Import
+## 📦 Static Import
 
 ```tsx
 import Image from "next/image";
@@ -37,7 +41,7 @@ export function Hero() {
 
 Static import membuat Next.js mengetahui ukuran gambar.
 
-## Fill
+## 🧩 Fill
 
 Gunakan `fill` jika ukuran gambar mengikuti parent.
 
@@ -60,7 +64,7 @@ export function CoverImage() {
 
 Parent harus punya `position: relative`, `fixed`, atau `absolute`.
 
-## Remote Image
+## 🌐 Remote Image
 
 Untuk gambar remote, konfigurasi domain atau `remotePatterns` di `next.config`.
 
@@ -81,10 +85,10 @@ const nextConfig: NextConfig = {
 export default nextConfig;
 ```
 
-## Alt Text
+## 📝 Alt Text
 
 `alt` wajib dan harus menjelaskan fungsi gambar. Jika gambar dekoratif, gunakan `alt=""`.
 
-## Ringkasan
+## ✅ Ringkasan
 
 Gunakan `next/image`, tentukan dimensi atau `fill`, konfigurasi remote image, dan tulis alt text yang bermakna.

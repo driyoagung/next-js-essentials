@@ -3,9 +3,13 @@ title: Async Server Component
 description: Mengambil data langsung di komponen server dengan async dan await.
 ---
 
+<Callout type="info" title="Definisi singkat">
+Async Server Component adalah Server Component yang memakai `async` dan `await` untuk mengambil data sebelum UI dirender.
+</Callout>
+
 Server Component dapat dibuat `async`, sehingga data bisa diambil saat render di server.
 
-## Contoh Page Async
+## 💻 Contoh Page Async
 
 ```tsx filename="app/posts/page.tsx"
 type Post = {
@@ -41,7 +45,7 @@ export default async function PostsPage() {
 
 Dengan pola ini, browser menerima hasil render yang sudah berisi data awal.
 
-## Params pada Dynamic Route
+## 🧩 Params pada Dynamic Route
 
 Di Next.js 16, `params` adalah Promise. Jika mengambil data berdasarkan dynamic route, `params` perlu di-`await`.
 
@@ -81,7 +85,7 @@ export default async function PostDetailPage({
 }
 ```
 
-## Sequential vs Parallel
+## ⚡ Sequential vs Parallel
 
 Jika dua request tidak saling bergantung, mulai keduanya dulu lalu tunggu bersama.
 
@@ -97,7 +101,38 @@ const [usersResponse, productsResponse] = await Promise.all([
 
 Pola ini mencegah waterfall yang tidak perlu.
 
-## Ringkasan
+## 🧪 Studi Kasus: Dashboard dengan Dua Data
+
+Dashboard sering membutuhkan beberapa data sekaligus, misalnya daftar employee dan daftar department. Jika keduanya tidak saling bergantung, jalankan paralel.
+
+```tsx
+export default async function DashboardPage() {
+  const employeesPromise = getEmployees();
+  const departmentsPromise = getDepartments();
+
+  const [employees, departments] = await Promise.all([
+    employeesPromise,
+    departmentsPromise,
+  ]);
+
+  return <Dashboard employees={employees} departments={departments} />;
+}
+```
+
+<Callout type="idea" title="Hindari waterfall">
+Jika request B tidak membutuhkan hasil request A, jangan tunggu A selesai untuk memulai B.
+</Callout>
+
+## 📝 Latihan
+
+Perbaiki pola berikut agar request berjalan paralel:
+
+```tsx
+const users = await getUsers();
+const products = await getProducts();
+```
+
+## ✅ Ringkasan
 
 - Server Component bisa `async`.
 - Data bisa diambil langsung sebelum UI dikirim ke browser.

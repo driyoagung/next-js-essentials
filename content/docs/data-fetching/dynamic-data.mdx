@@ -3,9 +3,13 @@ title: Dynamic Data
 description: Memahami data yang harus dibaca pada request time.
 ---
 
+<Callout type="info" title="Definisi singkat">
+Dynamic data adalah data yang bergantung pada request user atau harus selalu fresh, seperti cookie, header, session, dan query string.
+</Callout>
+
 Dynamic data adalah data yang nilainya baru diketahui saat request terjadi. Contohnya cookie user, header request, session, query string, atau data yang harus selalu fresh.
 
-## Contoh Dynamic Fetch
+## 💻 Contoh Dynamic Fetch
 
 ```tsx filename="app/dashboard/page.tsx"
 async function getDashboardStats() {
@@ -25,7 +29,7 @@ export default async function DashboardPage() {
 
 `cache: "no-store"` menyatakan bahwa response tidak disimpan di cache framework dan perlu diambil ulang.
 
-## Runtime API
+## 🌐 Runtime API
 
 Beberapa API hanya punya nilai saat request:
 
@@ -42,7 +46,7 @@ export default async function ProfilePage() {
 
 Karena cookie bergantung pada request user, hasilnya tidak bisa dianggap sama untuk semua user.
 
-## Search Params
+## 🔎 Search Params
 
 Di Next.js 16, `searchParams` pada Page juga Promise.
 
@@ -58,7 +62,7 @@ export default async function ProductsPage({
 }
 ```
 
-## Hubungan dengan Suspense
+## 🧩 Hubungan dengan Suspense
 
 Jika route memakai runtime data atau uncached async work, pisahkan area yang menunggu data dengan `<Suspense>` agar static shell masih bisa tampil lebih cepat.
 
@@ -86,6 +90,34 @@ async function DashboardStats() {
 }
 ```
 
-## Ringkasan
+## 🧪 Studi Kasus: Dashboard User
+
+Dashboard user biasanya dynamic karena datanya bergantung pada session dan request user.
+
+Contoh data dynamic:
+
+- Nama user dari session.
+- Notifikasi pribadi.
+- Statistik akun.
+- Preferensi user.
+- Query filter dari URL.
+
+Data seperti ini tidak boleh dianggap sama untuk semua user.
+
+<Callout type="warn" title="Hati-hati cache data personal">
+Jangan cache data yang bergantung pada cookie, session, atau user tertentu sebagai data publik. Ini bisa menyebabkan kebocoran data antar user.
+</Callout>
+
+## 📝 Latihan
+
+Tentukan apakah data berikut static atau dynamic:
+
+1. Halaman dokumentasi publik.
+2. Dashboard user login.
+3. Query search `/products?q=keyboard`.
+4. Cookie session.
+5. Daftar kategori produk.
+
+## ✅ Ringkasan
 
 Dynamic data perlu diperlakukan berbeda dari data statis. Jika data bergantung pada request user atau harus selalu fresh, jangan cache sembarangan dan sediakan fallback UI yang jelas.

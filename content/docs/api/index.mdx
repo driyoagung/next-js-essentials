@@ -3,27 +3,32 @@ title: "Bab 7: Route Handler / API"
 description: Membuat endpoint API menggunakan Route Handler di App Router.
 ---
 
+<Callout type="info" title="Fokus utama bab ini">
+Bab ini membahas cara membuat endpoint API di App Router menggunakan `route.ts`, HTTP method, request body, response, status code, caching, dan CORS.
+</Callout>
+
+![Diagram alur Route Handler](/diagrams/route-handler-flow.svg)
+
 Bab ini membahas cara membuat endpoint API langsung dari project Next.js.
 
 Route Handler adalah cara App Router membuat endpoint non-UI. File ini cocok untuk kebutuhan seperti endpoint JSON, webhook, proxy ke service internal, download file, atau integrasi yang perlu menjaga secret tetap berada di server.
 
 Di Next.js, Route Handler memakai Web API standar seperti `Request` dan `Response`. Next.js juga menyediakan `NextRequest` dan `NextResponse` untuk helper tambahan seperti membaca query, cookie, dan URL dengan lebih nyaman.
 
-## Alur Bab Ini
+## 🗺️ Alur Bab Ini
 
-1. Memahami fungsi `route.ts`
-2. Membuat endpoint dengan HTTP method
-3. Membaca request dan mengirim response
-4. Mengambil dynamic params dan query string
-5. Membaca JSON body dan `FormData`
-6. Menangani status code dan error
-7. Memahami caching dan CORS dasar
+<Cards>
+  <Card title="route.ts" description="Membuat endpoint non-UI di App Router." />
+  <Card title="HTTP Method" description="Menangani GET, POST, PATCH, DELETE, dan OPTIONS." />
+  <Card title="Request & Response" description="Membaca body, header, params, query, dan mengirim JSON." />
+  <Card title="Error & CORS" description="Mengatur status code, error response, cache, dan CORS." />
+</Cards>
 
-## Hasil yang Diharapkan
+## 🎯 Hasil yang Diharapkan
 
 Setelah bab ini selesai, kamu dapat membuat endpoint API sederhana dan memahami cara menangani request serta response.
 
-## Mental Model
+## 🧠 Mental Model
 
 ```text
 Request masuk
@@ -32,3 +37,32 @@ Handler method dijalankan
 Data dibaca atau diproses
 Response dikirim
 ```
+
+## 🧪 Studi Kasus Bab API
+
+Bayangkan kamu membuat endpoint sederhana untuk aplikasi task manager:
+
+```text
+GET    /api/tasks        -> membaca daftar task
+POST   /api/tasks        -> membuat task baru
+GET    /api/tasks/1      -> membaca detail task
+PATCH  /api/tasks/1      -> mengubah task
+DELETE /api/tasks/1      -> menghapus task
+```
+
+Dari kebutuhan tersebut, kamu bisa membuat struktur:
+
+```text
+app/api/tasks/route.ts
+app/api/tasks/[id]/route.ts
+```
+
+## 📝 Latihan Pemanasan
+
+Rancang endpoint untuk fitur product catalog:
+
+1. Membaca semua produk.
+2. Membaca detail produk berdasarkan ID.
+3. Membuat produk baru.
+4. Menghapus produk.
+5. Mencari produk dengan query `?q=keyboard`.

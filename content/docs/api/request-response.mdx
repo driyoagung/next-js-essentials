@@ -3,11 +3,15 @@ title: Request dan Response
 description: Membaca request masuk dan mengirim response dari Route Handler.
 ---
 
+<Callout type="info" title="Definisi singkat">
+Route Handler memakai Web API standar seperti `Request`, `Response`, dan `Headers`, sehingga pola API-nya mirip platform web modern.
+</Callout>
+
 Route Handler memakai Web API standar. Karena itu, kamu akan sering bertemu `Request`, `Response`, `Headers`, dan method seperti `request.json()`.
 
 Next.js juga menyediakan `NextRequest` dan `NextResponse` dari `next/server`.
 
-## Response JSON
+## 📦 Response JSON
 
 Cara paling umum mengirim data adalah `Response.json()`.
 
@@ -32,7 +36,7 @@ export async function GET() {
 }
 ```
 
-## Response Manual
+## 🛠️ Response Manual
 
 Gunakan `new Response()` jika perlu mengirim text, HTML, XML, atau header khusus.
 
@@ -47,7 +51,7 @@ export async function GET() {
 }
 ```
 
-## Membaca Header
+## 🧾 Membaca Header
 
 Header bisa dibaca dari object `request`.
 
@@ -61,7 +65,7 @@ export async function GET(request: Request) {
 }
 ```
 
-## NextRequest
+## 🧭 NextRequest
 
 `NextRequest` memperluas Web `Request` dengan helper tambahan. Salah satu yang sering dipakai adalah `nextUrl`.
 
@@ -77,7 +81,7 @@ export async function GET(request: NextRequest) {
 }
 ```
 
-## NextResponse
+## 🚀 NextResponse
 
 `NextResponse` berguna ketika kamu butuh helper dari Next.js.
 
@@ -98,6 +102,6 @@ export async function POST() {
 }
 ```
 
-## Ringkasan
+## ✅ Ringkasan
 
 Pakai `Response.json()` untuk endpoint JSON sederhana. Gunakan `new Response()` atau `NextResponse` ketika perlu kontrol lebih atas header, cookie, atau format response.

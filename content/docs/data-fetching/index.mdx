@@ -3,27 +3,32 @@ title: "Bab 5-6: Data Fetching, Loading, dan Error Handling"
 description: Mengambil data, memahami caching, serta menangani loading dan error.
 ---
 
+<Callout type="info" title="Fokus utama bab ini">
+Bab ini menggabungkan cara mengambil data dengan pengalaman UI saat data loading, gagal dimuat, perlu cache, perlu refresh, atau tidak ditemukan.
+</Callout>
+
+![Diagram alur data fetching](/diagrams/data-fetching-flow.svg)
+
 Bab ini menggabungkan data fetching dengan state UI yang muncul saat data sedang dimuat, gagal dimuat, atau tidak ditemukan.
 
 Di App Router, data biasanya diambil dari Server Component. Pendekatan ini membuat halaman bisa membaca data di server, mengurangi kebutuhan API internal yang tidak perlu, dan menjaga secret tetap tidak dikirim ke browser.
 
 Namun data fetching tidak berdiri sendiri. Setelah mengambil data, kamu perlu memikirkan apakah data perlu cache, kapan data harus diperbarui, bagaimana UI saat loading, apa yang terjadi ketika request gagal, dan bagaimana menampilkan halaman not found.
 
-## Alur Bab Ini
+## 🗺️ Alur Bab Ini
 
-1. Mengambil data dengan Fetch API
-2. Membuat async Server Component
-3. Memahami caching dan revalidation
-4. Menangani dynamic data
-5. Membuat loading UI
-6. Membuat error boundary route
-7. Menangani data tidak ditemukan
+<Cards>
+  <Card title="Fetch API" description="Mengambil data langsung dari Server Component." />
+  <Card title="Async Server Component" description="Membuat page async dan mencegah waterfall request." />
+  <Card title="Caching" description="Menentukan kapan data boleh disimpan dan kapan harus fresh." />
+  <Card title="Loading & Error" description="Menyediakan UI saat loading, error, dan not found." />
+</Cards>
 
-## Hasil yang Diharapkan
+## 🎯 Hasil yang Diharapkan
 
 Setelah bab ini selesai, kamu dapat mengambil data di halaman Next.js dan menyediakan pengalaman loading, error, serta not found yang jelas.
 
-## Mental Model
+## 🧠 Mental Model
 
 ```text
 Data dibutuhkan
@@ -33,3 +38,27 @@ Sediakan loading state
 Tangani error dan not found
 Render UI
 ```
+
+## 🧪 Studi Kasus Bab Ini
+
+Bayangkan kamu membuat halaman katalog produk. Halaman tersebut membutuhkan:
+
+- Daftar produk dari API atau database.
+- Filter berdasarkan query string.
+- Cache untuk kategori yang jarang berubah.
+- Data fresh untuk stok produk.
+- Loading skeleton saat data lambat.
+- Error UI jika API gagal.
+- Not found jika detail produk tidak ada.
+
+Alur berpikirnya bukan hanya "ambil data", tetapi juga "apa pengalaman user saat data belum siap atau gagal?".
+
+## 📝 Latihan Pemanasan
+
+Rancang strategi data untuk halaman `/products`:
+
+1. Data apa yang boleh di-cache?
+2. Data apa yang harus selalu fresh?
+3. Bagian mana yang butuh loading UI?
+4. Kapan memakai `notFound()`?
+5. Error apa yang perlu ditampilkan sebagai pesan biasa?

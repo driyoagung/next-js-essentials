@@ -3,11 +3,15 @@ title: Validation
 description: Memvalidasi FormData di server sebelum mutation.
 ---
 
+<Callout type="warn" title="Validasi server wajib">
+Validasi client membantu UX, tetapi validasi utama harus tetap dilakukan di server karena request bisa dikirim langsung ke Server Action.
+</Callout>
+
 Validasi form tidak boleh hanya mengandalkan browser. Atribut seperti `required` dan `type="email"` membantu user, tetapi request tetap bisa dikirim langsung ke Server Action.
 
 Karena itu, validasi utama harus berada di server.
 
-## Membaca FormData
+## 📦 Membaca FormData
 
 ```ts filename="app/profile/actions.ts"
 "use server";
@@ -22,7 +26,7 @@ export async function updateProfile(formData: FormData) {
 
 Nilai dari `formData.get()` bisa berupa `FormDataEntryValue` atau `null`. Untuk input text, pastikan nilainya string.
 
-## Validasi Manual
+## ✅ Validasi Manual
 
 ```ts filename="app/profile/validation.ts"
 export type ProfileInput = {
@@ -63,7 +67,7 @@ export async function updateProfile(formData: FormData) {
 }
 ```
 
-## Return Error untuk Expected Validation
+## 🧯 Return Error untuk Expected Validation
 
 Untuk validasi yang memang bisa terjadi, lebih baik return state daripada `throw`.
 
@@ -98,7 +102,7 @@ export async function updateProfile(
 
 `throw` lebih cocok untuk unexpected error, sedangkan validation error lebih cocok dikembalikan ke form.
 
-## Dengan Schema Validator
+## 🧩 Dengan Schema Validator
 
 Di aplikasi production, gunakan schema validator seperti Zod, Valibot, atau Yup. Schema membuat validasi lebih konsisten dan mudah dites.
 
@@ -117,6 +121,6 @@ if (!result.success) {
 }
 ```
 
-## Ringkasan
+## ✅ Ringkasan
 
 Validasi client membantu pengalaman user, tetapi validasi server tetap wajib. Untuk expected validation error, return state agar pesan bisa ditampilkan di form.

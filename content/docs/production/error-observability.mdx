@@ -3,9 +3,13 @@ title: Error dan Observability
 description: Menyiapkan error UI, not found UI, logging, dan monitoring.
 ---
 
+<Callout type="warn" title="Error pasti terjadi">
+Production harus siap menghadapi error. User perlu fallback UI yang jelas, dan developer perlu log/monitoring untuk investigasi.
+</Callout>
+
 Production harus siap menghadapi error. User perlu mendapat UI yang jelas, dan developer perlu mendapat informasi untuk debugging.
 
-## Route Error UI
+## 🧯 Route Error UI
 
 Gunakan `error.tsx` untuk segment penting.
 
@@ -38,7 +42,7 @@ export default function DashboardError({
 
 Di Next.js 16, error boundary memakai prop `retry`.
 
-## Not Found UI
+## 🚫 Not Found UI
 
 Gunakan `not-found.tsx` untuk resource yang tidak ada.
 
@@ -55,7 +59,7 @@ export default function ProductNotFound() {
 }
 ```
 
-## Global Error
+## 🌐 Global Error
 
 Untuk fallback paling atas, tambahkan `app/global-error.tsx`.
 
@@ -80,7 +84,7 @@ export default function GlobalError({
 }
 ```
 
-## Logging dan Monitoring
+## 📈 Logging dan Monitoring
 
 Minimal, pastikan error production dikirim ke platform monitoring atau logging.
 
@@ -92,6 +96,6 @@ Yang perlu dipantau:
 - Failed Route Handlers.
 - Core Web Vitals.
 
-## Ringkasan
+## ✅ Ringkasan
 
 Siapkan `error.tsx`, `not-found.tsx`, dan logging production. Error UI menjaga user tetap punya jalan keluar, observability membantu developer memperbaiki masalah.

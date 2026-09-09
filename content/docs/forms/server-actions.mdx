@@ -3,11 +3,15 @@ title: Server Actions
 description: Membuat action untuk menangani mutation dari form.
 ---
 
+<Callout type="info" title="Definisi singkat">
+Server Action adalah function server untuk mutation yang bisa dipanggil dari form tanpa membuat endpoint API manual.
+</Callout>
+
 Server Action adalah Server Function yang dipanggil melalui mekanisme action React, seperti `<form action>`, `<button formAction>`, atau event handler client yang dibungkus `startTransition`.
 
 Server Action cocok untuk mutation, bukan untuk data fetching awal halaman.
 
-## Membuat Action
+## ⚙️ Membuat Action
 
 ```ts filename="app/contact/actions.ts"
 "use server";
@@ -22,7 +26,7 @@ export async function sendMessage(formData: FormData) {
 
 Action harus async karena dipanggil melalui request ke server.
 
-## Memanggil dari Form
+## 📝 Memanggil dari Form
 
 ```tsx filename="app/contact/page.tsx"
 import { sendMessage } from "./actions";
@@ -40,7 +44,7 @@ export default function ContactPage() {
 
 Function `sendMessage` tidak dikirim ke browser sebagai source code asli. Client hanya mendapat reference yang bisa memanggil action tersebut.
 
-## Action Menggunakan POST
+## 📮 Action Menggunakan POST
 
 Di balik layar, Server Action dipanggil sebagai request `POST`. Karena itu, Server Action harus diperlakukan seperti endpoint mutation.
 
@@ -51,7 +55,7 @@ Selalu lakukan:
 - Cek authorization untuk data milik user tertentu.
 - Batasi data yang dikembalikan ke client.
 
-## Inline Server Action
+## 🧩 Inline Server Action
 
 Action juga bisa ditulis langsung di Server Component.
 
@@ -75,7 +79,7 @@ export default function TasksPage() {
 
 Pola inline cocok untuk action kecil yang hanya dipakai oleh satu halaman.
 
-## Action dari Client Component
+## 🖱️ Action dari Client Component
 
 Client Component tidak bisa mendefinisikan Server Action di dalam component. Namun Client Component bisa mengimpor action dari file yang memiliki directive `"use server"`.
 
@@ -94,6 +98,6 @@ export function CreateTaskForm() {
 }
 ```
 
-## Ringkasan
+## ✅ Ringkasan
 
 Server Action adalah cara ringkas menangani mutation dari form. Action berjalan di server, dipanggil melalui request POST, dan tetap perlu validasi serta authorization.

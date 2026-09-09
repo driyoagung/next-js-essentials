@@ -3,11 +3,15 @@ title: Route Handler
 description: Mengenal file route.ts sebagai endpoint API di App Router.
 ---
 
+<Callout type="info" title="Definisi singkat">
+Route Handler adalah file khusus `route.ts` yang membuat endpoint API non-UI di dalam App Router.
+</Callout>
+
 Route Handler adalah file khusus bernama `route.ts` atau `route.js` yang berada di dalam folder `app`.
 
 File ini tidak merender UI. Tugasnya adalah menerima request HTTP dan mengembalikan response.
 
-## Struktur Dasar
+## 🗂️ Struktur Dasar
 
 ```text
 app/
@@ -34,13 +38,13 @@ export async function GET() {
 
 Ketika user membuka `/api/users`, Next.js menjalankan function `GET`.
 
-## Hanya di App Directory
+## 📁 Hanya di App Directory
 
 Route Handler hanya tersedia di dalam folder `app`. Jika project lama masih memakai Pages Router, endpoint API lama biasanya berada di `pages/api`.
 
 Pada App Router, gunakan Route Handler. Kamu tidak perlu memakai `pages/api` dan `app/api` bersamaan untuk endpoint yang sama.
 
-## Tidak Bisa Satu Segment dengan Page
+## 🚫 Tidak Bisa Satu Segment dengan Page
 
 `route.ts` tidak bisa berada di level segment yang sama dengan `page.tsx`.
 
@@ -66,7 +70,7 @@ app/
 
 Halaman UI berada di `/users`, sedangkan endpoint API berada di `/api/users`.
 
-## Kapan Menggunakan Route Handler?
+## 🎯 Kapan Menggunakan Route Handler?
 
 Gunakan Route Handler untuk:
 
@@ -76,7 +80,7 @@ Gunakan Route Handler untuk:
 - Menyembunyikan token atau secret dari browser.
 - Menjadi backend-for-frontend untuk Client Component.
 
-## Hindari Request Internal dari Server Component
+## ⚠️ Hindari Request Internal dari Server Component
 
 Jika data sudah bisa diambil langsung dari Server Component, tidak perlu memanggil Route Handler internal dari server.
 
@@ -100,6 +104,6 @@ export default async function UsersPage() {
 
 Route Handler lebih berguna ketika request datang dari browser, webhook, atau client eksternal.
 
-## Ringkasan
+## ✅ Ringkasan
 
 Route Handler adalah endpoint API di App Router. Letakkan di `app/**/route.ts`, export function sesuai HTTP method, lalu return `Response`.

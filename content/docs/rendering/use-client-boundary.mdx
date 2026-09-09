@@ -3,17 +3,35 @@ title: Boundary use client
 description: Menentukan batas antara module server dan module client.
 ---
 
+<Callout type="info" title="Definisi singkat">
+Directive `"use client"` menandai batas antara Server Component dan Client Component. File yang diberi directive ini menjadi entry point ke client module graph.
+</Callout>
+
 Directive `"use client"` adalah penanda boundary antara Server Component dan Client Component.
 
 Directive ini ditulis di baris paling atas file, sebelum import.
 
-```tsx filename="app/components/search-box.tsx"
-"use client";
+## 🧭 Apa Itu Boundary?
 
-import { useState } from "react";
+Boundary adalah batas. Dalam konteks Next.js, boundary menentukan bagian mana yang tetap berada di server dan bagian mana yang masuk ke client.
+
+Jika sebuah file diberi `"use client"`, maka file tersebut dan module yang diimpornya menjadi bagian dari client module graph.
+
+![Diagram boundary use client](/diagrams/use-client-boundary.svg)
+
+<Callout type="warn" title="Efek boundary">
+`"use client"` tidak hanya memengaruhi file itu sendiri. Module yang diimpor oleh file client juga ikut masuk ke client graph.
+</Callout>
+
+## 💻 Contoh Directive `"use client"`
+
+```tsx filename="app/components/search-box.tsx"
+'use client';
+
+import { useState } from 'react';
 
 export function SearchBox() {
-  const [keyword, setKeyword] = useState("");
+  const [keyword, setKeyword] = useState('');
 
   return (
     <input
@@ -25,9 +43,13 @@ export function SearchBox() {
 }
 ```
 
-## Tidak Perlu di Semua File
+Directive harus berada di baris paling atas file, sebelum import.
+
+## 📍 Tidak Perlu di Semua File
 
 Kamu tidak perlu menambahkan `"use client"` ke setiap file. Cukup letakkan di entry point komponen yang akan di-render langsung dari Server Component.
+
+Contoh:
 
 ```text
 app/components/search-box.tsx
@@ -36,14 +58,16 @@ app/components/search-icon.tsx
 
 Jika `search-box.tsx` memakai `"use client"` dan mengimpor `search-icon.tsx`, maka `search-icon.tsx` ikut masuk client module graph.
 
-## Efek ke Bundle Browser
+Artinya, `search-icon.tsx` tidak perlu diberi `"use client"` jika hanya dipakai oleh `search-box.tsx`.
+
+## 📦 Efek ke Bundle Browser
 
 Semua module yang diimpor oleh Client Component akan menjadi bagian dari client bundle. Karena itu, jangan menaruh `"use client"` terlalu tinggi seperti di root layout jika hanya satu tombol kecil yang butuh interaksi.
 
 Kurang ideal:
 
 ```tsx filename="app/layout.tsx"
-"use client";
+'use client';
 
 export default function RootLayout({
   children,
@@ -58,10 +82,12 @@ export default function RootLayout({
 }
 ```
 
+Pada contoh di atas, root layout menjadi Client Component. Ini terlalu tinggi karena root layout membungkus seluruh aplikasi.
+
 Lebih baik:
 
 ```tsx filename="app/layout.tsx"
-import { ThemeToggle } from "./components/theme-toggle";
+import { ThemeToggle } from './components/theme-toggle';
 
 export default function RootLayout({
   children,
@@ -80,39 +106,172 @@ export default function RootLayout({
 ```
 
 ```tsx filename="app/components/theme-toggle.tsx"
-"use client";
+'use client';
 
 export function ThemeToggle() {
   return <button type="button">Toggle theme</button>;
 }
 ```
 
-## Props Harus Serializable
+Dengan pola ini, hanya `ThemeToggle` yang menjadi Client Component.
+
+## 🧠 Prinsip Boundary Kecil
+
+Boundary client sebaiknya dibuat sekecil mungkin.
+
+```text
+Kurang ideal:
+Seluruh page menjadi Client Component
+
+Lebih baik:
+Page tetap Server Component
+Hanya tombol/filter/modal yang menjadi Client Component
+```
+
+<Cards>
+  <Card title="Boundary kecil" description="Lebih sedikit JavaScript dikirim ke browser." />
+  <Card title="Server tetap dominan" description="Data dan render awal tetap berada di server." />
+  <Card title="Interaksi terisolasi" description="Bagian client fokus pada state dan event saja." />
+</Cards>
+
+## 🔐 Props Harus Serializable
 
 Data dari Server Component ke Client Component dikirim lewat props. Props tersebut harus serializable, misalnya string, number, boolean, array, dan object sederhana.
 
 Contoh aman:
 
 ```tsx filename="app/page.tsx"
-import { ProductCard } from "./components/product-card";
+import { ProductCard } from './components/product-card';
 
 export default function Page() {
-  return <ProductCard product={{ id: 1, name: "Keyboard" }} />;
+  return <ProductCard product={{ id: 1, name: 'Keyboard' }} />;
 }
 ```
 
 Contoh bermasalah:
 
 ```tsx filename="app/page.tsx"
-import { ProductCard } from "./components/product-card";
+import { ProductCard } from './components/product-card';
 
 export default function Page() {
-  return <ProductCard onSelect={() => console.log("selected")} />;
+  return <ProductCard onSelect={() => console.log('selected')} />;
 }
 ```
 
 Function biasa seperti `onSelect` tidak bisa dikirim dari Server Component ke Client Component sebagai props.
 
-## Ringkasan
+## 🧩 Contoh Data Serializable
 
-Letakkan `"use client"` sedekat mungkin dengan bagian yang membutuhkan interaksi. Dengan begitu, mayoritas UI tetap bisa menjadi Server Component dan JavaScript yang dikirim ke browser tetap lebih kecil.
+Data yang umumnya aman dikirim:
+
+```text
+string
+number
+boolean
+null
+array
+object sederhana
+```
+
+Contoh:
+
+```tsx
+<ProductCard product={{ id: '1', name: 'Keyboard', price: 250000 }} />
+```
+
+Data yang perlu dihindari:
+
+```text
+function
+class instance
+connection database
+secret token
+object kompleks yang tidak bisa diserialisasi
+```
+
+## 🧪 Studi Kasus: Search Box di Halaman Produk
+
+Halaman produk mengambil data di server, tetapi search box membutuhkan state di browser.
+
+Struktur yang sehat:
+
+```text
+app/products/page.tsx              -> Server Component
+app/products/search-box.tsx        -> Client Component
+app/products/product-list.tsx      -> Server Component
+```
+
+Contoh page:
+
+```tsx filename="app/products/page.tsx"
+import { SearchBox } from './search-box';
+
+export default function ProductsPage() {
+  return (
+    <main>
+      <h1>Produk</h1>
+      <SearchBox />
+    </main>
+  );
+}
+```
+
+Contoh search box:
+
+```tsx filename="app/products/search-box.tsx"
+'use client';
+
+import { useState } from 'react';
+
+export function SearchBox() {
+  const [keyword, setKeyword] = useState('');
+
+  return (
+    <input
+      value={keyword}
+      onChange={(event) => setKeyword(event.target.value)}
+      placeholder="Cari produk"
+    />
+  );
+}
+```
+
+Boundary client cukup di `search-box.tsx`, bukan di seluruh page.
+
+## 🚧 Kesalahan Umum
+
+### ⚠️ Menaruh `"use client"` di Root Layout
+
+Hindari ini kecuali benar-benar perlu. Root layout membungkus seluruh aplikasi.
+
+### ⚠️ Mengirim Function dari Server ke Client
+
+Function biasa tidak serializable. Kirim data sederhana, lalu definisikan event handler di Client Component.
+
+### ⚠️ Mengimpor Module Server ke Client
+
+Jangan impor module database, filesystem, atau secret ke file Client Component.
+
+### ⚠️ Menambahkan Directive di Banyak File Anak
+
+Jika parent client mengimpor child, child ikut masuk client graph. Tidak semua child perlu directive sendiri.
+
+## 📝 Latihan
+
+Tentukan di mana `"use client"` sebaiknya diletakkan:
+
+1. Halaman produk punya tombol filter interaktif.
+2. Layout dashboard punya active link.
+3. Halaman artikel hanya menampilkan teks dari database.
+4. Form pencarian memakai controlled input.
+5. Tombol logout memakai event click.
+
+Pertanyaan:
+
+- Apa efek `"use client"` terhadap module yang diimpor?
+- Kenapa boundary client sebaiknya kecil?
+- Apa maksud props harus serializable?
+
+## ✅ Ringkasan
+
+Letakkan `"use client"` sedekat mungkin dengan bagian yang membutuhkan interaksi. Dengan begitu, mayoritas UI tetap bisa menjadi Server Component dan JavaScript yang dikirim ke browser tetap lebih kecil. Data dari server ke client harus berupa props yang serializable.

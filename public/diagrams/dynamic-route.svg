@@ -1,0 +1,24 @@
+<svg width="960" height="520" viewBox="0 0 960 520" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+  <title id="title">Dynamic Route dan Catch-all</title>
+  <desc id="desc">Diagram membandingkan dynamic segment, catch-all segment, dan optional catch-all segment di Next.js.</desc>
+  <rect width="960" height="520" rx="28" fill="#111827"/>
+  <text x="480" y="58" fill="#f9fafb" font-family="Arial, sans-serif" font-size="34" font-weight="700" text-anchor="middle">Dynamic Route dan Catch-all</text>
+  <g font-family="Arial, sans-serif">
+    <rect x="70" y="115" width="250" height="260" rx="22" fill="#1f2937" stroke="#38bdf8" stroke-width="3"/>
+    <text x="195" y="165" fill="#7dd3fc" font-size="28" font-weight="700" text-anchor="middle">[id]</text>
+    <text x="195" y="215" fill="#e5e7eb" font-size="20" text-anchor="middle">Satu segment</text>
+    <text x="195" y="265" fill="#e5e7eb" font-size="20" text-anchor="middle">/products/1</text>
+    <text x="195" y="315" fill="#e5e7eb" font-size="20" text-anchor="middle">id = &quot;1&quot;</text>
+    <rect x="355" y="115" width="250" height="260" rx="22" fill="#1f2937" stroke="#22c55e" stroke-width="3"/>
+    <text x="480" y="165" fill="#86efac" font-size="28" font-weight="700" text-anchor="middle">[...slug]</text>
+    <text x="480" y="215" fill="#e5e7eb" font-size="20" text-anchor="middle">Satu atau lebih</text>
+    <text x="480" y="265" fill="#e5e7eb" font-size="20" text-anchor="middle">/docs/a/b</text>
+    <text x="480" y="315" fill="#e5e7eb" font-size="20" text-anchor="middle">slug = [&quot;a&quot;, &quot;b&quot;]</text>
+    <rect x="640" y="115" width="250" height="260" rx="22" fill="#1f2937" stroke="#f59e0b" stroke-width="3"/>
+    <text x="765" y="165" fill="#fbbf24" font-size="28" font-weight="700" text-anchor="middle">[[...slug]]</text>
+    <text x="765" y="215" fill="#e5e7eb" font-size="20" text-anchor="middle">Boleh kosong</text>
+    <text x="765" y="265" fill="#e5e7eb" font-size="20" text-anchor="middle">/docs</text>
+    <text x="765" y="315" fill="#e5e7eb" font-size="20" text-anchor="middle">slug = undefined</text>
+  </g>
+  <text x="480" y="455" fill="#cbd5e1" font-family="Arial, sans-serif" font-size="22" text-anchor="middle">Gunakan bracket untuk bagian URL yang nilainya berubah.</text>
+</svg>

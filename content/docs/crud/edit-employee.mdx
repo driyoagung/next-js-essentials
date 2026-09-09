@@ -3,9 +3,13 @@ title: Edit Employee
 description: Membuat halaman edit berdasarkan id dan menyimpan perubahan data.
 ---
 
+<Callout type="info" title="Update flow">
+Edit membutuhkan data lama sebagai nilai awal form, lalu Server Action update menyimpan perubahan berdasarkan `id`.
+</Callout>
+
 Edit adalah proses membaca data lama, menampilkan form dengan nilai awal, lalu menyimpan perubahan.
 
-## Route Edit
+## 🗺️ Route Edit
 
 Route:
 
@@ -19,7 +23,7 @@ File:
 app/employees/[id]/edit/page.tsx
 ```
 
-## Server Action Update
+## ⚙️ Server Action Update
 
 Server Action bisa menerima argumen tambahan dengan `bind`.
 
@@ -46,7 +50,7 @@ export async function updateEmployee(
 
 `id` berasal dari route params, sedangkan `formData` berasal dari submit form.
 
-## Halaman Edit
+## ✏️ Halaman Edit
 
 ```tsx filename="app/employees/[id]/edit/page.tsx"
 import Link from "next/link";
@@ -111,12 +115,12 @@ export default async function EditEmployeePage({
 
 Gunakan `defaultValue` untuk input form yang tidak dikontrol oleh state React.
 
-## Kenapa Tidak useState?
+## 🧠 Kenapa Tidak useState?
 
 Untuk form sederhana, uncontrolled input dengan `defaultValue` sudah cukup. Ini mengurangi JavaScript client karena halaman edit tetap bisa menjadi Server Component.
 
 Gunakan Client Component jika form membutuhkan interaksi kompleks seperti preview real-time, field dinamis, atau validasi client yang detail.
 
-## Ringkasan
+## ✅ Ringkasan
 
 Edit flow membaca data berdasarkan `id`, menampilkan form dengan nilai awal, memanggil Server Action update, melakukan revalidation, lalu redirect ke halaman detail.

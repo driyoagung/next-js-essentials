@@ -3,11 +3,15 @@ title: Caching dan CORS
 description: Memahami caching GET Route Handler dan header CORS dasar.
 ---
 
+<Callout type="info" title="Definisi singkat">
+Caching mengatur apakah response boleh disimpan, sedangkan CORS mengatur apakah endpoint boleh diakses dari origin berbeda.
+</Callout>
+
 Route Handler punya perilaku caching yang perlu dipahami sejak awal.
 
 Di Next.js versi modern, `GET` Route Handler tidak otomatis cached secara default. Jika response `GET` memang aman untuk disimpan, kamu perlu opt-in dengan route config.
 
-## GET Tidak Cached Secara Default
+## 📦 GET Tidak Cached Secara Default
 
 Contoh endpoint dynamic:
 
@@ -21,7 +25,7 @@ export async function GET() {
 
 Endpoint seperti ini sebaiknya tetap dynamic karena hasilnya berubah setiap request.
 
-## Membuat GET Static
+## 🧊 Membuat GET Static
 
 Jika data aman dianggap static, gunakan `dynamic = "force-static"`.
 
@@ -36,7 +40,7 @@ export async function GET() {
 }
 ```
 
-## Revalidation
+## 🔄 Revalidation
 
 Untuk response yang boleh diperbarui berkala, gunakan `revalidate`.
 
@@ -53,7 +57,7 @@ export async function GET() {
 
 Nilai `60` berarti response dapat direvalidasi setelah 60 detik.
 
-## Dengan Cache Components
+## 🧩 Dengan Cache Components
 
 Jika fitur Cache Components aktif, `GET` Route Handler mengikuti model cache yang sama dengan route UI. Data yang uncached dapat dipindahkan ke helper dengan directive `"use cache"`.
 
@@ -77,7 +81,7 @@ async function getProducts() {
 
 Directive `"use cache"` tidak diletakkan langsung di body Route Handler. Letakkan di helper function.
 
-## CORS Dasar
+## 🌐 CORS Dasar
 
 CORS diperlukan jika endpoint akan dipanggil dari origin berbeda.
 
@@ -113,6 +117,6 @@ export async function OPTIONS() {
 }
 ```
 
-## Ringkasan
+## ✅ Ringkasan
 
 `GET` Route Handler tidak cached secara default. Aktifkan caching hanya jika data aman disimpan. Tambahkan header CORS ketika endpoint perlu diakses dari origin lain.

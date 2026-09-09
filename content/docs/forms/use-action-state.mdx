@@ -3,11 +3,15 @@ title: useActionState
 description: Mengembalikan state validasi dan pending dari Server Action ke form.
 ---
 
+<Callout type="info" title="Definisi singkat">
+`useActionState` menghubungkan return value dari Server Action ke UI form, sehingga error validasi dan pesan sukses bisa ditampilkan langsung.
+</Callout>
+
 `useActionState` dipakai ketika Server Action perlu mengembalikan state ke UI, misalnya pesan validasi, error field, atau status sukses.
 
 Hook ini menggantikan pola lama `useFormState`. Pada React 19, gunakan `useActionState`.
 
-## Bentuk State
+## 🧩 Bentuk State
 
 Mulai dengan type state yang sederhana.
 
@@ -21,7 +25,7 @@ export type SignupState = {
 };
 ```
 
-## Action dengan State
+## ⚙️ Action dengan State
 
 Action yang dipakai oleh `useActionState` menerima state sebelumnya sebagai argumen pertama, lalu `FormData` sebagai argumen kedua.
 
@@ -63,7 +67,7 @@ export async function signup(
 }
 ```
 
-## Client Form
+## 🖱️ Client Form
 
 Karena `useActionState` adalah hook, form component perlu menjadi Client Component.
 
@@ -101,7 +105,7 @@ export function SignupForm() {
 }
 ```
 
-## Kapan Pakai useActionState?
+## 🎯 Kapan Pakai useActionState?
 
 Gunakan `useActionState` ketika:
 
@@ -112,6 +116,6 @@ Gunakan `useActionState` ketika:
 
 Jika action selalu redirect setelah sukses dan error ditangani global, form sederhana dengan `useFormStatus` mungkin sudah cukup.
 
-## Ringkasan
+## ✅ Ringkasan
 
 `useActionState` menghubungkan return value Server Action ke UI form. Ini cocok untuk validasi server yang perlu ditampilkan langsung di field.

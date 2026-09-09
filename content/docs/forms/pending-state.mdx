@@ -3,11 +3,15 @@ title: Pending State
 description: Menampilkan status loading saat form sedang submit.
 ---
 
+<Callout type="info" title="Kenapa penting?">
+Pending state mencegah user bingung saat submit berjalan dan membantu menghindari submit ganda.
+</Callout>
+
 Pending state memberi feedback saat form sedang dikirim. Tanpa pending state, user bisa mengira tombol tidak bekerja dan menekan submit berkali-kali.
 
 Untuk form sederhana, gunakan `useFormStatus` di Client Component kecil.
 
-## Submit Button
+## 🔘 Submit Button
 
 ```tsx filename="app/tasks/submit-button.tsx"
 "use client";
@@ -27,7 +31,7 @@ export function SubmitButton() {
 
 `useFormStatus` membaca status form terdekat di atasnya.
 
-## Menggunakan Submit Button
+## 🧩 Menggunakan Submit Button
 
 ```tsx filename="app/tasks/task-form.tsx"
 import { createTask } from "./actions";
@@ -47,7 +51,7 @@ export function TaskForm() {
 
 `SubmitButton` harus berada di dalam `<form>` agar `useFormStatus` bisa membaca status submit.
 
-## Data dari useFormStatus
+## 📦 Data dari useFormStatus
 
 Pada React 19, `useFormStatus` menyediakan informasi tambahan seperti:
 
@@ -58,13 +62,13 @@ Pada React 19, `useFormStatus` menyediakan informasi tambahan seperti:
 
 Yang paling sering dipakai pada tahap awal adalah `pending`.
 
-## Kenapa Client Component Kecil?
+## 🧠 Kenapa Client Component Kecil?
 
 Halaman dan form bisa tetap menjadi Server Component. Hanya tombol pending yang menjadi Client Component.
 
 Pola ini menjaga JavaScript client tetap kecil.
 
-## Banyak Tombol Submit
+## 🧭 Banyak Tombol Submit
 
 Jika satu form punya beberapa aksi, gunakan `formAction` pada button.
 
@@ -88,6 +92,6 @@ export function PostActionsForm() {
 
 `formAction` menimpa `action` form untuk tombol tertentu.
 
-## Ringkasan
+## ✅ Ringkasan
 
 Gunakan `useFormStatus` untuk pending state form. Buat Client Component kecil seperti `SubmitButton` agar halaman utama tetap bisa menjadi Server Component.

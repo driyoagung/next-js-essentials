@@ -3,12 +3,67 @@ title: Shared Layout
 description: Menyusun navbar, sidebar, dan area konten dengan layout yang reusable.
 ---
 
+<Callout type="info" title="Definisi singkat">
+Shared layout adalah pola menaruh UI yang sama di beberapa halaman agar tidak ditulis berulang, misalnya navbar untuk halaman publik atau sidebar untuk dashboard.
+</Callout>
+
 Shared layout adalah pola untuk menaruh UI yang sama di beberapa halaman. Di Next.js, pola ini biasanya dibuat dengan `layout.tsx` pada segment route tertentu.
 
-## Contoh Navbar Sederhana
+## 🧭 Apa Itu Shared Layout?
+
+Shared layout bukan file khusus bernama `shared-layout.tsx`. Ini adalah pola penggunaan layout untuk membagikan struktur UI ke beberapa halaman.
+
+Contoh UI yang sering dijadikan shared layout:
+
+- Navbar halaman publik
+- Footer website
+- Sidebar dashboard
+- Header dashboard
+- Container dokumentasi
+- Wrapper halaman auth
+
+Tujuannya sederhana: tulis sekali, pakai di banyak halaman.
+
+## 🧱 Kenapa Shared Layout Dibutuhkan?
+
+Tanpa shared layout, kamu mungkin menulis navbar di setiap halaman:
+
+```tsx
+export default function AboutPage() {
+  return (
+    <>
+      <Navbar />
+      <main>About</main>
+    </>
+  );
+}
+```
+
+Lalu menulis lagi di halaman lain:
+
+```tsx
+export default function ContactPage() {
+  return (
+    <>
+      <Navbar />
+      <main>Contact</main>
+    </>
+  );
+}
+```
+
+Jika nanti menu navbar berubah, kamu harus mengubah banyak file. Shared layout membuat perubahan cukup dilakukan di satu tempat.
+
+<Callout type="idea" title="Prinsip reuse">
+Jika sebuah UI muncul di banyak halaman dalam konteks yang sama, pertimbangkan untuk memindahkannya ke layout.
+</Callout>
+
+## 🔗 Contoh Navbar Sederhana
+
+Contoh shared layout untuk halaman publik:
 
 ```tsx filename="app/(site)/layout.tsx"
-import Link from "next/link";
+import Link from 'next/link';
 
 export default function SiteLayout({
   children,
@@ -30,10 +85,71 @@ export default function SiteLayout({
 
 Folder `(site)` adalah route group. Namanya tidak masuk ke URL, tetapi bisa dipakai untuk mengelompokkan halaman yang memakai layout yang sama.
 
-## Contoh Sidebar
+Struktur lengkapnya:
+
+```text
+app/
++-- (site)/
+    +-- layout.tsx
+    +-- page.tsx
+    +-- about/
+    |   +-- page.tsx
+    +-- contact/
+        +-- page.tsx
+```
+
+Route yang terbentuk tetap:
+
+```text
+/
+/about
+/contact
+```
+
+Segment `(site)` tidak muncul di URL.
+
+## 🗂️ Route Group untuk Layout
+
+Route group ditulis dengan tanda kurung:
+
+```text
+(site)
+(auth)
+(marketing)
+```
+
+Route group berguna untuk mengelompokkan route tanpa menambah segment URL.
+
+Contoh:
+
+```text
+app/(site)/about/page.tsx
+```
+
+Tetap menghasilkan route:
+
+```text
+/about
+```
+
+Bukan:
+
+```text
+/site/about
+```
+
+<Cards>
+  <Card title="(site)" description="Mengelompokkan halaman publik seperti home, about, dan contact." />
+  <Card title="(auth)" description="Mengelompokkan login, register, dan forgot password." />
+  <Card title="dashboard" description="Segment biasa yang tetap muncul di URL sebagai /dashboard." />
+</Cards>
+
+## 📚 Contoh Sidebar
+
+Dashboard biasanya membutuhkan sidebar.
 
 ```tsx filename="app/dashboard/layout.tsx"
-import Link from "next/link";
+import Link from 'next/link';
 
 export default function DashboardLayout({
   children,
@@ -41,26 +157,52 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div>
+    <section>
       <aside>
         <Link href="/dashboard">Overview</Link>
         <Link href="/dashboard/settings">Settings</Link>
       </aside>
       <main>{children}</main>
-    </div>
+    </section>
   );
 }
 ```
 
-## Active Link
+Struktur route:
+
+```text
+app/
++-- dashboard/
+    +-- layout.tsx
+    +-- page.tsx
+    +-- settings/
+        +-- page.tsx
+```
+
+Sidebar hanya muncul untuk route:
+
+```text
+/dashboard
+/dashboard/settings
+```
+
+Tidak muncul pada:
+
+```text
+/
+/about
+/contact
+```
+
+## 🎯 Active Link
 
 Jika perlu menandai menu aktif berdasarkan URL, gunakan Client Component karena pembacaan pathname memakai hook browser.
 
 ```tsx filename="app/dashboard/nav-link.tsx"
-"use client";
+'use client';
 
-import Link from "next/link";
-import { usePathname } from "next/navigation";
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 
 export function NavLink({
   href,
@@ -73,16 +215,237 @@ export function NavLink({
   const isActive = pathname === href;
 
   return (
-    <Link aria-current={isActive ? "page" : undefined} href={href}>
+    <Link aria-current={isActive ? 'page' : undefined} href={href}>
       {children}
     </Link>
   );
 }
 ```
 
-## Prinsip Praktis
+Komponen ini bisa dipakai di layout dashboard:
+
+```tsx filename="app/dashboard/layout.tsx"
+import { NavLink } from './nav-link';
+
+export default function DashboardLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return (
+    <section>
+      <aside>
+        <NavLink href="/dashboard">Overview</NavLink>
+        <NavLink href="/dashboard/settings">Settings</NavLink>
+      </aside>
+      <main>{children}</main>
+    </section>
+  );
+}
+```
+
+## 🧠 Kenapa Active Link Harus Client Component?
+
+`usePathname` adalah hook dari `next/navigation` yang membaca URL aktif di browser. Karena hook ini membutuhkan informasi client-side, komponen yang memakainya harus diberi directive `"use client"`.
+
+Namun, bukan berarti seluruh layout harus menjadi Client Component. Cukup pisahkan bagian interaktifnya saja.
+
+Pola yang lebih baik:
+
+```text
+DashboardLayout -> Server Component
+NavLink         -> Client Component
+```
+
+Dengan begitu, layout tetap ringan, dan hanya active link yang berjalan di client.
+
+<Callout type="warn" title="Jangan semua dibuat client">
+Jika hanya sebagian kecil UI yang butuh hook browser, pisahkan menjadi Client Component kecil. Jangan membuat seluruh layout menjadi Client Component tanpa kebutuhan jelas.
+</Callout>
+
+## 🧩 Shared Layout dengan Footer
+
+Website publik sering punya navbar dan footer yang sama.
+
+Contoh:
+
+```tsx filename="app/(site)/layout.tsx"
+import Link from 'next/link';
+
+export default function SiteLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return (
+    <div>
+      <header>
+        <nav>
+          <Link href="/">Home</Link>
+          <Link href="/about">About</Link>
+          <Link href="/contact">Contact</Link>
+        </nav>
+      </header>
+
+      <main>{children}</main>
+
+      <footer>Copyright 2026</footer>
+    </div>
+  );
+}
+```
+
+Semua page di dalam `(site)` akan memiliki navbar dan footer yang sama.
+
+## 🧪 Studi Kasus: Website Publik dan Dashboard
+
+Bayangkan aplikasi punya dua area:
+
+```text
+Website publik:
+/
+/about
+/contact
+
+Dashboard:
+/dashboard
+/dashboard/settings
+```
+
+Kebutuhan:
+
+- Website publik punya navbar dan footer
+- Dashboard punya sidebar
+- Dashboard tidak memakai footer publik
+
+Struktur yang cocok:
+
+```text
+app/
++-- layout.tsx
++-- (site)/
+|   +-- layout.tsx
+|   +-- page.tsx
+|   +-- about/
+|   |   +-- page.tsx
+|   +-- contact/
+|       +-- page.tsx
++-- dashboard/
+    +-- layout.tsx
+    +-- page.tsx
+    +-- settings/
+        +-- page.tsx
+```
+
+Hasil URL:
+
+```text
+/
+/about
+/contact
+/dashboard
+/dashboard/settings
+```
+
+Folder `(site)` tidak muncul di URL, tetapi membantu mengelompokkan layout publik.
+
+## 🧪 Studi Kasus: Halaman Auth Minimal
+
+Halaman login dan register biasanya tidak membutuhkan navbar publik maupun sidebar dashboard.
+
+Route:
+
+```text
+/login
+/register
+```
+
+Struktur:
+
+```text
+app/
++-- (auth)/
+    +-- layout.tsx
+    +-- login/
+    |   +-- page.tsx
+    +-- register/
+        +-- page.tsx
+```
+
+Contoh auth layout:
+
+```tsx filename="app/(auth)/layout.tsx"
+export default function AuthLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return (
+    <main>
+      <section>{children}</section>
+    </main>
+  );
+}
+```
+
+Layout ini membuat halaman auth tetap sederhana dan tidak bercampur dengan layout lain.
+
+## 🚧 Kesalahan Umum
+
+### ⚠️ Menulis Navbar di Setiap Page
+
+Jika navbar dipakai banyak halaman, pindahkan ke layout agar tidak duplikasi.
+
+### ⚠️ Membuat Semua Layout Menjadi Client Component
+
+Layout tidak perlu menjadi Client Component hanya karena ada active link. Pisahkan active link ke komponen kecil.
+
+### ⚠️ Salah Memahami Route Group
+
+Folder `(site)` tidak masuk ke URL. Jika ingin segment muncul di URL, jangan pakai tanda kurung.
+
+### ⚠️ Mencampur Layout Publik dan Dashboard
+
+Navbar publik dan sidebar dashboard biasanya punya konteks berbeda. Pisahkan layout-nya agar UI tidak saling mengganggu.
+
+## 📋 Prinsip Praktis
 
 - Taruh UI global di root layout.
 - Taruh UI area tertentu di nested layout.
 - Pakai route group jika ingin mengelompokkan layout tanpa mengubah URL.
 - Pindahkan logic interaktif seperti active link ke Client Component.
+- Jangan menaruh semua UI di root layout.
+- Gunakan `Link` untuk menu navigasi internal.
+
+## 📝 Latihan
+
+Buat struktur layout untuk aplikasi dengan kebutuhan berikut:
+
+```text
+/
+/about
+/pricing
+/login
+/register
+/dashboard
+/dashboard/profile
+/dashboard/billing
+```
+
+Syarat:
+
+1. Halaman publik punya navbar dan footer.
+2. Login dan register punya layout minimal.
+3. Dashboard punya sidebar.
+4. Route `/pricing` tetap URL `/pricing`, bukan `/site/pricing`.
+
+Pertanyaan:
+
+- Route group apa yang kamu pakai?
+- Di mana navbar publik diletakkan?
+- Di mana sidebar dashboard diletakkan?
+- Komponen mana yang perlu menjadi Client Component jika ingin active link?
+
+## ✅ Ringkasan
+
+Shared layout adalah pola untuk menggunakan UI yang sama di banyak halaman tanpa duplikasi. Gunakan `layout.tsx` untuk navbar, sidebar, footer, atau wrapper bersama. Gunakan route group seperti `(site)` atau `(auth)` jika ingin mengelompokkan route tanpa mengubah URL. Untuk logic interaktif seperti active link, pisahkan ke Client Component kecil.

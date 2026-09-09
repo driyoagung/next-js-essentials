@@ -3,14 +3,32 @@ title: Navigasi
 description: Berpindah halaman dengan Link dan hook navigasi App Router.
 ---
 
+<Callout type="info" title="Definisi singkat">
+Navigasi adalah proses berpindah dari satu route ke route lain. Di Next.js, navigasi internal sebaiknya memakai `Link`, sedangkan navigasi dari event handler memakai `useRouter`.
+</Callout>
+
 Next.js menyediakan beberapa cara navigasi. Untuk link antar halaman, gunakan komponen `Link`. Untuk navigasi dari event handler, gunakan `useRouter` di Client Component.
 
-## Navigasi dengan Link
+## 🧭 Kenapa Navigasi Perlu Dibahas?
 
-`Link` dipakai untuk navigasi deklaratif.
+Setelah bisa membuat route, langkah berikutnya adalah menghubungkan route tersebut. User tidak mungkin mengetik URL secara manual setiap kali ingin berpindah halaman.
+
+Navigasi membuat aplikasi terasa seperti satu kesatuan.
+
+Contoh:
+
+```text
+Home -> Products -> Product Detail -> Checkout
+```
+
+Di Next.js, navigasi bisa dilakukan dengan beberapa cara tergantung konteksnya.
+
+## 🔗 Navigasi dengan `Link`
+
+`Link` dipakai untuk navigasi deklaratif. Ini adalah cara utama untuk membuat link antar halaman internal di Next.js.
 
 ```tsx filename="app/page.tsx"
-import Link from "next/link";
+import Link from 'next/link';
 
 export default function HomePage() {
   return (
@@ -24,34 +42,109 @@ export default function HomePage() {
 
 `Link` membantu Next.js melakukan client-side transition dan prefetch ketika memungkinkan. Ini membuat perpindahan halaman terasa lebih cepat dibanding navigasi penuh memakai tag `<a>` untuk route internal.
 
-## Navigasi dengan useRouter
+<Callout type="idea" title="Aturan praktis">
+Gunakan `Link` untuk navigasi yang terlihat sebagai link di UI, seperti menu navbar, tombol menuju halaman lain, breadcrumb, atau daftar artikel.
+</Callout>
 
-`useRouter` dipakai ketika navigasi terjadi setelah interaksi, misalnya setelah tombol diklik atau form berhasil disimpan. Karena hook ini berjalan di browser, komponennya harus memakai `"use client"`.
+## ⚖️ `Link` vs Tag `<a>`
+
+Untuk route internal, gunakan `Link`:
+
+```tsx
+<Link href="/about">Tentang Kami</Link>
+```
+
+Untuk URL eksternal, tag `<a>` tetap bisa digunakan:
+
+```tsx
+<a href="https://example.com">Website Eksternal</a>
+```
+
+Perbedaannya:
+
+| Kebutuhan | Gunakan |
+| --- | --- |
+| Pindah halaman internal | `Link` |
+| Membuka website eksternal | `<a>` |
+| Download file langsung | `<a>` |
+| Navigasi setelah event | `useRouter` |
+
+## 🖱️ Navigasi dengan `useRouter`
+
+`useRouter` dipakai ketika navigasi terjadi setelah interaksi, misalnya setelah tombol diklik atau form berhasil disimpan.
+
+Karena hook ini berjalan di browser, komponennya harus memakai `"use client"`.
 
 ```tsx filename="app/products/create/submit-button.tsx"
-"use client";
+'use client';
 
-import { useRouter } from "next/navigation";
+import { useRouter } from 'next/navigation';
 
 export function SubmitButton() {
   const router = useRouter();
 
   return (
-    <button type="button" onClick={() => router.push("/products")}>
+    <button type="button" onClick={() => router.push('/products')}>
       Simpan
     </button>
   );
 }
 ```
 
-## Membaca Params dengan useParams
+Pada contoh tersebut, user akan diarahkan ke `/products` setelah tombol diklik.
+
+## 🚦 Method Umum pada Router
+
+Beberapa method yang sering dipakai:
+
+```tsx
+router.push('/products');
+router.replace('/login');
+router.back();
+router.refresh();
+```
+
+Penjelasan singkat:
+
+- `push` berpindah halaman dan menambahkan history baru
+- `replace` berpindah halaman tanpa menambahkan history baru
+- `back` kembali ke halaman sebelumnya
+- `refresh` memuat ulang data route yang sedang aktif
+
+<Cards>
+  <Card title="push" description="Cocok untuk navigasi normal setelah user melakukan aksi." />
+  <Card title="replace" description="Cocok setelah login agar user tidak kembali ke halaman login." />
+  <Card title="refresh" description="Cocok untuk memperbarui data pada route aktif." />
+</Cards>
+
+## 🔐 Redirect dari Server Component
+
+Selain `Link` dan `useRouter`, Next.js juga menyediakan `redirect` dari `next/navigation`.
+
+`redirect` cocok dipakai di Server Component atau server-side logic.
+
+Contoh:
+
+```tsx filename="app/page.tsx"
+import { redirect } from 'next/navigation';
+
+export default function HomePage() {
+  redirect('/docs');
+}
+```
+
+Kode di atas langsung mengarahkan user dari `/` ke `/docs`.
+
+Project ini memakai pola tersebut pada halaman home.
+
+## 🧩 Membaca Params dengan `useParams`
 
 `useParams` dipakai di Client Component untuk membaca dynamic segment.
 
 ```tsx filename="app/products/[id]/product-client.tsx"
-"use client";
+'use client';
 
-import { useParams } from "next/navigation";
+import { useParams } from 'next/navigation';
 
 export function ProductClient() {
   const params = useParams<{ id: string }>();
@@ -60,24 +153,84 @@ export function ProductClient() {
 }
 ```
 
-## Membaca Query dengan useSearchParams
+Jika user membuka:
+
+```text
+/products/10
+```
+
+Maka `params.id` berisi:
+
+```text
+10
+```
+
+Namun, jika kamu berada di Page Server Component, params biasanya lebih baik dibaca dari props page.
+
+## 🔎 Membaca Query dengan `useSearchParams`
 
 `useSearchParams` dipakai untuk membaca query string seperti `?page=2&search=phone`.
 
 ```tsx filename="app/products/product-filter.tsx"
-"use client";
+'use client';
 
-import { useSearchParams } from "next/navigation";
+import { useSearchParams } from 'next/navigation';
 
 export function ProductFilter() {
   const searchParams = useSearchParams();
-  const search = searchParams.get("search") ?? "";
+  const search = searchParams.get('search') ?? '';
 
   return <p>Keyword: {search}</p>;
 }
 ```
 
-## Kapan Memakai Masing-masing?
+Jika URL-nya:
+
+```text
+/products?search=keyboard&page=2
+```
+
+Maka:
+
+```text
+searchParams.get('search') -> "keyboard"
+searchParams.get('page') -> "2"
+```
+
+Query string cocok untuk data yang bersifat filter, pencarian, sorting, dan pagination.
+
+## 📦 Params vs Search Params
+
+Params dan search params sering membingungkan di awal.
+
+Contoh URL:
+
+```text
+/products/10?tab=reviews&page=2
+```
+
+Bagian params:
+
+```text
+/products/10 -> id = "10"
+```
+
+Bagian search params:
+
+```text
+?tab=reviews&page=2
+```
+
+Perbandingan:
+
+| Bagian URL | Contoh | Cara baca |
+| --- | --- | --- |
+| Dynamic params | `/products/10` | `params.id` atau `useParams` |
+| Query string | `?page=2` | `searchParams` atau `useSearchParams` |
+
+## 🧭 Kapan Memakai Masing-masing?
+
+![Diagram navigasi Next.js](/diagrams/nextjs-navigation.svg)
 
 | Kebutuhan | Gunakan |
 | --- | --- |
@@ -86,5 +239,136 @@ export function ProductFilter() {
 | Navigasi setelah klik/event | `useRouter` |
 | Membaca dynamic segment di Client Component | `useParams` |
 | Membaca query string di Client Component | `useSearchParams` |
+| Membaca params di Page Server Component | props `params` |
+| Membaca query di Page Server Component | props `searchParams` |
 
 Untuk Page Server Component, `params` dan `searchParams` biasanya lebih baik dibaca dari props page, lalu di-`await`.
+
+## 🧪 Studi Kasus: Navigasi Katalog Produk
+
+Bayangkan kamu membuat halaman katalog produk.
+
+Route yang tersedia:
+
+```text
+/
+/products
+/products/1
+/products/2
+```
+
+Di halaman home, kamu ingin membuat link ke daftar produk:
+
+```tsx filename="app/page.tsx"
+import Link from 'next/link';
+
+export default function HomePage() {
+  return (
+    <main>
+      <h1>Selamat Datang</h1>
+      <Link href="/products">Lihat Produk</Link>
+    </main>
+  );
+}
+```
+
+Di halaman products, kamu ingin membuat link ke detail produk:
+
+```tsx filename="app/products/page.tsx"
+import Link from 'next/link';
+
+const products = [
+  { id: '1', name: 'Keyboard' },
+  { id: '2', name: 'Mouse' },
+];
+
+export default function ProductsPage() {
+  return (
+    <main>
+      <h1>Produk</h1>
+      <ul>
+        {products.map((product) => (
+          <li key={product.id}>
+            <Link href={`/products/${product.id}`}>{product.name}</Link>
+          </li>
+        ))}
+      </ul>
+    </main>
+  );
+}
+```
+
+Dengan pola ini, user bisa berpindah dari home ke daftar produk, lalu ke detail produk.
+
+## 🧪 Studi Kasus: Filter Produk dengan Query
+
+Misalnya halaman produk mendukung pencarian:
+
+```text
+/products?search=keyboard
+```
+
+Kamu bisa membaca query dari `searchParams` di Page:
+
+```tsx filename="app/products/page.tsx"
+export default async function ProductsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ search?: string }>;
+}) {
+  const { search } = await searchParams;
+
+  return (
+    <main>
+      <h1>Produk</h1>
+      <p>Keyword: {search ?? 'Tidak ada keyword'}</p>
+    </main>
+  );
+}
+```
+
+Pada aplikasi nyata, nilai `search` bisa dipakai untuk filter data dari database.
+
+## 🚧 Kesalahan Umum
+
+### ⚠️ Memakai `<a>` untuk Route Internal
+
+Untuk navigasi internal seperti `/about` atau `/products`, gunakan `Link` agar Next.js bisa mengoptimalkan transisi halaman.
+
+### ⚠️ Memakai `useRouter` di Server Component
+
+`useRouter` adalah hook client. Jika ingin memakainya, komponen harus diberi directive `"use client"`.
+
+### ⚠️ Menaruh Semua Navigasi di Client Component
+
+Tidak semua navigasi butuh Client Component. Jika hanya link biasa, gunakan `Link` di Server Component.
+
+### ⚠️ Bingung Params dan Query
+
+`/products/10` adalah dynamic params. `?page=2` adalah query string. Cara membacanya berbeda.
+
+## 📝 Latihan
+
+Buat contoh navigasi untuk kebutuhan berikut:
+
+1. Link dari `/` ke `/blog`.
+2. Link dari `/blog` ke `/blog/belajar-nextjs`.
+3. Tombol yang mengarahkan user ke `/dashboard` setelah diklik.
+4. Halaman `/products?search=mouse` yang membaca query `search`.
+5. Halaman `/users/john` yang membaca params `username`.
+
+Pertanyaan:
+
+- Kapan memakai `Link`?
+- Kapan memakai `useRouter`?
+- Apa perbedaan `params` dan `searchParams`?
+- Kenapa `useRouter` membutuhkan `"use client"`?
+
+## ✅ Ringkasan
+
+- Gunakan `Link` untuk navigasi internal yang berbentuk link.
+- Gunakan `useRouter` untuk navigasi dari event handler di Client Component.
+- Gunakan `redirect` untuk redirect dari Server Component atau server-side logic.
+- Gunakan `useParams` untuk membaca dynamic segment di Client Component.
+- Gunakan `useSearchParams` untuk membaca query string di Client Component.
+- Untuk Page Server Component, baca `params` dan `searchParams` dari props page.

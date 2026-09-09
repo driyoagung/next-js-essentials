@@ -3,11 +3,15 @@ title: Dynamic Route dan Query
 description: Mengambil params dan query string pada Route Handler.
 ---
 
+<Callout type="info" title="Definisi singkat">
+Dynamic segment berasal dari path seperti `/api/users/1`, sedangkan query string berasal dari bagian URL seperti `?q=nextjs&page=2`.
+</Callout>
+
 Route Handler bisa membaca dynamic segment dan query string.
 
 Dynamic segment berasal dari nama folder seperti `[id]`. Query string berasal dari URL seperti `?q=nextjs`.
 
-## Dynamic Segment
+## 🧩 Dynamic Segment
 
 Contoh struktur:
 
@@ -42,7 +46,7 @@ export async function GET(
 }
 ```
 
-## RouteContext
+## 🧠 RouteContext
 
 Next.js juga menyediakan helper global `RouteContext` untuk type params berdasarkan path route.
 
@@ -61,7 +65,7 @@ export async function GET(
 
 Type `RouteContext` tersedia setelah type generation berjalan melalui `next dev`, `next build`, atau `next typegen`.
 
-## Catch-All Segment
+## 🗂️ Catch-All Segment
 
 Catch-all route memakai folder `[...slug]`.
 
@@ -86,7 +90,7 @@ export async function GET(
 }
 ```
 
-## Query String
+## 🔎 Query String
 
 Untuk membaca query string, gunakan `NextRequest`.
 
@@ -119,6 +123,6 @@ Response:
 }
 ```
 
-## Ringkasan
+## ✅ Ringkasan
 
 Gunakan `params` untuk mengambil nilai dari folder dynamic route. Gunakan `request.nextUrl.searchParams` untuk membaca query string.

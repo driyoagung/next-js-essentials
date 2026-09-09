@@ -3,6 +3,10 @@ title: Request Body
 description: Membaca JSON body, FormData, dan text payload.
 ---
 
+<Callout type="info" title="Definisi singkat">
+Request body adalah data yang dikirim client ke server, misalnya JSON, FormData, atau raw text untuk webhook.
+</Callout>
+
 Route Handler dapat membaca body request menggunakan method Web API.
 
 Method yang sering dipakai:
@@ -11,7 +15,7 @@ Method yang sering dipakai:
 - `request.formData()`
 - `request.text()`
 
-## JSON Body
+## 📦 JSON Body
 
 JSON body umum dipakai untuk endpoint dari `fetch()`.
 
@@ -71,7 +75,7 @@ export function CreateUserButton() {
 }
 ```
 
-## FormData
+## 📝 FormData
 
 `FormData` cocok untuk form HTML biasa atau upload file.
 
@@ -97,7 +101,7 @@ export async function POST(request: Request) {
 }
 ```
 
-## Text Body
+## 📄 Text Body
 
 Webhook kadang membutuhkan raw text body, misalnya untuk validasi signature.
 
@@ -111,10 +115,10 @@ export async function POST(request: Request) {
 }
 ```
 
-## Body Hanya Bisa Dibaca Sekali
+## ⚠️ Body Hanya Bisa Dibaca Sekali
 
 Body request adalah stream. Setelah dibaca dengan `json()`, `formData()`, atau `text()`, body tidak bisa dibaca ulang dengan method lain.
 
-## Ringkasan
+## ✅ Ringkasan
 
 Gunakan `request.json()` untuk API JSON, `request.formData()` untuk form, dan `request.text()` untuk payload mentah seperti webhook.

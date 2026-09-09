@@ -3,6 +3,12 @@ title: HTTP Method
 description: Membuat GET, POST, PUT, PATCH, DELETE, HEAD, dan OPTIONS.
 ---
 
+<Callout type="info" title="Definisi singkat">
+HTTP method menjelaskan maksud request: membaca, membuat, mengubah, atau menghapus data.
+</Callout>
+
+![Diagram HTTP method](/diagrams/http-methods.svg)
+
 Route Handler bekerja berdasarkan HTTP method. Nama function yang diekspor harus sesuai method yang ingin ditangani.
 
 Next.js mendukung:
@@ -15,7 +21,7 @@ Next.js mendukung:
 - `HEAD`
 - `OPTIONS`
 
-## GET
+## 📖 GET
 
 `GET` digunakan untuk membaca data.
 
@@ -30,7 +36,7 @@ export async function GET() {
 }
 ```
 
-## POST
+## ➕ POST
 
 `POST` digunakan untuk membuat data baru.
 
@@ -57,7 +63,7 @@ export async function POST(request: Request) {
 }
 ```
 
-## PUT dan PATCH
+## ✏️ PUT dan PATCH
 
 `PUT` biasanya dipakai untuk mengganti data secara penuh. `PATCH` biasanya dipakai untuk mengubah sebagian data.
 
@@ -78,7 +84,7 @@ export async function PATCH(
 }
 ```
 
-## DELETE
+## 🗑️ DELETE
 
 `DELETE` digunakan untuk menghapus data.
 
@@ -95,12 +101,12 @@ export async function DELETE(
 }
 ```
 
-## Method yang Tidak Ada
+## 🚫 Method yang Tidak Ada
 
 Jika method tidak didefinisikan, Next.js akan mengembalikan response `405 Method Not Allowed`.
 
 Jika `OPTIONS` tidak dibuat manual, Next.js dapat membuat response `OPTIONS` otomatis berdasarkan method yang tersedia.
 
-## Ringkasan
+## ✅ Ringkasan
 
 Export function berdasarkan HTTP method. Gunakan `GET` untuk membaca, `POST` untuk membuat, `PATCH` atau `PUT` untuk update, dan `DELETE` untuk menghapus.

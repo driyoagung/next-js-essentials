@@ -3,11 +3,15 @@ title: Directive use server
 description: Memahami posisi dan fungsi directive use server.
 ---
 
+<Callout type="info" title="Definisi singkat">
+Directive `"use server"` menandai function atau file sebagai Server Function yang hanya berjalan di server.
+</Callout>
+
 Directive `"use server"` memberi tahu React dan Next.js bahwa function tertentu harus berjalan di server.
 
 Ada dua cara umum memakai directive ini.
 
-## Di Level File
+## 📄 Di Level File
 
 Jika `"use server"` ditulis di bagian paling atas file, semua export async function di file tersebut menjadi Server Function.
 
@@ -27,7 +31,7 @@ export async function deleteTask(formData: FormData) {
 
 Pola ini bagus untuk file `actions.ts` yang berisi kumpulan mutation.
 
-## Di Dalam Function
+## 🧩 Di Dalam Function
 
 Directive juga bisa ditulis di awal body function.
 
@@ -51,7 +55,7 @@ export default function TasksPage() {
 
 Pola ini cocok untuk action yang sangat dekat dengan satu halaman.
 
-## File Action Terpisah
+## 🗂️ File Action Terpisah
 
 Untuk aplikasi yang mulai besar, file terpisah biasanya lebih rapi.
 
@@ -78,7 +82,7 @@ export default function TasksPage() {
 }
 ```
 
-## Jangan Campur dengan use client
+## 🚫 Jangan Campur dengan use client
 
 Satu file tidak bisa menjadi Client Component dan file Server Action sekaligus.
 
@@ -118,6 +122,6 @@ export function TaskForm() {
 }
 ```
 
-## Ringkasan
+## ✅ Ringkasan
 
 Gunakan `"use server"` di level file untuk kumpulan action, atau di body function untuk action inline. Pisahkan file server dan client agar boundary tetap jelas.

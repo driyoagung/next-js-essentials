@@ -3,9 +3,41 @@ title: Dynamic Route dan Catch-all Route
 description: Membuat route yang membaca nilai dinamis dari URL.
 ---
 
+<Callout type="info" title="Definisi singkat">
+Dynamic route dipakai ketika sebagian URL tidak tetap, tetapi berubah berdasarkan data seperti ID produk, slug artikel, atau username.
+</Callout>
+
 Dynamic route dipakai ketika sebagian URL berubah berdasarkan data. Contohnya detail produk, detail artikel, atau halaman profile user.
 
-## Dynamic Segment
+## 🧭 Kenapa Butuh Dynamic Route?
+
+Tidak semua route bisa ditulis satu per satu secara manual.
+
+Bayangkan kamu punya 1.000 produk. Jika setiap produk dibuat dengan folder statis, struktur project akan sangat tidak masuk akal:
+
+```text
+app/products/1/page.tsx
+app/products/2/page.tsx
+app/products/3/page.tsx
+```
+
+Dynamic route menyelesaikan masalah ini. Kamu cukup membuat satu pola route yang bisa menangani banyak nilai.
+
+Contoh:
+
+```text
+app/products/[id]/page.tsx
+```
+
+Route tersebut bisa menangani:
+
+```text
+/products/1
+/products/2
+/products/nextjs-book
+```
+
+## 🔢 Dynamic Segment
 
 Folder dengan nama `[id]` membuat satu segment dinamis.
 
@@ -24,6 +56,20 @@ Route tersebut cocok untuk URL seperti:
 /products/nextjs-book
 ```
 
+Bagian yang berubah adalah segment setelah `/products`.
+
+```text
+/products/1            -> id = "1"
+/products/2            -> id = "2"
+/products/nextjs-book  -> id = "nextjs-book"
+```
+
+<Callout type="idea" title="Cara mengingat dynamic segment">
+Gunakan bracket `[]` untuk bagian URL yang nilainya berubah. Nama di dalam bracket menjadi nama parameter.
+</Callout>
+
+## 💻 Membaca `params` di Page
+
 Di Next.js 16, `params` pada Page adalah Promise, jadi perlu di-`await`.
 
 ```tsx filename="app/products/[id]/page.tsx"
@@ -38,7 +84,80 @@ export default async function ProductDetailPage({
 }
 ```
 
-## Catch-all Segment
+Jika user membuka:
+
+```text
+/products/123
+```
+
+Maka nilai `id` adalah:
+
+```text
+123
+```
+
+Parameter ini biasanya dipakai untuk mengambil data dari database atau API.
+
+Contoh pola sederhana:
+
+```tsx filename="app/products/[id]/page.tsx"
+type Product = {
+  id: string;
+  name: string;
+};
+
+const products: Product[] = [
+  { id: '1', name: 'Keyboard' },
+  { id: '2', name: 'Mouse' },
+];
+
+export default async function ProductDetailPage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  const { id } = await params;
+  const product = products.find((item) => item.id === id);
+
+  return <h1>{product?.name ?? 'Product not found'}</h1>;
+}
+```
+
+## 📝 Dynamic Route dengan Slug
+
+Dynamic route tidak harus bernama `[id]`. Kamu bisa memakai nama lain sesuai kebutuhan.
+
+Contoh artikel blog:
+
+```text
+app/blog/[slug]/page.tsx
+```
+
+URL yang cocok:
+
+```text
+/blog/belajar-nextjs
+/blog/memahami-routing
+/blog/server-component
+```
+
+Contoh kode:
+
+```tsx filename="app/blog/[slug]/page.tsx"
+export default async function BlogDetailPage({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}) {
+  const { slug } = await params;
+
+  return <h1>Artikel: {slug}</h1>;
+}
+```
+
+Gunakan nama parameter yang menggambarkan isi URL. Untuk produk, `[id]` sering masuk akal. Untuk artikel, `[slug]` biasanya lebih cocok.
+
+## 🧩 Catch-all Segment
 
 Folder `[...slug]` menangkap satu atau lebih segment.
 
@@ -67,11 +186,27 @@ export default async function DocsPage({
 }) {
   const { slug } = await params;
 
-  return <p>{slug.join("/")}</p>;
+  return <p>{slug.join('/')}</p>;
 }
 ```
 
-## Optional Catch-all Segment
+Jika user membuka:
+
+```text
+/docs/routing/dynamic-route
+```
+
+Maka nilai `slug` adalah:
+
+```text
+['routing', 'dynamic-route']
+```
+
+<Callout type="warn" title="Perhatikan bentuk datanya">
+Dynamic segment biasa seperti `[id]` menghasilkan string. Catch-all segment seperti `[...slug]` menghasilkan array string.
+</Callout>
+
+## 🧭 Optional Catch-all Segment
 
 Folder `[[...slug]]` menangkap nol, satu, atau lebih segment.
 
@@ -100,13 +235,138 @@ export default async function DocsPage({
 }) {
   const { slug } = await params;
 
-  return <p>{slug?.join("/") ?? "index"}</p>;
+  return <p>{slug?.join('/') ?? 'index'}</p>;
 }
 ```
 
-## Ringkasan
+Jika user membuka `/docs`, maka `slug` bisa tidak ada. Karena itu kita memakai optional chaining dan fallback `index`.
+
+## 📊 Perbandingan Segment Dinamis
+
+![Diagram dynamic route dan catch-all](/diagrams/dynamic-route.svg)
+
+<Cards>
+  <Card title="[id]" description="Menangkap satu segment seperti /products/1." />
+  <Card title="[...slug]" description="Menangkap satu atau lebih segment seperti /docs/a/b." />
+  <Card title="[[...slug]]" description="Menangkap nol, satu, atau lebih segment seperti /docs dan /docs/a." />
+</Cards>
+
+| Pola folder | Contoh URL | Bentuk params |
+| --- | --- | --- |
+| `[id]` | `/products/1` | `{ id: '1' }` |
+| `[slug]` | `/blog/belajar-nextjs` | `{ slug: 'belajar-nextjs' }` |
+| `[...slug]` | `/docs/routing/basic` | `{ slug: ['routing', 'basic'] }` |
+| `[[...slug]]` | `/docs` | `{ slug: undefined }` |
+
+## 🧪 Studi Kasus: Detail Produk
+
+Bayangkan kamu membuat halaman detail produk. Daftar URL yang mungkin:
+
+```text
+/products/1
+/products/2
+/products/keyboard-mechanical
+```
+
+Daripada membuat tiga folder berbeda, kamu cukup membuat:
+
+```text
+app/
++-- products/
+    +-- [id]/
+        +-- page.tsx
+```
+
+Lalu di dalam page, baca `id` dari params:
+
+```tsx filename="app/products/[id]/page.tsx"
+export default async function ProductDetailPage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  const { id } = await params;
+
+  return (
+    <main>
+      <h1>Detail Produk</h1>
+      <p>ID produk: {id}</p>
+    </main>
+  );
+}
+```
+
+Pada aplikasi nyata, `id` tersebut dipakai untuk query ke database.
+
+## 🧪 Studi Kasus: Dokumentasi Bertingkat
+
+Website dokumentasi sering punya URL bertingkat seperti:
+
+```text
+/docs
+/docs/getting-started
+/docs/routing/dynamic-route
+/docs/production/deployment/vercel
+```
+
+Untuk kasus seperti ini, optional catch-all route cocok:
+
+```text
+app/docs/[[...slug]]/page.tsx
+```
+
+Alasannya:
+
+- `/docs` tetap bisa dibuka
+- `/docs/getting-started` bisa dibuka
+- `/docs/routing/dynamic-route` juga bisa dibuka
+- Struktur URL bisa fleksibel mengikuti struktur konten
+
+Pola inilah yang digunakan project dokumentasi ini.
+
+## 🚧 Kesalahan Umum
+
+### ⚠️ Mengira Semua Dynamic Params Berbentuk String
+
+`[id]` menghasilkan string, tetapi `[...slug]` menghasilkan array string.
+
+### ⚠️ Lupa `await params`
+
+Di Next.js 16, `params` pada Page adalah Promise. Jika langsung dipakai tanpa `await`, kode bisa tidak sesuai dengan tipe yang diharapkan.
+
+### ⚠️ Memakai Catch-all Padahal Tidak Perlu
+
+Jika hanya butuh satu segment, gunakan `[id]` atau `[slug]`. Gunakan `[...slug]` hanya jika jumlah segment memang bisa lebih dari satu.
+
+### ⚠️ Nama Parameter Tidak Jelas
+
+Gunakan nama parameter yang menggambarkan data. `[id]`, `[slug]`, dan `[username]` lebih jelas daripada `[value]`.
+
+## 📝 Latihan
+
+Buat struktur folder untuk kebutuhan berikut:
+
+```text
+/products/10
+/blog/belajar-nextjs
+/users/john
+/docs/routing/basic-routing
+/docs
+```
+
+Pertanyaan:
+
+1. Route mana yang cocok memakai `[id]`?
+2. Route mana yang cocok memakai `[slug]`?
+3. Route mana yang cocok memakai `[[...slug]]`?
+4. Apa bentuk params untuk `/docs/routing/basic-routing` jika memakai `[[...slug]]`?
+5. Kenapa halaman detail produk tidak dibuat satu folder per produk?
+
+## ✅ Ringkasan
 
 - `[id]` untuk satu segment dinamis.
+- `[slug]` cocok untuk URL berbasis teks seperti artikel.
 - `[...slug]` untuk banyak segment.
 - `[[...slug]]` untuk banyak segment yang juga boleh kosong.
-- Di Next.js 16, `params` perlu diakses secara async.
+- Di Next.js 16, `params` perlu diakses secara async dengan `await`.
+- Dynamic route membuat aplikasi lebih fleksibel karena satu file page bisa menangani banyak URL.

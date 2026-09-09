@@ -3,16 +3,68 @@ title: Root Layout
 description: Memahami layout utama yang membungkus seluruh aplikasi.
 ---
 
+<Callout type="info" title="Definisi singkat">
+Root layout adalah layout paling atas pada App Router. File ini wajib ada dan menjadi pembungkus utama seluruh route aplikasi.
+</Callout>
+
 Root layout adalah layout paling atas di folder `app`. File ini wajib ada pada App Router dan harus mengembalikan tag `<html>` serta `<body>`.
 
-## Contoh Root Layout
+## 🧭 Apa Itu Root Layout?
+
+Root layout adalah file `app/layout.tsx`. File ini menjadi struktur utama HTML aplikasi.
+
+Jika user membuka route apa pun, route tersebut tetap berada di dalam root layout.
+
+Contoh:
+
+```text
+app/
++-- layout.tsx
++-- page.tsx
++-- about/
+|   +-- page.tsx
++-- dashboard/
+    +-- page.tsx
+```
+
+Pada struktur di atas, `app/layout.tsx` membungkus:
+
+```text
+/
+/about
+/dashboard
+```
+
+Artinya, root layout berlaku untuk seluruh aplikasi.
+
+## 🧱 Kenapa Root Layout Wajib Ada?
+
+Root layout wajib ada karena Next.js membutuhkan struktur HTML utama untuk aplikasi.
+
+Root layout harus mengembalikan:
+
+```tsx
+<html>
+  <body>{children}</body>
+</html>
+```
+
+Tag `<html>` dan `<body>` hanya boleh didefinisikan di root layout. Layout lain tidak perlu dan tidak boleh mendefinisikan ulang struktur HTML utama.
+
+<Callout type="warn" title="Perhatian penting">
+Root layout harus berisi tag `<html>` dan `<body>`. Nested layout cukup mengembalikan wrapper biasa seperti `<section>`, `<div>`, atau fragment.
+</Callout>
+
+## 💻 Contoh Root Layout
+
+Contoh root layout sederhana:
 
 ```tsx filename="app/layout.tsx"
-import type { Metadata } from "next";
+import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: "Next.js Essential",
-  description: "Dokumentasi belajar Next.js essential.",
+  title: 'Next.js Essential',
+  description: 'Dokumentasi belajar Next.js essential.',
 };
 
 export default function RootLayout({
@@ -28,7 +80,17 @@ export default function RootLayout({
 }
 ```
 
-## Peran `children`
+Bagian pentingnya:
+
+- `metadata` mengatur metadata default halaman
+- `RootLayout` adalah component layout utama
+- `children` adalah isi route aktif
+- `<html lang="id">` menentukan bahasa dokumen
+- `<body>` membungkus seluruh UI aplikasi
+
+## 🧩 Peran `children`
+
+![Diagram root layout dan children](/diagrams/root-layout-children.svg)
 
 `children` adalah isi route yang sedang aktif. Jika user membuka `/about`, maka komponen dari `app/about/page.tsx` akan masuk ke posisi `{children}`.
 
@@ -38,19 +100,259 @@ export default function RootLayout({
 </body>
 ```
 
-## Apa yang Cocok Ditaruh di Root Layout?
+Contoh struktur:
+
+```text
+app/
++-- layout.tsx
++-- about/
+    +-- page.tsx
+```
+
+Jika user membuka `/about`, maka secara konsep hasilnya seperti ini:
+
+```tsx
+<html lang="id">
+  <body>
+    <AboutPage />
+  </body>
+</html>
+```
+
+Kamu tidak menulis `<AboutPage />` secara manual. Next.js yang memasukkan page aktif ke slot `children`.
+
+## 🎨 Root Layout dan CSS Global
+
+CSS global biasanya di-import di root layout.
+
+Contoh:
+
+```tsx filename="app/layout.tsx"
+import './globals.css';
+
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return (
+    <html lang="id">
+      <body>{children}</body>
+    </html>
+  );
+}
+```
+
+File `globals.css` cocok untuk:
+
+- Import Tailwind CSS
+- CSS reset
+- CSS variable global
+- Style dasar body
+- Font variable
+- Theme token global
+
+Pada project ini, root layout juga meng-import `app/globals.css`.
+
+## 🔤 Root Layout dan Font Global
+
+Root layout juga sering dipakai untuk mengatur font global.
+
+Contoh pola umum:
+
+```tsx filename="app/layout.tsx"
+import { Geist } from 'next/font/google';
+import './globals.css';
+
+const geist = Geist({
+  subsets: ['latin'],
+});
+
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return (
+    <html lang="id" className={geist.className}>
+      <body>{children}</body>
+    </html>
+  );
+}
+```
+
+Dengan pola ini, font berlaku ke seluruh aplikasi.
+
+## 🌐 Root Layout dan Provider Global
+
+Provider global adalah provider yang dibutuhkan banyak bagian aplikasi.
+
+Contoh:
+
+- Theme provider
+- Auth provider
+- Query provider
+- UI provider
+- Analytics provider
+
+Contoh sederhana:
+
+```tsx filename="app/layout.tsx"
+import { ThemeProvider } from '@/components/theme-provider';
+
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return (
+    <html lang="id">
+      <body>
+        <ThemeProvider>{children}</ThemeProvider>
+      </body>
+    </html>
+  );
+}
+```
+
+Pada project ini, root layout memakai `RootProvider` dari Fumadocs UI agar fitur UI dokumentasi berjalan secara global.
+
+<Callout type="idea" title="Prinsip provider">
+Taruh provider di root layout hanya jika benar-benar dibutuhkan oleh banyak halaman. Jika provider hanya dibutuhkan dashboard, taruh di layout dashboard.
+</Callout>
+
+## 🧠 Apa yang Cocok Ditaruh di Root Layout?
+
+Root layout cocok untuk hal-hal yang berlaku di seluruh aplikasi:
+
+<Cards>
+  <Card title="Struktur HTML" description="Tag html dan body utama aplikasi." />
+  <Card title="CSS Global" description="Import globals.css, Tailwind, reset, dan CSS variable." />
+  <Card title="Provider Global" description="Provider yang dibutuhkan hampir semua halaman." />
+  <Card title="Font Global" description="Konfigurasi font yang digunakan seluruh aplikasi." />
+</Cards>
+
+Daftar praktis:
 
 - Provider global
 - Font global
-- Theme provider
+- Theme provider global
 - Struktur HTML utama
 - Metadata global
 - CSS global
+- Wrapper yang benar-benar berlaku untuk semua route
 
-## Apa yang Sebaiknya Tidak Ditaruh di Root Layout?
+## 🚫 Apa yang Sebaiknya Tidak Ditaruh di Root Layout?
 
-Jangan menaruh semua UI aplikasi di root layout jika hanya dipakai oleh sebagian halaman. Untuk area seperti dashboard atau docs, lebih baik buat nested layout di segment terkait.
+Jangan menaruh semua UI aplikasi di root layout jika hanya dipakai oleh sebagian halaman.
 
-## Catatan Metadata
+Contoh yang kurang tepat:
+
+```text
+Navbar marketing ditaruh di root layout,
+padahal dashboard tidak membutuhkan navbar tersebut.
+```
+
+Akibatnya, dashboard ikut menampilkan navbar marketing walaupun tidak relevan.
+
+Solusi yang lebih baik:
+
+```text
+app/(site)/layout.tsx       -> navbar marketing
+app/dashboard/layout.tsx    -> sidebar dashboard
+app/layout.tsx              -> provider dan struktur global
+```
+
+## 🔎 Catatan Metadata
 
 Di App Router, jangan menulis tag `<head>` manual di root layout. Gunakan Metadata API seperti `metadata` atau `generateMetadata`.
+
+Contoh metadata statis:
+
+```tsx filename="app/layout.tsx"
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'Next.js Essential',
+  description: 'Dokumentasi belajar Next.js essential.',
+};
+```
+
+Metadata ini menjadi default untuk aplikasi. Halaman tertentu tetap bisa memiliki metadata sendiri.
+
+## 🧪 Studi Kasus: Root Layout untuk Website Dokumentasi
+
+Bayangkan kamu membuat website dokumentasi. Semua halaman membutuhkan:
+
+- Font global
+- Theme provider
+- CSS global
+- Struktur HTML
+- Metadata default
+
+Maka root layout bisa berisi:
+
+```tsx filename="app/layout.tsx"
+import type { Metadata } from 'next';
+import './globals.css';
+
+export const metadata: Metadata = {
+  title: 'Dokumentasi App',
+  description: 'Panduan penggunaan aplikasi.',
+};
+
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return (
+    <html lang="id">
+      <body>{children}</body>
+    </html>
+  );
+}
+```
+
+Jika nanti ada layout khusus docs, kamu bisa membuat nested layout di `app/docs/layout.tsx` tanpa mengubah root layout secara berlebihan.
+
+## 🚧 Kesalahan Umum
+
+### ⚠️ Lupa Menambahkan `<html>` dan `<body>`
+
+Root layout wajib mengembalikan tag `<html>` dan `<body>`.
+
+### ⚠️ Menaruh Semua UI di Root Layout
+
+Root layout sebaiknya tidak dipenuhi UI yang hanya berlaku untuk sebagian halaman.
+
+### ⚠️ Menulis `<head>` Manual
+
+Gunakan Metadata API, bukan menulis tag `<head>` manual di root layout.
+
+### ⚠️ Menganggap `children` Harus Di-import
+
+`children` berasal dari props layout. Kamu tidak perlu meng-import page secara manual.
+
+## 📝 Latihan
+
+Jawab pertanyaan berikut:
+
+1. File apa yang disebut root layout?
+2. Kenapa root layout wajib punya `<html>` dan `<body>`?
+3. Apa fungsi `children`?
+4. Apa saja yang cocok diletakkan di root layout?
+5. Apa contoh UI yang sebaiknya tidak diletakkan di root layout?
+
+Latihan praktik:
+
+Buat root layout untuk aplikasi blog yang memiliki:
+
+- Bahasa dokumen Indonesia
+- Metadata title dan description
+- Import `globals.css`
+- Body yang merender `children`
+
+## ✅ Ringkasan
+
+Root layout adalah layout utama yang membungkus seluruh aplikasi. File ini berada di `app/layout.tsx`, wajib mengembalikan `<html>` dan `<body>`, dan cocok untuk CSS global, font global, metadata default, serta provider yang berlaku di seluruh aplikasi.

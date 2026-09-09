@@ -3,9 +3,25 @@ title: Kapan Memakai Masing-masing?
 description: Panduan praktis memilih Server Component atau Client Component.
 ---
 
+<Callout type="info" title="Jawaban paling aman">
+Mulai dari Server Component sebagai default. Ubah menjadi Client Component hanya jika ada kebutuhan browser yang jelas.
+</Callout>
+
 Mulai dari Server Component sebagai default. Ubah menjadi Client Component hanya jika ada kebutuhan browser yang jelas.
 
-## Gunakan Server Component Jika
+## 🧭 Cara Mengambil Keputusan
+
+Saat membuat komponen, jangan langsung menambahkan `"use client"`. Mulailah dengan pertanyaan sederhana:
+
+```text
+Apakah komponen ini membutuhkan browser?
+```
+
+Jika tidak, biarkan sebagai Server Component.
+
+Jika iya, pindahkan bagian yang membutuhkan browser menjadi Client Component kecil.
+
+## 🖥️ Gunakan Server Component Jika
 
 | Kebutuhan | Alasan |
 | --- | --- |
@@ -14,8 +30,23 @@ Mulai dari Server Component sebagai default. Ubah menjadi Client Component hanya
 | Membaca secret | Secret tetap berada di server |
 | Menampilkan konten statis | Tidak perlu JavaScript tambahan di browser |
 | Membuat layout umum | Layout sering tidak butuh interaksi langsung |
+| Menampilkan markdown atau dokumentasi | Konten bisa dirender di server |
+| Menampilkan daftar data awal | Data bisa disiapkan sebelum halaman tampil |
 
-## Gunakan Client Component Jika
+Contoh yang cocok Server Component:
+
+- Halaman artikel
+- Halaman detail produk
+- Layout dokumentasi
+- Daftar produk awal
+- Komponen metadata konten
+- Komponen yang membaca database
+
+<Callout type="idea" title="Prinsip server-first">
+Jika komponen hanya menampilkan data, teks, gambar, atau struktur UI, gunakan Server Component terlebih dahulu.
+</Callout>
+
+## 🖱️ Gunakan Client Component Jika
 
 | Kebutuhan | Alasan |
 | --- | --- |
@@ -25,8 +56,21 @@ Mulai dari Server Component sebagai default. Ubah menjadi Client Component hanya
 | `window` atau `localStorage` | API hanya tersedia di browser |
 | Controlled form input | Nilai input dikontrol oleh state client |
 | Hook dari `next/navigation` | Hook seperti `useRouter` berjalan di client |
+| Modal interaktif | Membutuhkan state open/close |
+| Tabs interaktif | Membutuhkan state tab aktif |
 
-## Checklist Cepat
+Contoh yang cocok Client Component:
+
+- Counter
+- Theme toggle
+- Modal
+- Dropdown
+- Search input controlled
+- Quantity selector
+- Add to cart button
+- Active navigation link
+
+## 📋 Checklist Cepat
 
 Tanyakan ini sebelum menambahkan `"use client"`:
 
@@ -34,10 +78,34 @@ Tanyakan ini sebelum menambahkan `"use client"`:
 2. Apakah komponen ini punya event handler?
 3. Apakah komponen ini memakai browser API?
 4. Apakah komponen ini memakai hook yang hanya berjalan di client?
+5. Apakah komponen ini mengontrol input secara real-time?
 
 Jika semua jawabannya tidak, kemungkinan besar komponen tersebut tetap bisa menjadi Server Component.
 
-## Contoh Keputusan
+## 🧩 Diagram Keputusan
+
+```text
+Mulai dari Server Component
+        |
+        v
+Butuh state/event/effect/browser API?
+        |
+   +----+----+
+   |         |
+  Tidak      Ya
+   |         |
+   v         v
+Tetap     Pisahkan bagian itu
+Server    menjadi Client Component
+```
+
+<Cards>
+  <Card title="Default" description="Server Component adalah titik awal di App Router." />
+  <Card title="Interaksi" description="Client Component dipakai jika butuh state atau event browser." />
+  <Card title="Boundary" description="Letakkan use client sedekat mungkin dengan interaksi." />
+</Cards>
+
+## 🧪 Contoh Keputusan: Halaman Produk
 
 Halaman produk:
 
@@ -51,12 +119,105 @@ AddToCartButton: Client Component
 
 Alasannya, deskripsi dan gambar hanya ditampilkan. Quantity selector dan tombol add to cart membutuhkan state atau event handler.
 
-## Kesalahan Umum
+Contoh struktur:
+
+```text
+app/products/[id]/page.tsx
+app/products/[id]/quantity-selector.tsx
+app/products/[id]/add-to-cart-button.tsx
+```
+
+Page mengambil data produk di server, lalu komponen client menangani interaksi.
+
+## 🧪 Contoh Keputusan: Dashboard
+
+Dashboard biasanya memiliki campuran server dan client.
+
+```text
+DashboardLayout: Server Component
+Sidebar: Server Component
+ActiveNavLink: Client Component
+StatsCards: Server Component
+DateRangePicker: Client Component
+ReportsTable: Server Component
+```
+
+Alasannya:
+
+- Layout dan sidebar bisa statis
+- Active link membaca pathname di browser
+- Stats dan table bisa diambil dari server
+- Date range picker membutuhkan state/input
+
+## 🧪 Contoh Keputusan: Blog
+
+Blog sering lebih banyak memakai Server Component.
+
+```text
+BlogIndexPage: Server Component
+BlogDetailPage: Server Component
+ArticleContent: Server Component
+ShareButton: Client Component
+CommentForm: Client Component
+```
+
+Artikel dan konten dapat dirender di server. Share button dan comment form membutuhkan interaksi browser.
+
+## 🚧 Kesalahan Umum
+
+### ⚠️ Memberi `"use client"` pada Page Terlalu Cepat
 
 Kesalahan yang sering terjadi adalah memberi `"use client"` pada file terlalu tinggi, misalnya seluruh page atau layout, padahal hanya satu komponen kecil yang interaktif.
 
 Akibatnya, lebih banyak kode masuk ke client bundle dan sebagian manfaat Server Component hilang.
 
-## Ringkasan
+### ⚠️ Menganggap Client Component Lebih Mudah
 
-Default ke Server Component. Client Component adalah alat untuk interaksi, bukan pilihan utama untuk semua UI.
+Client Component memang mirip React biasa, tetapi bukan berarti semua UI harus client. Gunakan client saat dibutuhkan.
+
+### ⚠️ Mengabaikan Serializable Props
+
+Saat Server Component mengirim data ke Client Component, pastikan datanya sederhana dan serializable.
+
+### ⚠️ Menaruh Data Fetching Client Padahal Bisa Server
+
+Jika data bisa diambil di server untuk render awal, pertimbangkan Server Component agar halaman lebih siap saat dikirim ke browser.
+
+## 📋 Checklist Praktis per Komponen
+
+Gunakan checklist berikut saat membuat komponen baru:
+
+| Pertanyaan | Jika Ya |
+| --- | --- |
+| Perlu `useState`? | Client Component |
+| Perlu `onClick`? | Client Component |
+| Perlu `useEffect`? | Client Component |
+| Perlu `window`? | Client Component |
+| Hanya tampilkan data? | Server Component |
+| Ambil data dari database? | Server Component |
+| Baca secret? | Server Component |
+| Perlu active link? | Client Component kecil |
+
+## 📝 Latihan
+
+Tentukan jenis komponen untuk daftar berikut:
+
+1. `ArticleContent` yang menampilkan isi artikel.
+2. `LikeButton` yang berubah saat diklik.
+3. `UserProfilePage` yang membaca data user dari database.
+4. `ThemeToggle` yang menyimpan tema ke localStorage.
+5. `DashboardSidebar` yang hanya berisi link statis.
+6. `NavLink` yang membaca pathname aktif.
+7. `ProductPrice` yang hanya menampilkan harga.
+8. `QuantityInput` yang memakai state.
+
+Pertanyaan tambahan:
+
+- Mana yang sebaiknya tetap Server Component?
+- Mana yang harus menjadi Client Component?
+- Apakah seluruh page perlu diberi `"use client"`?
+- Apa risiko boundary client terlalu tinggi?
+
+## ✅ Ringkasan
+
+Default ke Server Component. Client Component adalah alat untuk interaksi, bukan pilihan utama untuk semua UI. Jika komponen membutuhkan state, event, effect, browser API, atau hook client, gunakan Client Component. Jika tidak, pertahankan sebagai Server Component agar aplikasi lebih ringan dan struktur rendering lebih sehat.

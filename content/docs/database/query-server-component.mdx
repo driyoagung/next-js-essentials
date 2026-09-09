@@ -5,7 +5,7 @@ description: Membaca data database langsung dari Server Component melalui DAL.
 
 Server Component dapat membaca database karena berjalan di server. Namun halaman sebaiknya tidak langsung berisi detail query. Panggil function dari Data Access Layer.
 
-## List Page
+## 📋 List Page
 
 ```tsx filename="app/employees/page.tsx"
 import Link from "next/link";
@@ -36,7 +36,7 @@ export default async function EmployeesPage() {
 }
 ```
 
-## Detail Page
+## 🔎 Detail Page
 
 ```tsx filename="app/employees/[id]/page.tsx"
 import { notFound } from "next/navigation";
@@ -67,7 +67,7 @@ export default async function EmployeeDetailPage({
 
 Di Next.js 16, `params` perlu di-`await` karena berupa Promise.
 
-## Empty State
+## 🫙 Empty State
 
 Tetap tangani list kosong.
 
@@ -82,7 +82,7 @@ if (employees.length === 0) {
 }
 ```
 
-## Parallel Query
+## ⚡ Parallel Query
 
 Jika ada beberapa query yang tidak saling bergantung, jalankan paralel.
 
@@ -107,6 +107,6 @@ export default async function DashboardPage() {
 
 Ini menghindari waterfall yang tidak perlu.
 
-## Ringkasan
+## ✅ Ringkasan
 
 Baca database dari Server Component melalui DAL. Tangani empty state dan `notFound()`, lalu jalankan query paralel jika data tidak saling bergantung.

@@ -1,0 +1,26 @@
+<svg width="960" height="520" viewBox="0 0 960 520" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+  <title id="title">File-based Routing</title>
+  <desc id="desc">Diagram menunjukkan hubungan folder app dengan URL yang terbentuk di Next.js.</desc>
+  <rect width="960" height="520" rx="28" fill="#0f172a"/>
+  <text x="480" y="58" fill="#f8fafc" font-family="Arial, sans-serif" font-size="34" font-weight="700" text-anchor="middle">File-based Routing</text>
+  <rect x="75" y="110" width="360" height="300" rx="22" fill="#1e293b" stroke="#38bdf8" stroke-width="3"/>
+  <text x="115" y="155" fill="#7dd3fc" font-family="Arial, sans-serif" font-size="26" font-weight="700">Struktur Folder</text>
+  <g font-family="monospace" font-size="22" fill="#e2e8f0">
+    <text x="115" y="205">app/</text>
+    <text x="145" y="245">page.tsx</text>
+    <text x="145" y="285">about/</text>
+    <text x="175" y="325">page.tsx</text>
+    <text x="145" y="365">products/</text>
+    <text x="175" y="405">page.tsx</text>
+  </g>
+  <path d="M455 260H505" stroke="#facc15" stroke-width="5" stroke-linecap="round"/>
+  <path d="M489 244L505 260L489 276" stroke="#facc15" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+  <rect x="525" y="110" width="360" height="300" rx="22" fill="#1e293b" stroke="#22c55e" stroke-width="3"/>
+  <text x="565" y="155" fill="#86efac" font-family="Arial, sans-serif" font-size="26" font-weight="700">URL yang Terbentuk</text>
+  <g font-family="monospace" font-size="24" fill="#e2e8f0">
+    <text x="580" y="245">/</text>
+    <text x="580" y="325">/about</text>
+    <text x="580" y="405">/products</text>
+  </g>
+  <text x="480" y="470" fill="#cbd5e1" font-family="Arial, sans-serif" font-size="22" text-anchor="middle">Folder menjadi segment URL, page.tsx membuat route bisa dibuka.</text>
+</svg>

@@ -3,14 +3,39 @@ title: Struktur Project Next.js
 description: Membaca folder dan file penting pada project Next.js App Router.
 ---
 
-Project Next.js punya beberapa folder dan file penting di root project. Tidak semuanya harus kamu ubah setiap hari, tetapi kamu perlu tahu perannya.
+<Callout type="info" title="Kunci membaca project">
+Di Next.js, lokasi file punya arti. Folder `app`, file `page.tsx`, dan file `layout.tsx` bukan sekadar nama, tetapi bagian dari sistem routing App Router.
+</Callout>
 
-## Struktur Umum
+Project Next.js punya beberapa folder dan file penting di root project. Tidak semuanya harus kamu ubah setiap hari, tetapi kamu perlu tahu perannya agar tidak bingung saat membaca atau mengembangkan aplikasi.
+
+Di Next.js, struktur folder bukan hanya soal kerapian. Beberapa file dan folder memiliki arti khusus. Misalnya folder `app` digunakan oleh App Router, file `page.tsx` membuat halaman, dan file `layout.tsx` membungkus halaman.
+
+## 🧭 Kenapa Struktur Project Penting?
+
+Saat belajar React biasa, kamu bisa menyusun folder dengan sangat bebas. Kamu bisa membuat folder `pages`, `views`, `screens`, atau `components` sesuai preferensi.
+
+Di Next.js, kamu tetap punya kebebasan, tetapi ada beberapa convention yang harus diikuti. Convention ini membantu Next.js memahami mana yang menjadi route, mana yang menjadi layout, mana yang menjadi API, dan mana yang hanya file pendukung.
+
+Jika kamu memahami struktur project, kamu akan lebih mudah:
+
+- Membuat halaman baru
+- Membaca route yang tersedia
+- Menentukan lokasi komponen
+- Memisahkan file route dan file pendukung
+- Menghindari error karena salah penempatan file
+- Memahami project orang lain
+
+## 🗂️ Struktur Umum
+
+![Diagram struktur project Next.js](/diagrams/project-structure.svg)
+
+Contoh struktur project Next.js sederhana:
 
 ```text
 .
 +-- app/
-+-- content/
++-- components/
 +-- lib/
 +-- public/
 +-- next.config.ts
@@ -19,9 +44,33 @@ Project Next.js punya beberapa folder dan file penting di root project. Tidak se
 +-- eslint.config.mjs
 ```
 
-## Folder `app`
+Pada project dokumentasi ini, strukturnya sedikit berbeda karena memakai Fumadocs dan MDX:
 
-Folder `app` adalah pusat App Router. Folder di dalamnya dapat menjadi URL, tetapi route baru benar-benar bisa diakses jika ada file `page.tsx` atau `route.ts`.
+```text
+.
++-- app/
++-- content/
++-- lib/
++-- public/
++-- .source/
++-- next.config.ts
++-- source.config.ts
++-- package.json
++-- tsconfig.json
++-- eslint.config.mjs
+```
+
+Setiap folder memiliki peran berbeda. Ada folder yang memengaruhi routing, ada folder yang berisi konten, dan ada folder yang hanya berisi konfigurasi.
+
+<Cards>
+  <Card title="Route" description="Folder dan file khusus di app yang membentuk URL aplikasi." />
+  <Card title="Konten" description="Materi MDX yang ditampilkan sebagai halaman dokumentasi." />
+  <Card title="Pendukung" description="Utility, konfigurasi, asset, dan file generated yang membantu aplikasi berjalan." />
+</Cards>
+
+## 📁 Folder `app`
+
+Folder `app` adalah pusat App Router. Di dalam folder ini, struktur folder dapat membentuk URL.
 
 Contoh:
 
@@ -29,6 +78,8 @@ Contoh:
 app/
 +-- page.tsx
 +-- about/
+|   +-- page.tsx
++-- products/
     +-- page.tsx
 ```
 
@@ -37,11 +88,31 @@ Route yang terbentuk:
 ```text
 /
 /about
+/products
 ```
 
-## File `page.tsx`
+Namun, penting dipahami bahwa folder saja tidak cukup untuk membuat halaman. Sebuah route baru bisa diakses jika di dalam segment route tersebut ada file khusus seperti `page.tsx`.
 
-File `page.tsx` mendefinisikan UI unik untuk sebuah route. Di App Router, page adalah leaf dari route subtree.
+Contoh berikut belum membuat route `/about`:
+
+```text
+app/
++-- about/
+```
+
+Agar `/about` bisa dibuka, perlu file:
+
+```text
+app/
++-- about/
+    +-- page.tsx
+```
+
+## 📄 File `page.tsx`
+
+File `page.tsx` mendefinisikan UI unik untuk sebuah route. Di App Router, `page.tsx` adalah titik akhir dari route yang bisa dibuka pengguna.
+
+Contoh:
 
 ```tsx filename="app/about/page.tsx"
 export default function AboutPage() {
@@ -49,11 +120,33 @@ export default function AboutPage() {
 }
 ```
 
-File di atas membuat halaman `/about`.
+File di atas membuat halaman:
 
-## File `layout.tsx`
+```text
+/about
+```
 
-File `layout.tsx` membungkus halaman dan route di bawahnya. Root layout wajib memiliki tag `<html>` dan `<body>`.
+Jika file berada di root `app`, maka route-nya adalah `/`:
+
+```tsx filename="app/page.tsx"
+export default function HomePage() {
+  return <h1>Beranda</h1>;
+}
+```
+
+Route yang terbentuk:
+
+```text
+/
+```
+
+## 🧱 File `layout.tsx`
+
+File `layout.tsx` digunakan untuk membungkus halaman dan route di bawahnya. Layout cocok untuk tampilan yang berulang seperti navbar, sidebar, footer, atau wrapper utama.
+
+Root layout wajib memiliki tag `<html>` dan `<body>`.
+
+Contoh root layout:
 
 ```tsx filename="app/layout.tsx"
 export default function RootLayout({
@@ -69,17 +162,418 @@ export default function RootLayout({
 }
 ```
 
-## Folder Pendukung
+Parameter `children` adalah isi halaman yang sedang dibuka. Jika user membuka `/about`, maka komponen dari `app/about/page.tsx` akan masuk ke bagian `{children}`.
 
-Folder seperti `lib`, `components`, atau `content` bukan convention khusus Next.js untuk route. Folder tersebut biasanya dipakai untuk menyimpan helper, komponen, atau konten.
+Contoh layout dengan navbar:
+
+```tsx filename="app/layout.tsx"
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return (
+    <html lang="id">
+      <body>
+        <nav>Navbar</nav>
+        <main>{children}</main>
+      </body>
+    </html>
+  );
+}
+```
+
+Dengan pola ini, navbar akan tampil di semua halaman yang dibungkus oleh layout tersebut.
+
+## 🪆 Nested Layout
+
+Layout bisa dibuat bertingkat. Ini berguna jika bagian tertentu dari aplikasi punya struktur tampilan berbeda.
+
+Contoh:
+
+```text
+app/
++-- layout.tsx
++-- page.tsx
++-- dashboard/
+    +-- layout.tsx
+    +-- page.tsx
+    +-- settings/
+        +-- page.tsx
+```
+
+Pada struktur tersebut:
+
+- `app/layout.tsx` membungkus seluruh aplikasi
+- `app/dashboard/layout.tsx` membungkus `/dashboard` dan `/dashboard/settings`
+- `app/dashboard/page.tsx` menjadi halaman `/dashboard`
+- `app/dashboard/settings/page.tsx` menjadi halaman `/dashboard/settings`
+
+Ini membuat layout dashboard seperti sidebar dapat dipakai hanya di area dashboard, bukan di seluruh website.
+
+## 🧩 Folder Route dan Folder Pendukung
+
+Tidak semua folder dalam project Next.js adalah route.
+
+Folder yang berada di dalam `app` dapat berperan dalam routing. Folder di luar `app` biasanya hanya folder pendukung.
+
+Contoh folder pendukung:
+
+```text
+components/
+lib/
+utils/
+services/
+content/
+```
+
+Folder tersebut tidak otomatis menjadi URL. Misalnya `lib/source.ts` tidak membuat route `/lib/source`.
 
 Di project ini:
 
-- `app` berisi route aplikasi dan layout docs.
-- `content/docs` berisi materi dokumentasi MDX.
-- `lib/source.ts` menghubungkan Fumadocs dengan konten docs.
-- `.source` adalah hasil generate Fumadocs dan tidak perlu diedit manual.
+- `app` berisi route aplikasi dan layout docs
+- `content/docs` berisi materi dokumentasi MDX
+- `lib/source.ts` menghubungkan Fumadocs dengan konten docs
+- `.source` adalah hasil generate Fumadocs dan tidak perlu diedit manual
+- `public` berisi file static seperti gambar dan ikon
 
-## Catatan Praktis
+## 🖼️ Folder `public`
 
-Saat membuat halaman baru, mulai dari pertanyaan sederhana: URL apa yang ingin dibuat? Dari URL itu, buat struktur folder di `app`, lalu tambahkan `page.tsx`.
+Folder `public` dipakai untuk menyimpan asset static yang bisa diakses langsung dari root URL.
+
+Contoh:
+
+```text
+public/logo.png
+```
+
+File tersebut bisa diakses sebagai:
+
+```text
+/logo.png
+```
+
+Folder ini cocok untuk menyimpan gambar, icon, file PDF publik, atau asset lain yang memang ingin disajikan langsung.
+
+## 🧰 Folder `lib`
+
+Folder `lib` biasanya dipakai untuk kode pendukung seperti helper, konfigurasi library, data access, atau utility.
+
+Contoh:
+
+```text
+lib/
++-- source.ts
++-- db.ts
++-- auth.ts
++-- utils.ts
+```
+
+Di project ini, `lib/source.ts` digunakan untuk membuat sumber data dokumentasi:
+
+```ts filename="lib/source.ts"
+import { docs, meta } from '@/.source/server';
+import { toFumadocsSource } from 'fumadocs-mdx/runtime/server';
+import { loader } from 'fumadocs-core/source';
+
+export const source = loader({
+  baseUrl: '/docs',
+  source: toFumadocsSource(docs, meta),
+});
+```
+
+File ini bukan halaman. Perannya adalah menghubungkan konten MDX dengan Fumadocs.
+
+## 📝 Folder `content`
+
+Pada project ini, folder `content` berisi materi dokumentasi.
+
+Strukturnya seperti ini:
+
+```text
+content/
++-- docs/
+    +-- index.mdx
+    +-- getting-started/
+    +-- routing/
+    +-- layout/
+```
+
+File `.mdx` adalah file Markdown yang bisa berisi komponen JSX. Fumadocs membaca file di `content/docs`, lalu menampilkannya melalui route `/docs`.
+
+Jadi, halaman dokumentasi tidak dibuat satu per satu di dalam `app/docs`. Kontennya ditulis di `content/docs`, sedangkan route renderer-nya berada di `app/docs/[[...slug]]/page.tsx`.
+
+## 📦 File `package.json`
+
+File `package.json` berisi informasi project, dependency, dan perintah npm.
+
+Contoh bagian `scripts` di `package.json`:
+
+```json filename="package.json"
+{
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint"
+  }
+}
+```
+
+Artinya:
+
+- `npm run dev` menjalankan development server
+- `npm run build` membuat build production
+- `npm run start` menjalankan hasil build production
+- `npm run lint` mengecek kualitas kode dengan ESLint
+
+## ⚙️ File `next.config.ts`
+
+File `next.config.ts` digunakan untuk konfigurasi Next.js.
+
+Pada project ini, konfigurasi Next.js dibungkus oleh Fumadocs MDX:
+
+```ts filename="next.config.ts"
+import { createMDX } from 'fumadocs-mdx/next';
+import type { NextConfig } from 'next';
+
+const withMDX = createMDX();
+
+const nextConfig: NextConfig = {};
+
+export default withMDX(nextConfig);
+```
+
+Ini membuat Next.js dapat memproses file MDX yang dipakai untuk dokumentasi.
+
+## 🧠 File `tsconfig.json`
+
+File `tsconfig.json` berisi konfigurasi TypeScript. File ini mengatur bagaimana TypeScript membaca project.
+
+Contoh konfigurasi penting pada project ini:
+
+```json filename="tsconfig.json"
+{
+  "compilerOptions": {
+    "strict": true,
+    "paths": {
+      "@/*": ["./*"]
+    }
+  }
+}
+```
+
+Konfigurasi `paths` memungkinkan import seperti ini:
+
+```ts
+import { source } from '@/lib/source';
+```
+
+Alih-alih menulis relative import panjang seperti:
+
+```ts
+import { source } from '../../lib/source';
+```
+
+## 🧹 File `eslint.config.mjs`
+
+File ini mengatur ESLint. ESLint membantu menemukan masalah pada kode, menjaga konsistensi, dan mengurangi bug sederhana.
+
+Pada project ini, ESLint memakai konfigurasi Next.js:
+
+```js filename="eslint.config.mjs"
+import nextVitals from 'eslint-config-next/core-web-vitals';
+import nextTs from 'eslint-config-next/typescript';
+```
+
+Ini berarti aturan lint disesuaikan dengan praktik umum Next.js dan TypeScript.
+
+## 🏛️ Struktur Project Ini Secara Khusus
+
+Project ini adalah website dokumentasi, bukan aplikasi CRUD biasa. Karena itu, struktur pentingnya adalah:
+
+```text
+app/
++-- layout.tsx
++-- page.tsx
++-- docs/
+    +-- layout.tsx
+    +-- [[...slug]]/
+        +-- page.tsx
+
+content/
++-- docs/
+    +-- index.mdx
+    +-- getting-started/
+    +-- routing/
+    +-- layout/
+
+lib/
++-- source.ts
+```
+
+Alurnya seperti ini:
+
+```text
+User membuka /docs/getting-started
+        ↓
+Next.js menjalankan route app/docs/[[...slug]]/page.tsx
+        ↓
+Route mengambil konten dari source
+        ↓
+source membaca hasil MDX dari Fumadocs
+        ↓
+Konten MDX ditampilkan sebagai halaman dokumentasi
+```
+
+## 🧪 Studi Kasus: Membuat Halaman About
+
+Misalnya kamu ingin membuat halaman biasa dengan URL `/about`.
+
+Langkahnya:
+
+1. Buat folder `about` di dalam `app`
+2. Buat file `page.tsx` di dalamnya
+3. Export default component dari file tersebut
+
+Struktur:
+
+```text
+app/
++-- about/
+    +-- page.tsx
+```
+
+Isi file:
+
+```tsx filename="app/about/page.tsx"
+export default function AboutPage() {
+  return (
+    <main>
+      <h1>Tentang Kami</h1>
+      <p>Ini adalah halaman tentang kami.</p>
+    </main>
+  );
+}
+```
+
+Hasilnya, halaman bisa dibuka di:
+
+```text
+/about
+```
+
+## 🧪 Studi Kasus: Membuat Area Dashboard
+
+Misalnya kamu ingin membuat dashboard dengan halaman:
+
+```text
+/dashboard
+/dashboard/users
+/dashboard/settings
+```
+
+Strukturnya:
+
+```text
+app/
++-- dashboard/
+    +-- layout.tsx
+    +-- page.tsx
+    +-- users/
+    |   +-- page.tsx
+    +-- settings/
+        +-- page.tsx
+```
+
+Jika dashboard punya sidebar yang sama, simpan sidebar di `app/dashboard/layout.tsx`.
+
+Contoh:
+
+```tsx filename="app/dashboard/layout.tsx"
+export default function DashboardLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return (
+    <section>
+      <aside>Sidebar Dashboard</aside>
+      <main>{children}</main>
+    </section>
+  );
+}
+```
+
+Dengan ini, sidebar muncul di semua halaman dalam `/dashboard`.
+
+## 🚧 Kesalahan Umum Pemula
+
+### ⚠️ Membuat Folder Tanpa `page.tsx`
+
+Folder tidak otomatis menjadi halaman. Untuk membuat route yang bisa dibuka, tambahkan `page.tsx`.
+
+### ⚠️ Menaruh Komponen Umum sebagai Route
+
+Jika komponen tidak dimaksudkan menjadi halaman, sebaiknya simpan di `components` atau folder pendukung lain, bukan sembarang di dalam struktur route.
+
+### ⚠️ Mengubah Folder Generated
+
+Pada project ini, `.source` adalah hasil generate Fumadocs. File generated sebaiknya tidak diedit manual karena bisa berubah lagi saat proses build atau dev.
+
+### ⚠️ Bingung Antara Konten dan Route
+
+Di project dokumentasi ini, konten berada di `content/docs`, tetapi renderer halaman berada di `app/docs/[[...slug]]/page.tsx`. Jadi tidak semua halaman dokumentasi punya file route manual satu per satu.
+
+## 📋 Checklist Membaca Project Next.js
+
+Saat membuka project Next.js baru, gunakan checklist ini:
+
+1. Buka `package.json` untuk melihat dependency dan script.
+2. Buka folder `app` untuk melihat route utama.
+3. Cari `layout.tsx` untuk memahami wrapper halaman.
+4. Cari `page.tsx` untuk melihat halaman yang tersedia.
+5. Buka `next.config.ts` untuk melihat konfigurasi khusus.
+6. Buka `tsconfig.json` untuk melihat alias import.
+7. Identifikasi folder pendukung seperti `components`, `lib`, atau `content`.
+
+## 📝 Latihan
+
+Coba buat rancangan struktur folder untuk kebutuhan berikut:
+
+```text
+/
+/about
+/products
+/products/sepatu
+/contact
+```
+
+Jawaban yang mungkin:
+
+```text
+app/
++-- page.tsx
++-- about/
+|   +-- page.tsx
++-- products/
+|   +-- page.tsx
+|   +-- sepatu/
+|       +-- page.tsx
++-- contact/
+    +-- page.tsx
+```
+
+Latihan lanjutan:
+
+1. Di mana kamu akan menaruh navbar yang muncul di semua halaman?
+2. Di mana kamu akan menaruh helper function untuk format tanggal?
+3. Di mana kamu akan menaruh gambar logo?
+4. File apa yang harus dibuat agar route `/blog` bisa dibuka?
+5. Apa perbedaan `app/page.tsx` dan `app/about/page.tsx`?
+
+## ✅ Ringkasan
+
+Struktur project Next.js punya convention penting. Folder `app` berhubungan dengan routing. File `page.tsx` membuat halaman. File `layout.tsx` membungkus halaman. Folder seperti `lib`, `components`, `content`, dan `public` adalah folder pendukung sesuai kebutuhan project.
+
+Dengan memahami struktur ini, kamu akan lebih mudah mengikuti bab berikutnya tentang routing, layout, rendering, dan pengembangan fitur aplikasi.

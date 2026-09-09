@@ -1,0 +1,16 @@
+<svg width="960" height="520" viewBox="0 0 960 520" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+  <title id="title">Nested Layout</title>
+  <desc id="desc">Diagram menunjukkan page dashboard settings dibungkus oleh root layout dan dashboard layout.</desc>
+  <rect width="960" height="520" rx="28" fill="#111827"/>
+  <text x="480" y="58" fill="#f9fafb" font-family="Arial, sans-serif" font-size="34" font-weight="700" text-anchor="middle">Nested Layout</text>
+  <rect x="100" y="105" width="760" height="340" rx="28" fill="#1f2937" stroke="#60a5fa" stroke-width="4"/>
+  <text x="480" y="150" fill="#93c5fd" font-family="Arial, sans-serif" font-size="28" font-weight="700" text-anchor="middle">Root Layout</text>
+  <rect x="175" y="190" width="610" height="210" rx="24" fill="#111827" stroke="#22c55e" stroke-width="4"/>
+  <text x="480" y="235" fill="#86efac" font-family="Arial, sans-serif" font-size="28" font-weight="700" text-anchor="middle">Dashboard Layout</text>
+  <rect x="240" y="275" width="170" height="80" rx="16" fill="#374151"/>
+  <text x="325" y="323" fill="#e5e7eb" font-family="Arial, sans-serif" font-size="22" text-anchor="middle">Sidebar</text>
+  <rect x="450" y="275" width="250" height="80" rx="16" fill="#0f172a" stroke="#f59e0b" stroke-width="3"/>
+  <text x="575" y="309" fill="#fbbf24" font-family="Arial, sans-serif" font-size="22" font-weight="700" text-anchor="middle">Settings Page</text>
+  <text x="575" y="337" fill="#e5e7eb" font-family="Arial, sans-serif" font-size="18" text-anchor="middle">children</text>
+  <text x="480" y="475" fill="#cbd5e1" font-family="Arial, sans-serif" font-size="22" text-anchor="middle">/dashboard/settings dibungkus root layout dan dashboard layout.</text>
+</svg>

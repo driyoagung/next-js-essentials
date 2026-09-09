@@ -3,11 +3,15 @@ title: Deployment
 description: Menjalankan build dan memilih strategi deployment Next.js.
 ---
 
+<Callout type="info" title="Definisi singkat">
+Deployment adalah proses merilis aplikasi ke environment yang bisa diakses user, lengkap dengan environment variable, domain, HTTPS, dan monitoring.
+</Callout>
+
 Deployment adalah proses merilis aplikasi agar bisa diakses user.
 
 Next.js dapat dideploy sebagai Node.js server, Docker container, static export, atau melalui platform yang menyediakan adapter.
 
-## Script Dasar
+## 📜 Script Dasar
 
 Pastikan `package.json` punya script:
 
@@ -21,7 +25,7 @@ Pastikan `package.json` punya script:
 }
 ```
 
-## Local Production Check
+## 🧪 Local Production Check
 
 Sebelum deploy, jalankan:
 
@@ -32,7 +36,7 @@ npm run start
 
 `npm run build` membuat production build. `npm run start` menjalankan server production lokal.
 
-## Node.js Server
+## 🖥️ Node.js Server
 
 Node.js server mendukung semua fitur Next.js.
 
@@ -44,7 +48,7 @@ Cocok untuk:
 - Dynamic rendering.
 - Image optimization.
 
-## Docker
+## 🐳 Docker
 
 Docker cocok jika deployment environment memakai container.
 
@@ -60,7 +64,7 @@ const nextConfig: NextConfig = {
 export default nextConfig;
 ```
 
-## Static Export
+## 🧊 Static Export
 
 Static export cocok untuk halaman static, tetapi fitur yang membutuhkan server menjadi terbatas.
 
@@ -71,7 +75,7 @@ Hindari static export jika aplikasi membutuhkan:
 - Authentication berbasis server.
 - Dynamic rendering.
 
-## Deployment Checklist
+## 📋 Deployment Checklist
 
 Sebelum merge atau deploy:
 
@@ -82,6 +86,6 @@ Sebelum merge atau deploy:
 - Pastikan error monitoring aktif.
 - Pastikan domain dan HTTPS aktif.
 
-## Ringkasan
+## ✅ Ringkasan
 
 Pilih deployment sesuai fitur yang dipakai. Untuk aplikasi App Router dengan auth, database, dan Server Actions, Node.js server atau platform full-stack Next.js biasanya paling aman.

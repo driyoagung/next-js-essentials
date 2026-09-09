@@ -3,17 +3,149 @@ title: "Bab 2: Routing"
 description: Mempelajari routing berbasis folder pada Next.js App Router.
 ---
 
+<Callout type="info" title="Fokus utama bab ini">
+Routing adalah cara aplikasi menentukan halaman apa yang harus ditampilkan ketika user membuka sebuah URL. Di Next.js App Router, URL dibentuk dari struktur folder di dalam `app`.
+</Callout>
+
 Bab ini membahas bagaimana URL dibentuk dari struktur folder di dalam direktori `app`.
 
 Di App Router, route dibuat dari folder. File `page.tsx` membuat sebuah route bisa diakses oleh user, sedangkan file lain seperti `layout.tsx`, `loading.tsx`, dan `error.tsx` menambah perilaku di sekitar route tersebut.
 
-## Alur Bab Ini
+## 🧭 Kenapa Routing Penting?
 
-1. Basic routing
-2. Nested route
-3. Dynamic route dan catch-all route
-4. Navigasi dengan `Link`, `useRouter`, `useParams`, dan `useSearchParams`
+Hampir semua aplikasi web membutuhkan routing. Routing membuat user bisa membuka halaman berbeda melalui URL yang berbeda.
 
-## Hasil yang Diharapkan
+Contoh:
 
-Setelah bab ini selesai, kamu dapat membuat halaman statis, halaman dinamis, nested route, dan navigasi antar halaman dengan pola App Router.
+```text
+/
+/about
+/products
+/products/1
+/dashboard/settings
+```
+
+Tanpa routing, aplikasi hanya punya satu halaman. Dengan routing, aplikasi dapat dibagi menjadi beberapa halaman yang lebih jelas dan mudah dipahami.
+
+Dalam Next.js, routing tidak dibuat dengan konfigurasi route manual. Next.js membaca struktur folder di dalam `app`, lalu mengubahnya menjadi URL.
+
+## 🧱 Mental Model Routing Next.js
+
+![Diagram file-based routing](/diagrams/file-based-routing.svg)
+
+Pola berpikir routing di Next.js cukup sederhana:
+
+```text
+Folder di app -> segmen URL
+File page.tsx -> halaman yang bisa dibuka
+File layout.tsx -> pembungkus halaman
+```
+
+Contoh:
+
+```text
+app/about/page.tsx
+```
+
+Menjadi:
+
+```text
+/about
+```
+
+Jika route semakin dalam, foldernya juga semakin dalam:
+
+```text
+app/dashboard/settings/page.tsx
+```
+
+Menjadi:
+
+```text
+/dashboard/settings
+```
+
+<Callout type="idea" title="Cara mudah mengingat">
+Mulailah dari URL yang ingin dibuat, lalu ubah setiap bagian URL menjadi folder. Setelah itu, tambahkan `page.tsx` pada folder terakhir.
+</Callout>
+
+## 🗺️ Alur Bab Ini
+
+<Cards>
+  <Card title="Basic Routing" description="Membuat route dasar seperti /, /about, dan /contact." />
+  <Card title="Nested Route" description="Membuat route bertingkat seperti /dashboard/settings." />
+  <Card title="Dynamic Route" description="Membuat route berdasarkan data seperti /products/1." />
+  <Card title="Navigasi" description="Berpindah halaman dengan Link, useRouter, params, dan query string." />
+</Cards>
+
+## 🎯 Hasil yang Diharapkan
+
+Setelah bab ini selesai, kamu dapat:
+
+- Membuat halaman statis dengan `page.tsx`
+- Membaca hubungan folder dan URL
+- Membuat nested route
+- Membuat dynamic route dengan `[id]`
+- Membuat catch-all route dengan `[...slug]`
+- Membuat optional catch-all route dengan `[[...slug]]`
+- Melakukan navigasi antar halaman dengan `Link`
+- Memahami kapan memakai `useRouter`, `useParams`, dan `useSearchParams`
+
+## 🧪 Studi Kasus Bab 2
+
+Bayangkan kamu diminta membuat aplikasi katalog produk sederhana dengan halaman berikut:
+
+```text
+/
+/products
+/products/1
+/products/2
+/products/categories
+/contact
+```
+
+Dari daftar URL tersebut, kamu bisa langsung membayangkan struktur folder:
+
+```text
+app/
++-- page.tsx
++-- products/
+|   +-- page.tsx
+|   +-- [id]/
+|   |   +-- page.tsx
+|   +-- categories/
+|       +-- page.tsx
++-- contact/
+    +-- page.tsx
+```
+
+Struktur ini menunjukkan beberapa konsep sekaligus:
+
+- `/products` adalah route biasa
+- `/products/categories` adalah nested route
+- `/products/1` dan `/products/2` memakai dynamic route
+- `/contact` adalah route statis sederhana
+
+## 📝 Latihan Pemanasan
+
+Sebelum masuk ke subbab berikutnya, coba buat rancangan folder untuk URL berikut:
+
+```text
+/
+/blog
+/blog/belajar-nextjs
+/dashboard
+/dashboard/users
+/dashboard/settings
+```
+
+Pertanyaan latihan:
+
+1. Route mana yang bersifat statis?
+2. Route mana yang cocok memakai dynamic segment?
+3. Folder apa yang harus dibuat untuk `/dashboard/settings`?
+4. File apa yang wajib ada agar sebuah route bisa dibuka?
+
+## ✅ Ringkasan
+
+Routing di Next.js App Router berbasis struktur folder. Folder di dalam `app` membentuk segmen URL, sedangkan `page.tsx` membuat route tersebut menjadi halaman yang dapat diakses. Dengan memahami routing sejak awal, kamu akan lebih mudah memahami layout, data fetching, dynamic page, dan struktur aplikasi yang lebih besar.

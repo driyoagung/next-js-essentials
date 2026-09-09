@@ -3,9 +3,13 @@ title: Revalidation
 description: Memperbarui data cache dengan strategi time-based dan on-demand.
 ---
 
+<Callout type="info" title="Definisi singkat">
+Revalidation adalah proses memperbarui cache agar aplikasi tetap cepat tanpa membiarkan data lama dipakai selamanya.
+</Callout>
+
 Revalidation adalah proses memperbarui data yang sudah disimpan di cache. Dengan revalidation, aplikasi tetap bisa cepat karena memakai cache, tetapi data tidak dibiarkan basi selamanya.
 
-## Time-based Revalidation
+## ⏱️ Time-based Revalidation
 
 Time-based revalidation memperbarui cache setelah durasi tertentu.
 
@@ -23,7 +27,7 @@ async function getProducts() {
 
 Contoh di atas membuat data dapat diperbarui setelah 60 detik.
 
-## Revalidation dengan Cache Life
+## 🧩 Revalidation dengan Cache Life
 
 Jika memakai Cache Components, kamu dapat menentukan umur cache dengan `cacheLife`.
 
@@ -41,7 +45,7 @@ export async function getProducts() {
 
 Profile seperti `"hours"` cocok untuk data yang tidak sering berubah.
 
-## Tag-based Revalidation
+## 🏷️ Tag-based Revalidation
 
 Cache bisa diberi tag, lalu tag tersebut di-invalidate setelah ada perubahan data.
 
@@ -76,7 +80,7 @@ export async function createProduct(formData: FormData) {
 }
 ```
 
-## Path-based Revalidation
+## 🛣️ Path-based Revalidation
 
 Jika ingin memperbarui cache berdasarkan path, gunakan `revalidatePath`.
 
@@ -91,7 +95,7 @@ export async function updateProduct() {
 }
 ```
 
-## Kapan Memakai Masing-masing?
+## 🧭 Kapan Memakai Masing-masing?
 
 | Kebutuhan | Strategi |
 | --- | --- |
@@ -100,6 +104,34 @@ export async function updateProduct() {
 | Invalidate satu halaman tertentu | `revalidatePath` |
 | User harus langsung melihat data baru | `updateTag` atau redirect setelah mutation |
 
-## Ringkasan
+## 🧪 Studi Kasus: Setelah Create Product
+
+Saat user membuat produk baru, halaman `/products` harus menampilkan data terbaru.
+
+Flow yang umum:
+
+```text
+Submit form
+Server Action menyimpan produk
+revalidatePath('/products')
+redirect('/products')
+```
+
+Jika data produk diberi tag `products`, kamu juga bisa memakai tag-based revalidation agar semua data yang terkait produk ikut disegarkan.
+
+<Callout type="idea" title="Pilih berdasarkan dampak mutation">
+Jika mutation hanya memengaruhi satu halaman, `revalidatePath` cukup. Jika mutation memengaruhi banyak tempat yang memakai data sama, pertimbangkan tag-based revalidation.
+</Callout>
+
+## 📝 Latihan
+
+Pilih strategi revalidation untuk kasus berikut:
+
+1. Artikel baru dibuat dan list blog harus update.
+2. Profile user diubah dan halaman profile harus refresh.
+3. Produk berubah dan muncul di homepage, list, dan detail.
+4. Data statistik admin harus refresh setiap 60 detik.
+
+## ✅ Ringkasan
 
 Revalidation menjaga cache tetap berguna tanpa mengorbankan freshness terlalu jauh. Pilih strategi berdasarkan kapan data berubah dan seberapa cepat user harus melihat perubahan itu.

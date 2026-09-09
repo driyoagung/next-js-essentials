@@ -3,29 +3,32 @@ title: "Bab 10: Database"
 description: Menghubungkan aplikasi Next.js dengan database menggunakan ORM.
 ---
 
+<Callout type="info" title="Fokus utama bab ini">
+Bab ini membahas integrasi database di Next.js: ORM, environment variable, schema, migration, Data Access Layer, query dari Server Component, mutation dari Server Action, relasi, security, dan performa.
+</Callout>
+
+![Diagram alur database di Next.js](/diagrams/database-flow.svg)
+
 Bab ini membahas cara menghubungkan aplikasi dengan database agar data tidak hanya hidup di memory atau file sementara.
 
 Pada bab CRUD sebelumnya, data layer masih bersifat sementara. Di bab ini, data layer tersebut mulai diarahkan ke database sungguhan dengan ORM seperti Prisma atau Drizzle.
 
 Fokus utamanya bukan memilih satu ORM saja, tetapi memahami pola integrasi database di Next.js App Router: tempat menyimpan koneksi, cara membaca data dari Server Component, cara melakukan mutation dari Server Action, serta cara menjaga data private tetap berada di server.
 
-## Alur Bab Ini
+## 🗺️ Alur Bab Ini
 
-1. Memahami peran database di aplikasi Next.js
-2. Memilih ORM atau database client
-3. Menyimpan connection string di environment variable
-4. Membuat schema dan migration
-5. Menyusun Data Access Layer
-6. Query database dari Server Component
-7. Menghubungkan CRUD ke database
-8. Membaca relasi data
-9. Menjaga security dan performa query
+<Cards>
+  <Card title="ORM & Schema" description="Memilih ORM, mendesain model, dan membuat migration." />
+  <Card title="Environment" description="Menyimpan DATABASE_URL dan secret dengan aman." />
+  <Card title="DAL" description="Membungkus query agar server-only, aman, dan reusable." />
+  <Card title="Security & Performance" description="DTO, authorization, pagination, index, dan query paralel." />
+</Cards>
 
-## Hasil yang Diharapkan
+## 🎯 Hasil yang Diharapkan
 
 Setelah bab ini selesai, kamu dapat membuat model data, menjalankan query, dan menghubungkan CRUD ke database.
 
-## Mental Model
+## 🧠 Mental Model
 
 ```text
 Database menyimpan data

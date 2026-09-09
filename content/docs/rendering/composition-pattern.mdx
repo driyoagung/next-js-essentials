@@ -3,16 +3,59 @@ title: Komposisi Server dan Client
 description: Menggabungkan Server Component dan Client Component dalam satu halaman.
 ---
 
+<Callout type="info" title="Definisi singkat">
+Komposisi Server dan Client adalah pola menyusun UI dengan Server Component sebagai parent utama, lalu menyisipkan Client Component kecil untuk bagian yang membutuhkan interaksi.
+</Callout>
+
 Server Component dan Client Component bisa dipakai bersama. Pola yang umum adalah mengambil data di Server Component, lalu mengirim data serializable ke Client Component untuk interaksi.
 
-## Server Mengambil Data, Client Mengelola Interaksi
+## 🧭 Kenapa Komposisi Penting?
+
+Dalam aplikasi nyata, halaman jarang sepenuhnya statis atau sepenuhnya interaktif. Biasanya satu halaman memiliki dua jenis kebutuhan:
+
+- Menampilkan data dari server
+- Menyediakan interaksi di browser
+
+Contoh halaman produk:
+
+- Nama produk dari database
+- Deskripsi produk dari database
+- Harga produk dari database
+- Tombol favorite yang bisa diklik
+- Quantity selector yang berubah di browser
+
+Jika seluruh halaman dibuat Client Component, kita kehilangan banyak manfaat Server Component. Jika seluruh halaman dibuat Server Component, interaksi browser tidak bisa berjalan.
+
+Solusinya adalah komposisi.
+
+## 🧠 Mental Model Komposisi
+
+![Diagram komposisi server dan client](/diagrams/server-client-composition.svg)
+
+Pola umum:
+
+```text
+Server Component
++-- Ambil data
++-- Render konten utama
++-- Kirim props sederhana ke Client Component
+    +-- Client Component mengelola state dan event
+```
+
+<Callout type="idea" title="Prinsip komposisi sehat">
+Biarkan server menangani data dan render awal. Biarkan client menangani interaksi kecil yang benar-benar membutuhkan browser.
+</Callout>
+
+## 📦 Server Mengambil Data, Client Mengelola Interaksi
+
+Contoh halaman produk:
 
 ```tsx filename="app/products/page.tsx"
-import { FavoriteButton } from "./favorite-button";
+import { FavoriteButton } from './favorite-button';
 
 const product = {
   id: 1,
-  name: "Keyboard",
+  name: 'Keyboard',
   favorites: 12,
 };
 
@@ -26,10 +69,12 @@ export default function ProductPage() {
 }
 ```
 
-```tsx filename="app/products/favorite-button.tsx"
-"use client";
+Client Component:
 
-import { useState } from "react";
+```tsx filename="app/products/favorite-button.tsx"
+'use client';
+
+import { useState } from 'react';
 
 export function FavoriteButton({
   initialFavorites,
@@ -51,13 +96,33 @@ export function FavoriteButton({
 
 Halaman tetap Server Component, tetapi tombol favorite menjadi Client Component karena membutuhkan state dan event handler.
 
-## Server Component sebagai Children Client Component
+## 🔐 Props dari Server ke Client
+
+Data yang dikirim dari Server Component ke Client Component harus sederhana dan serializable.
+
+Contoh aman:
+
+```tsx
+<FavoriteButton initialFavorites={product.favorites} />
+```
+
+Nilai `initialFavorites` adalah number, sehingga aman dikirim.
+
+Contoh lain:
+
+```tsx
+<ProductCard product={{ id: '1', name: 'Keyboard', price: 250000 }} />
+```
+
+Object sederhana seperti ini juga aman.
+
+## 🧩 Server Component sebagai Children Client Component
 
 Client Component juga bisa menerima hasil render Server Component sebagai `children`.
 
 ```tsx filename="app/page.tsx"
-import { Modal } from "./modal";
-import { CartSummary } from "./cart-summary";
+import { Modal } from './modal';
+import { CartSummary } from './cart-summary';
 
 export default function Page() {
   return (
@@ -68,10 +133,12 @@ export default function Page() {
 }
 ```
 
-```tsx filename="app/modal.tsx"
-"use client";
+Client Component modal:
 
-import { useState, type ReactNode } from "react";
+```tsx filename="app/modal.tsx"
+'use client';
+
+import { useState, type ReactNode } from 'react';
 
 export function Modal({ children }: { children: ReactNode }) {
   const [open, setOpen] = useState(false);
@@ -87,6 +154,8 @@ export function Modal({ children }: { children: ReactNode }) {
 }
 ```
 
+Server Component yang menjadi children:
+
 ```tsx filename="app/cart-summary.tsx"
 export function CartSummary() {
   return <p>Total item: 3</p>;
@@ -95,14 +164,16 @@ export function CartSummary() {
 
 Pada pola ini, `Modal` mengatur interaksi di browser, sedangkan `CartSummary` tetap bisa dirender sebagai Server Component.
 
-## Hindari Import Server-only ke Client
+## 🚫 Hindari Import Server-only ke Client
 
 Jangan impor module yang berisi akses database, filesystem, atau secret ke Client Component.
 
-```tsx filename="app/components/profile.tsx"
-"use client";
+Contoh bermasalah:
 
-import { getUserProfile } from "@/lib/server-data";
+```tsx filename="app/components/profile.tsx"
+'use client';
+
+import { getUserProfile } from '@/lib/server-data';
 
 export function Profile() {
   return <p>{getUserProfile().name}</p>;
@@ -114,8 +185,8 @@ Pola di atas bermasalah karena Client Component menarik module server ke client 
 Lebih aman:
 
 ```tsx filename="app/profile/page.tsx"
-import { Profile } from "./profile";
-import { getUserProfile } from "@/lib/server-data";
+import { Profile } from './profile';
+import { getUserProfile } from '@/lib/server-data';
 
 export default async function ProfilePage() {
   const profile = await getUserProfile();
@@ -125,13 +196,122 @@ export default async function ProfilePage() {
 ```
 
 ```tsx filename="app/profile/profile.tsx"
-"use client";
+'use client';
 
 export function Profile({ name }: { name: string }) {
   return <p>{name}</p>;
 }
 ```
 
-## Ringkasan
+Server membaca data, Client hanya menerima data sederhana.
 
-Komposisi yang sehat biasanya dimulai dari Server Component sebagai parent. Bagian kecil yang membutuhkan interaksi dipindahkan menjadi Client Component.
+## ⚡ Hindari Waterfall Data yang Tidak Perlu
+
+Saat beberapa data tidak saling bergantung, mulai fetch secara paralel agar tidak membuat waterfall.
+
+Kurang ideal:
+
+```tsx
+const product = await getProduct();
+const reviews = await getReviews();
+```
+
+Lebih baik jika keduanya independen:
+
+```tsx
+const [product, reviews] = await Promise.all([
+  getProduct(),
+  getReviews(),
+]);
+```
+
+<Callout type="idea" title="Catatan performa">
+Server Component memudahkan data fetching, tetapi tetap perhatikan waterfall. Jika dua data tidak saling bergantung, ambil secara paralel.
+</Callout>
+
+## 🧪 Studi Kasus: Product Detail Page
+
+Kebutuhan halaman:
+
+- Ambil produk di server
+- Ambil review di server
+- Tampilkan nama dan deskripsi
+- Tombol favorite interaktif
+- Quantity selector interaktif
+
+Struktur komponen:
+
+```text
+app/products/[id]/page.tsx              -> Server Component
+app/products/[id]/favorite-button.tsx   -> Client Component
+app/products/[id]/quantity-selector.tsx -> Client Component
+```
+
+Contoh page:
+
+```tsx filename="app/products/[id]/page.tsx"
+import { FavoriteButton } from './favorite-button';
+import { QuantitySelector } from './quantity-selector';
+
+export default async function ProductDetailPage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  const { id } = await params;
+
+  return (
+    <main>
+      <h1>Detail Produk {id}</h1>
+      <p>Deskripsi produk ditampilkan dari server.</p>
+      <QuantitySelector />
+      <FavoriteButton initialFavorites={12} />
+    </main>
+  );
+}
+```
+
+Page tetap Server Component, sedangkan komponen interaktif dibuat terpisah.
+
+## 🚧 Kesalahan Umum
+
+### ⚠️ Membuat Seluruh Page Menjadi Client Component
+
+Jika hanya tombol kecil yang interaktif, cukup tombol tersebut yang menjadi Client Component.
+
+### ⚠️ Mengirim Function sebagai Props dari Server ke Client
+
+Function biasa tidak serializable. Buat event handler di Client Component.
+
+### ⚠️ Mengimpor Database ke Client Component
+
+Akses database harus tetap di server.
+
+### ⚠️ Mengirim Data Terlalu Banyak ke Client
+
+Kirim hanya data yang dibutuhkan Client Component. Jangan mengirim satu object besar jika hanya perlu `name` atau `count`.
+
+## 📝 Latihan
+
+Bagi komponen berikut menjadi Server Component atau Client Component:
+
+```text
+ProductPage
+ProductTitle
+ProductDescription
+ReviewList
+FavoriteButton
+QuantitySelector
+AddToCartButton
+```
+
+Pertanyaan:
+
+1. Komponen mana yang mengambil data?
+2. Komponen mana yang membutuhkan state?
+3. Data apa yang perlu dikirim dari server ke client?
+4. Apa yang tidak boleh dikirim sebagai props?
+
+## ✅ Ringkasan
+
+Komposisi yang sehat biasanya dimulai dari Server Component sebagai parent. Server mengambil data dan merender konten utama, sedangkan bagian kecil yang membutuhkan interaksi dipindahkan menjadi Client Component. Kirim props sederhana dan hindari membawa module server ke client.
