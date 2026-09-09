@@ -3,9 +3,31 @@ title: Basic Routing
 description: Membuat route dasar menggunakan folder dan page.tsx.
 ---
 
+<Callout type="info" title="Definisi singkat">
+Basic routing adalah pembuatan halaman sederhana berdasarkan struktur folder di dalam `app`. Setiap route publik membutuhkan file `page.tsx`.
+</Callout>
+
 Routing di Next.js App Router berbasis folder. Setiap folder di dalam `app` mewakili segmen URL. Route menjadi publik ketika segmen tersebut memiliki `page.tsx`.
 
-## Route Home
+## 🧭 Cara Kerja Basic Routing
+
+Di App Router, Next.js membaca folder `app` untuk menentukan route aplikasi.
+
+Aturan dasarnya:
+
+```text
+app/page.tsx -> /
+app/about/page.tsx -> /about
+app/contact/page.tsx -> /contact
+```
+
+Setiap bagian URL disebut segment. Misalnya URL `/about` memiliki satu segment, yaitu `about`. URL `/products` memiliki satu segment, yaitu `products`.
+
+Jika ingin membuat route baru, kamu membuat folder dengan nama segment tersebut, lalu menambahkan file `page.tsx` di dalamnya.
+
+## 🏠 Route Home
+
+Route home adalah route utama aplikasi. URL-nya adalah `/`.
 
 File berikut membuat route `/`:
 
@@ -15,9 +37,27 @@ export default function HomePage() {
 }
 ```
 
-## Route Baru
+Karena file `page.tsx` berada langsung di dalam folder `app`, maka route yang terbentuk adalah root route.
+
+```text
+app/page.tsx
+```
+
+Menjadi:
+
+```text
+/
+```
+
+<Callout type="idea" title="Ingat pola ini">
+Jika `page.tsx` berada langsung di folder `app`, maka halaman tersebut adalah halaman utama aplikasi.
+</Callout>
+
+## 📄 Route Baru
 
 Untuk membuat route `/about`, buat folder `about` dan file `page.tsx`.
+
+Struktur folder:
 
 ```text
 app/
@@ -26,13 +66,55 @@ app/
     +-- page.tsx
 ```
 
+Isi halaman:
+
 ```tsx filename="app/about/page.tsx"
 export default function AboutPage() {
   return <h1>About</h1>;
 }
 ```
 
-## Folder Tidak Selalu Menjadi Route
+Route yang terbentuk:
+
+```text
+/about
+```
+
+Nama folder `about` menjadi segment URL. File `page.tsx` membuat segment tersebut bisa dibuka sebagai halaman.
+
+## 🧩 Membuat Beberapa Route Dasar
+
+Misalnya aplikasi membutuhkan halaman:
+
+```text
+/
+/about
+/contact
+/services
+```
+
+Struktur foldernya:
+
+```text
+app/
++-- page.tsx
++-- about/
+|   +-- page.tsx
++-- contact/
+|   +-- page.tsx
++-- services/
+    +-- page.tsx
+```
+
+Setiap folder memiliki `page.tsx` masing-masing. Dengan begitu, setiap URL bisa dibuka secara langsung.
+
+<Cards>
+  <Card title="/" description="Dibuat dari app/page.tsx." />
+  <Card title="/about" description="Dibuat dari app/about/page.tsx." />
+  <Card title="/contact" description="Dibuat dari app/contact/page.tsx." />
+</Cards>
+
+## 🚫 Folder Tidak Selalu Menjadi Route
 
 Folder saja belum membuat route bisa diakses. Contoh ini belum membuat URL `/dashboard`:
 
@@ -49,8 +131,125 @@ app/
     +-- page.tsx
 ```
 
-## Ringkasan
+Ini penting karena folder di dalam `app` bisa saja hanya dipakai untuk mengelompokkan file route lain. Tanpa `page.tsx`, folder tersebut belum menjadi halaman.
+
+## 🧠 Kenapa Harus Ada `page.tsx`?
+
+`page.tsx` adalah file khusus yang menandai bahwa sebuah segment route punya UI yang bisa ditampilkan.
+
+Jika Next.js hanya menjadikan semua folder sebagai halaman, maka akan sulit membedakan mana folder route, mana folder grouping, dan mana folder pendukung. Karena itu, Next.js memakai file convention.
+
+Beberapa file convention di App Router:
+
+```text
+page.tsx      -> halaman
+layout.tsx    -> layout
+loading.tsx   -> loading UI
+error.tsx     -> error UI
+not-found.tsx -> halaman 404 khusus
+route.ts      -> API endpoint
+```
+
+Pada materi ini, fokus dulu pada `page.tsx`. File lain akan dibahas di bab berikutnya.
+
+## 🧪 Studi Kasus: Website Company Profile
+
+Bayangkan kamu membuat website company profile dengan halaman:
+
+```text
+/
+/about
+/services
+/contact
+```
+
+Langkah berpikirnya:
+
+1. Tentukan URL yang dibutuhkan.
+2. Buat folder sesuai URL.
+3. Tambahkan `page.tsx` di setiap route.
+4. Isi setiap `page.tsx` dengan komponen halaman.
+
+Struktur:
+
+```text
+app/
++-- page.tsx
++-- about/
+|   +-- page.tsx
++-- services/
+|   +-- page.tsx
++-- contact/
+    +-- page.tsx
+```
+
+Contoh halaman services:
+
+```tsx filename="app/services/page.tsx"
+export default function ServicesPage() {
+  return (
+    <main>
+      <h1>Layanan Kami</h1>
+      <p>Kami menyediakan layanan pengembangan aplikasi web.</p>
+    </main>
+  );
+}
+```
+
+Halaman tersebut bisa dibuka di:
+
+```text
+/services
+```
+
+## 🚧 Kesalahan Umum
+
+### ⚠️ Mengira Folder Otomatis Jadi Halaman
+
+Folder di dalam `app` belum tentu menjadi halaman. Pastikan ada `page.tsx` jika ingin route bisa dibuka.
+
+### ⚠️ Salah Menaruh File Halaman
+
+File halaman harus bernama `page.tsx`, bukan `about.tsx`, `index.tsx`, atau `home.tsx`.
+
+Pada App Router, pola yang benar adalah:
+
+```text
+app/about/page.tsx
+```
+
+Bukan:
+
+```text
+app/about.tsx
+```
+
+### ⚠️ Menyamakan App Router dengan Pages Router
+
+Pada App Router, route dibuat di folder `app`. Ini berbeda dengan Pages Router lama yang memakai folder `pages`.
+
+## 📝 Latihan
+
+Buat rancangan struktur folder untuk route berikut:
+
+```text
+/
+/profile
+/settings
+/help
+```
+
+Pertanyaan:
+
+1. File apa yang membuat route `/`?
+2. File apa yang membuat route `/profile`?
+3. Apakah folder `settings` tanpa `page.tsx` bisa dibuka?
+4. Apa perbedaan `app/page.tsx` dan `app/help/page.tsx`?
+
+## ✅ Ringkasan
 
 - Folder di dalam `app` membentuk segmen URL.
 - `page.tsx` membuat route bisa diakses.
+- `app/page.tsx` membuat route `/`.
+- `app/about/page.tsx` membuat route `/about`.
 - Nama file convention seperti `page.tsx` dan `layout.tsx` punya arti khusus di App Router.

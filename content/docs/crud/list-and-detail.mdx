@@ -3,9 +3,13 @@ title: List dan Detail Employee
 description: Menampilkan daftar employee dan halaman detail berdasarkan id.
 ---
 
+<Callout type="info" title="Read dalam CRUD">
+List dan detail adalah bagian read. Keduanya biasanya tetap Server Component karena hanya mengambil dan menampilkan data awal.
+</Callout>
+
 Setelah route dan data layer siap, langkah pertama CRUD adalah read. Kita mulai dari halaman list dan detail.
 
-## Halaman List
+## 📋 Halaman List
 
 Route:
 
@@ -52,7 +56,7 @@ export default async function EmployeesPage() {
 
 Karena data diambil di Server Component, halaman ini tidak perlu `useEffect` atau state client hanya untuk load data awal.
 
-## Empty State
+## 🫙 Empty State
 
 Jika list kosong, tampilkan pesan yang jelas.
 
@@ -68,7 +72,7 @@ if (employees.length === 0) {
 }
 ```
 
-## Halaman Detail
+## 🔎 Halaman Detail
 
 Route:
 
@@ -118,7 +122,7 @@ export default async function EmployeeDetailPage({
 }
 ```
 
-## Not Found
+## 🚫 Not Found
 
 Buat UI khusus ketika employee tidak ditemukan.
 
@@ -136,6 +140,6 @@ export default function EmployeeNotFound() {
 }
 ```
 
-## Ringkasan
+## ✅ Ringkasan
 
 List dan detail adalah bagian read pada CRUD. Gunakan Server Component untuk mengambil data awal dan `notFound()` ketika detail tidak ditemukan.

@@ -3,9 +3,13 @@ title: Security dan Performance
 description: Menjaga query database tetap aman, minim data, dan efisien.
 ---
 
+<Callout type="warn" title="Database bukan hanya query">
+Integrasi database harus memperhatikan authorization, data yang dikirim ke UI, efisiensi query, pagination, dan index.
+</Callout>
+
 Database sering berisi data sensitif. Karena itu, integrasi database bukan hanya soal query berhasil, tetapi juga soal siapa yang boleh membaca dan mengubah data.
 
-## Gunakan server-only
+## 🔐 Gunakan server-only
 
 Tandai module database dan DAL sebagai server-only.
 
@@ -17,7 +21,7 @@ import { db } from "@/lib/db";
 
 Jika module ini tidak sengaja diimpor ke Client Component, Next.js dapat memberi error saat build.
 
-## Jangan Kirim Raw Record
+## 📦 Jangan Kirim Raw Record
 
 Raw database record bisa berisi field internal.
 
@@ -44,7 +48,7 @@ return db.user.findUnique({
 
 Kirim hanya data yang memang dibutuhkan UI.
 
-## Authorization di DAL atau Action
+## 🛡️ Authorization di DAL atau Action
 
 Untuk data milik user tertentu, cek ownership di server.
 
@@ -69,7 +73,7 @@ export async function getTaskForUser({
 
 Jangan percaya `userId` dari form. Ambil identity user dari session di server.
 
-## Hindari Waterfall Query
+## ⚡ Hindari Waterfall Query
 
 Jika dua query tidak saling bergantung, jalankan paralel.
 
@@ -83,7 +87,7 @@ const [employees, departments] = await Promise.all([
 ]);
 ```
 
-## Gunakan Pagination
+## 📄 Gunakan Pagination
 
 Jangan menampilkan semua record jika jumlah data bisa besar.
 
@@ -102,7 +106,7 @@ export async function getEmployeesPage(page: number) {
 }
 ```
 
-## Index untuk Query Penting
+## 🧭 Index untuk Query Penting
 
 Kolom yang sering dipakai untuk filter, sort, atau relasi biasanya membutuhkan index.
 
@@ -112,6 +116,6 @@ Contoh:
 - `departmentId` untuk employee per department.
 - `createdAt` untuk list terbaru.
 
-## Ringkasan
+## ✅ Ringkasan
 
 Jaga module database tetap server-only, kirim DTO yang minimal, cek authorization di server, hindari waterfall query, dan gunakan pagination serta index untuk data besar.

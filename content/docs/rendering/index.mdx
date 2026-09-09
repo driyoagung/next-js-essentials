@@ -3,23 +3,30 @@ title: "Bab 4: Server Component dan Client Component"
 description: Memahami boundary antara komponen server dan komponen client.
 ---
 
+<Callout type="info" title="Fokus utama bab ini">
+Bab ini membahas cara berpikir rendering di Next.js App Router: mulai dari Server Component sebagai default, lalu gunakan Client Component hanya saat UI membutuhkan interaksi browser.
+</Callout>
+
 Bab ini membahas model rendering React yang dipakai Next.js App Router.
 
 Secara default, page dan layout di App Router adalah Server Component. Ini membuat Next.js dapat merender UI di server, mengambil data dekat dengan sumbernya, dan mengurangi JavaScript yang dikirim ke browser. Ketika UI membutuhkan state, event handler, effect, atau browser API, bagian itu dipindahkan ke Client Component.
 
-## Alur Bab Ini
+## 🧭 Kenapa Bab Ini Penting?
 
-1. Memahami Server Component
-2. Memahami Client Component
-3. Menentukan boundary dengan `"use client"`
-4. Menggabungkan Server Component dan Client Component
-5. Memilih jenis komponen berdasarkan kebutuhan
+Rendering adalah salah satu konsep yang paling membedakan Next.js App Router dari React client-side biasa.
 
-## Hasil yang Diharapkan
+Di React client-side tradisional, banyak UI dan logic dikirim ke browser. Browser kemudian menjalankan JavaScript untuk membentuk tampilan dan interaksi.
 
-Setelah bab ini selesai, kamu dapat menentukan komponen mana yang tetap di server dan komponen mana yang perlu berjalan di browser.
+Di Next.js App Router, kita bisa membagi pekerjaan:
 
-## Mental Model
+- Server menangani data, render awal, dan logic yang tidak perlu dikirim ke browser.
+- Client menangani interaksi setelah halaman tampil.
+
+Pembagian ini membantu aplikasi menjadi lebih ringan, aman, dan terstruktur.
+
+## 🧠 Mental Model
+
+![Diagram Server Component dan Client Component](/diagrams/server-client-components.svg)
 
 Gunakan Server Component sebagai default. Tambahkan Client Component hanya pada bagian yang benar-benar membutuhkan interaksi browser.
 
@@ -27,3 +34,77 @@ Gunakan Server Component sebagai default. Tambahkan Client Component hanya pada 
 Server Component: data, secrets, rendering awal, konten statis
 Client Component: state, event, effect, browser API
 ```
+
+<Callout type="idea" title="Prinsip utama">
+Jangan bertanya "apakah komponen ini bisa dibuat client?". Tanyakan "apakah komponen ini benar-benar perlu berjalan di browser?".
+</Callout>
+
+## 🗺️ Alur Bab Ini
+
+<Cards>
+  <Card title="Server Component" description="Default di App Router, cocok untuk data, konten, dan render awal." />
+  <Card title="Client Component" description="Dipakai untuk state, event handler, effect, dan browser API." />
+  <Card title="Boundary use client" description="Menentukan batas module server dan client." />
+  <Card title="Komposisi" description="Menggabungkan server dan client dalam struktur UI yang sehat." />
+</Cards>
+
+## 🎯 Hasil yang Diharapkan
+
+Setelah bab ini selesai, kamu dapat:
+
+- Menjelaskan perbedaan Server Component dan Client Component
+- Memahami kenapa page dan layout default-nya Server Component
+- Menentukan kapan perlu menambahkan `"use client"`
+- Menaruh boundary client sedekat mungkin dengan interaksi
+- Menghindari pengiriman data sensitif ke browser
+- Mengirim props serializable dari Server Component ke Client Component
+- Menggabungkan komponen server dan client dengan pola yang rapi
+
+## 🧪 Studi Kasus Bab 4
+
+Bayangkan kamu membuat halaman detail produk.
+
+Halaman tersebut membutuhkan:
+
+- Nama produk
+- Deskripsi produk
+- Harga produk
+- Gambar produk
+- Tombol tambah ke keranjang
+- Quantity selector
+
+Tidak semua bagian perlu menjadi Client Component.
+
+Pembagiannya:
+
+```text
+ProductPage: Server Component
+ProductDescription: Server Component
+ProductImage: Server Component
+PriceInfo: Server Component
+QuantitySelector: Client Component
+AddToCartButton: Client Component
+```
+
+Alasannya:
+
+- Data produk dapat diambil di server
+- Deskripsi dan gambar hanya ditampilkan
+- Quantity selector membutuhkan state
+- Tombol add to cart membutuhkan event handler
+
+## 📋 Checklist Awal
+
+Sebelum memberi `"use client"`, tanyakan:
+
+1. Apakah komponen memakai `useState`?
+2. Apakah komponen memakai `useEffect`?
+3. Apakah komponen punya `onClick`, `onChange`, atau event handler lain?
+4. Apakah komponen membaca `window`, `document`, atau `localStorage`?
+5. Apakah komponen memakai hook navigasi client seperti `useRouter`?
+
+Jika semua jawabannya tidak, kemungkinan besar komponen bisa tetap menjadi Server Component.
+
+## ✅ Ringkasan
+
+Bab ini menjadi dasar untuk memahami rendering di Next.js. Server Component adalah default dan cocok untuk data, konten, dan render awal. Client Component dipakai saat UI membutuhkan interaksi browser. Semakin kecil area client, semakin sedikit JavaScript yang perlu dikirim ke browser.

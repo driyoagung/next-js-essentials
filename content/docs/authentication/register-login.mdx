@@ -3,9 +3,13 @@ title: Register dan Login
 description: Membuat flow register dan login dengan Server Actions.
 ---
 
+<Callout type="warn" title="Credentials harus diproses di server">
+Register dan login memproses data sensitif seperti password. Validasi, verifikasi, hashing, dan pembuatan session harus berjalan di server.
+</Callout>
+
 Register dan login adalah mutation. Di App Router, flow ini cocok ditangani oleh Server Actions karena credentials diproses di server.
 
-## Register Form
+## 📝 Register Form
 
 ```tsx filename="app/register/register-form.tsx"
 "use client";
@@ -42,7 +46,7 @@ export function RegisterForm() {
 }
 ```
 
-## Register Action
+## ⚙️ Register Action
 
 ```ts filename="app/register/actions.ts"
 "use server";
@@ -90,7 +94,7 @@ export async function register(
 
 Sebelum menyimpan password, password harus di-hash dengan library yang tepat. Jangan menyimpan plain text password.
 
-## Login Action
+## 🔑 Login Action
 
 ```ts filename="app/login/actions.ts"
 "use server";
@@ -133,6 +137,6 @@ export async function login(
 
 Gunakan pesan error umum seperti `Invalid credentials` agar tidak memberi tahu attacker apakah email terdaftar atau password salah.
 
-## Ringkasan
+## ✅ Ringkasan
 
 Register dan login diproses di Server Action. Validasi input di server, hash password, buat session, lalu redirect setelah sukses.

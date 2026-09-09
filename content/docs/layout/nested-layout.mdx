@@ -3,9 +3,29 @@ title: Nested Layout
 description: Membuat layout khusus untuk kelompok route tertentu.
 ---
 
+<Callout type="info" title="Definisi singkat">
+Nested layout adalah layout yang ditempatkan di dalam route segment tertentu. Layout ini hanya membungkus route pada segment tersebut dan seluruh turunannya.
+</Callout>
+
 Nested layout adalah layout yang ditempatkan di dalam route segment. Layout ini hanya membungkus route pada segment tersebut dan turunannya.
 
-## Contoh Struktur
+## 🧭 Apa Itu Nested Layout?
+
+Nested layout adalah layout bertingkat. Jika root layout membungkus seluruh aplikasi, nested layout membungkus bagian tertentu saja.
+
+Contoh area yang sering memakai nested layout:
+
+- Dashboard admin
+- Halaman dokumentasi
+- Area auth
+- Area account settings
+- Area aplikasi setelah login
+
+Misalnya dashboard memiliki sidebar, tetapi halaman marketing tidak. Sidebar tersebut sebaiknya tidak ditaruh di root layout. Sidebar lebih tepat ditaruh di nested layout khusus dashboard.
+
+## 🗂️ Contoh Struktur
+
+Contoh struktur nested layout:
 
 ```text
 app/
@@ -19,12 +39,43 @@ app/
 
 Pada struktur di atas:
 
-- `app/layout.tsx` membungkus semua route.
-- `app/dashboard/layout.tsx` membungkus `/dashboard` dan `/dashboard/settings`.
-- `app/dashboard/page.tsx` menjadi halaman `/dashboard`.
-- `app/dashboard/settings/page.tsx` menjadi halaman `/dashboard/settings`.
+- `app/layout.tsx` membungkus semua route
+- `app/dashboard/layout.tsx` membungkus `/dashboard` dan `/dashboard/settings`
+- `app/dashboard/page.tsx` menjadi halaman `/dashboard`
+- `app/dashboard/settings/page.tsx` menjadi halaman `/dashboard/settings`
 
-## Contoh Nested Layout
+<Callout type="idea" title="Cara membaca layout bertingkat">
+Semakin dalam posisi `layout.tsx`, semakin spesifik area yang dibungkusnya.
+</Callout>
+
+## 🧱 Urutan Pembungkusan Layout
+
+![Diagram nested layout](/diagrams/nested-layout.svg)
+
+Jika user membuka `/dashboard/settings`, maka urutan pembungkusannya secara konsep seperti ini:
+
+```text
+app/layout.tsx
+  app/dashboard/layout.tsx
+    app/dashboard/settings/page.tsx
+```
+
+Artinya, page settings dibungkus oleh dua layout:
+
+1. Root layout
+2. Dashboard layout
+
+Secara visual bisa dibayangkan seperti ini:
+
+```text
+Root Layout
++-- Dashboard Layout
+    +-- Settings Page
+```
+
+## 💻 Contoh Nested Layout
+
+Contoh layout dashboard:
 
 ```tsx filename="app/dashboard/layout.tsx"
 export default function DashboardLayout({
@@ -33,22 +84,280 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div>
+    <section>
       <aside>Dashboard Menu</aside>
       <main>{children}</main>
-    </div>
+    </section>
   );
 }
 ```
 
-## Kenapa Nested Layout Berguna?
+Layout ini hanya berlaku untuk route di bawah `/dashboard`.
+
+Jika ada halaman:
+
+```text
+app/dashboard/page.tsx
+app/dashboard/settings/page.tsx
+```
+
+Maka keduanya akan tampil di dalam `<main>{children}</main>` milik dashboard layout.
+
+## 🎯 Kenapa Nested Layout Berguna?
 
 Nested layout membuat UI bersama hanya berlaku di area tertentu. Misalnya sidebar dashboard tidak perlu muncul di halaman landing page.
 
-## Layout Tidak Menerima Data dari Children
+Manfaat nested layout:
 
-Layout membungkus children, tetapi tidak menerima data dari page di bawahnya. Jika layout dan page membutuhkan data yang sama, ambil data tersebut di masing-masing tempat. Next.js dan React dapat membantu dedupe fetch yang sama dalam banyak kasus.
+<Cards>
+  <Card title="Lebih Rapi" description="UI area tertentu tidak mencampuri halaman lain." />
+  <Card title="Tidak Duplikasi" description="Sidebar, navbar, atau wrapper tidak perlu ditulis berulang." />
+  <Card title="Lebih Terstruktur" description="Route dan layout mengikuti konteks aplikasi." />
+</Cards>
 
-## Ringkasan
+Contoh:
 
-Gunakan nested layout ketika beberapa halaman berbagi struktur UI yang sama, tetapi struktur itu tidak berlaku untuk seluruh aplikasi.
+```text
+Landing page membutuhkan navbar marketing.
+Dashboard membutuhkan sidebar admin.
+Auth page membutuhkan layout minimal.
+```
+
+Ketiganya bisa punya layout berbeda tanpa saling mengganggu.
+
+## 🧩 Nested Layout untuk Dashboard
+
+Misalnya dashboard punya beberapa halaman:
+
+```text
+/dashboard
+/dashboard/users
+/dashboard/settings
+/dashboard/reports
+```
+
+Struktur folder:
+
+```text
+app/
++-- dashboard/
+    +-- layout.tsx
+    +-- page.tsx
+    +-- users/
+    |   +-- page.tsx
+    +-- settings/
+    |   +-- page.tsx
+    +-- reports/
+        +-- page.tsx
+```
+
+Semua halaman dashboard akan memakai layout yang sama.
+
+Contoh page dashboard:
+
+```tsx filename="app/dashboard/page.tsx"
+export default function DashboardPage() {
+  return <h1>Dashboard Overview</h1>;
+}
+```
+
+Contoh page settings:
+
+```tsx filename="app/dashboard/settings/page.tsx"
+export default function DashboardSettingsPage() {
+  return <h1>Dashboard Settings</h1>;
+}
+```
+
+Kedua page tersebut akan masuk ke slot `children` di `app/dashboard/layout.tsx`.
+
+## 📚 Nested Layout untuk Dokumentasi
+
+Project dokumentasi juga sering memakai nested layout.
+
+Contoh:
+
+```text
+app/
++-- docs/
+    +-- layout.tsx
+    +-- [[...slug]]/
+        +-- page.tsx
+```
+
+`app/docs/layout.tsx` dapat dipakai untuk membungkus semua halaman dokumentasi dengan sidebar docs, table of contents, atau struktur dokumentasi lain.
+
+Project ini memakai pola tersebut. Semua halaman di `/docs` dibungkus oleh layout docs dari Fumadocs.
+
+## 🚫 Layout Tidak Menerima Data dari Children
+
+Layout membungkus children, tetapi tidak menerima data dari page di bawahnya. Jika layout dan page membutuhkan data yang sama, ambil data tersebut di masing-masing tempat.
+
+Contoh situasi:
+
+```text
+Dashboard layout butuh data user login.
+Dashboard page juga butuh data user login.
+```
+
+Dalam banyak kasus, keduanya boleh mengambil data yang sama. Next.js dan React dapat membantu dedupe fetch yang sama dalam banyak kasus.
+
+<Callout type="warn" title="Jangan salah arah data">
+Data tidak mengalir dari page ke layout. Layout berada di atas page, sehingga layout tidak menerima props dari page turunannya.
+</Callout>
+
+## 🔄 Layout Bertahan Saat Navigasi
+
+Salah satu manfaat layout adalah dapat bertahan saat user berpindah antar route di bawah layout yang sama.
+
+Misalnya user berpindah dari:
+
+```text
+/dashboard/users
+```
+
+Ke:
+
+```text
+/dashboard/settings
+```
+
+Dashboard layout tetap menjadi pembungkus yang sama, sedangkan isi `children` berubah sesuai page aktif.
+
+Ini membuat UI seperti sidebar terasa stabil dan tidak perlu dibuat ulang secara konseptual di setiap halaman.
+
+## 🧪 Studi Kasus: Dashboard Admin
+
+Bayangkan kamu membuat dashboard admin dengan halaman:
+
+```text
+/dashboard
+/dashboard/users
+/dashboard/orders
+/dashboard/settings
+```
+
+Kebutuhan UI:
+
+- Semua halaman dashboard punya sidebar
+- Semua halaman dashboard punya header dashboard
+- Halaman publik tidak punya sidebar dashboard
+
+Struktur yang tepat:
+
+```text
+app/
++-- layout.tsx
++-- page.tsx
++-- dashboard/
+    +-- layout.tsx
+    +-- page.tsx
+    +-- users/
+    |   +-- page.tsx
+    +-- orders/
+    |   +-- page.tsx
+    +-- settings/
+        +-- page.tsx
+```
+
+Contoh layout:
+
+```tsx filename="app/dashboard/layout.tsx"
+export default function DashboardLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return (
+    <section>
+      <aside>
+        <p>Admin Menu</p>
+      </aside>
+      <div>
+        <header>Dashboard Header</header>
+        <main>{children}</main>
+      </div>
+    </section>
+  );
+}
+```
+
+Dengan struktur ini, halaman publik tetap bersih, sedangkan seluruh halaman dashboard memiliki UI dashboard yang konsisten.
+
+## 🧪 Studi Kasus: Area Auth
+
+Halaman login dan register biasanya tidak membutuhkan navbar utama atau sidebar.
+
+Route:
+
+```text
+/login
+/register
+/forgot-password
+```
+
+Kamu bisa membuat layout khusus auth:
+
+```text
+app/
++-- (auth)/
+    +-- layout.tsx
+    +-- login/
+    |   +-- page.tsx
+    +-- register/
+    |   +-- page.tsx
+    +-- forgot-password/
+        +-- page.tsx
+```
+
+Route group `(auth)` tidak masuk ke URL, tetapi membantu mengelompokkan halaman dengan layout yang sama.
+
+## 🚧 Kesalahan Umum
+
+### ⚠️ Menaruh Layout Khusus di Root Layout
+
+Jika sidebar hanya untuk dashboard, jangan taruh di root layout. Taruh di `app/dashboard/layout.tsx`.
+
+### ⚠️ Mengulang Struktur yang Sama di Banyak Page
+
+Jika beberapa page memakai wrapper yang sama, pertimbangkan layout agar tidak duplikasi.
+
+### ⚠️ Mengira Layout Bisa Membaca Props dari Page
+
+Layout tidak menerima data dari page turunannya. Ambil data di layout jika layout memang membutuhkannya.
+
+### ⚠️ Membuat Nested Layout Terlalu Banyak
+
+Gunakan nested layout jika ada kebutuhan UI bersama. Jangan membuat layout baru jika hanya dipakai satu halaman dan tidak memberi manfaat.
+
+## 📝 Latihan
+
+Buat struktur folder untuk aplikasi dengan route berikut:
+
+```text
+/
+/about
+/dashboard
+/dashboard/users
+/dashboard/settings
+/login
+/register
+```
+
+Syarat:
+
+1. Halaman publik punya navbar.
+2. Dashboard punya sidebar.
+3. Login dan register punya layout minimal.
+4. Root layout hanya berisi struktur global.
+
+Pertanyaan:
+
+- Di mana kamu menaruh navbar publik?
+- Di mana kamu menaruh sidebar dashboard?
+- Apakah login perlu memakai layout dashboard?
+- Apa fungsi route group dalam kasus ini?
+
+## ✅ Ringkasan
+
+Gunakan nested layout ketika beberapa halaman berbagi struktur UI yang sama, tetapi struktur itu tidak berlaku untuk seluruh aplikasi. Nested layout membuat UI lebih rapi, menghindari duplikasi, dan menjaga setiap area aplikasi memiliki tampilan sesuai konteksnya.

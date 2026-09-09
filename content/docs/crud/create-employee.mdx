@@ -3,9 +3,13 @@ title: Create Employee
 description: Membuat form tambah employee dengan Server Action.
 ---
 
+<Callout type="info" title="Create flow">
+Create dimulai dari form, divalidasi di server, disimpan melalui mutation, lalu UI direvalidasi dan user diarahkan ke halaman yang tepat.
+</Callout>
+
 Create adalah proses menambahkan data baru. Pada App Router, form bisa langsung memanggil Server Action melalui prop `action`.
 
-## Struktur File
+## 🗂️ Struktur File
 
 ```text
 app/
@@ -15,7 +19,7 @@ app/
         +-- page.tsx
 ```
 
-## Server Action Create
+## ⚙️ Server Action Create
 
 ```ts filename="app/employees/actions.ts"
 "use server";
@@ -38,7 +42,7 @@ Pada contoh di atas, `saveEmployee()` mewakili proses menyimpan data. Nanti func
 
 `redirect()` sebaiknya dipanggil setelah mutation dan revalidation selesai. Karena `redirect()` menghentikan alur function, jangan letakkan kode penting setelahnya.
 
-## Halaman Create
+## ➕ Halaman Create
 
 ```tsx filename="app/employees/create/page.tsx"
 import Link from "next/link";
@@ -72,13 +76,13 @@ export default function CreateEmployeePage() {
 
 Form ini tetap bisa bekerja sebagai HTML form. Next.js akan mengirim `FormData` ke Server Action.
 
-## Progressive Enhancement
+## 🚀 Progressive Enhancement
 
 Form yang memakai Server Action dapat tetap submit walaupun JavaScript belum selesai dimuat. Setelah hydration, submit bisa berjalan tanpa full page refresh.
 
 Ini membuat Server Action cocok untuk form CRUD dasar.
 
-## Validasi Dasar
+## ✅ Validasi Dasar
 
 Minimal, validasi field wajib dilakukan di server.
 
@@ -90,6 +94,6 @@ if (!input.name || !input.email) {
 
 Validasi client seperti `required` membantu pengalaman user, tetapi validasi server tetap wajib karena request bisa dikirim langsung ke action.
 
-## Ringkasan
+## ✅ Ringkasan
 
 Create flow terdiri dari form, Server Action, validasi server, mutation, revalidation, lalu redirect kembali ke halaman list atau detail.

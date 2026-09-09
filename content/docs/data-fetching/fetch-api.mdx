@@ -3,11 +3,15 @@ title: Fetch API
 description: Mengambil data menggunakan fetch di Next.js Server Component.
 ---
 
+<Callout type="info" title="Inti pembahasan">
+`fetch()` di Server Component bukan hanya mengambil data, tetapi juga terhubung dengan strategi rendering, caching, dan revalidation Next.js.
+</Callout>
+
 Next.js memakai Web `fetch()` API dan menambahkan perilaku khusus untuk server-side rendering, caching, dan revalidation.
 
 Di App Router, kamu bisa memanggil `fetch()` langsung di Server Component.
 
-## Contoh Dasar
+## 💻 Contoh Dasar
 
 ```tsx filename="app/users/page.tsx"
 type User = {
@@ -37,7 +41,7 @@ export default async function UsersPage() {
 
 Karena `UsersPage` memakai `await`, function page dibuat `async`.
 
-## Cek Response
+## ✅ Cek Response
 
 Jangan langsung menganggap request selalu berhasil. Cek `response.ok` sebelum memakai data.
 
@@ -72,7 +76,7 @@ export default async function UsersPage() {
 
 Error yang dilempar saat render dapat ditangani oleh `error.tsx` pada route segment yang sama atau parent terdekat.
 
-## Opsi Cache pada Fetch
+## 📦 Opsi Cache pada Fetch
 
 Next.js mendukung opsi cache pada server-side `fetch`.
 
@@ -90,7 +94,7 @@ await fetch("https://example.com/api/products", {
 
 Gunakan `force-cache` ketika data aman disimpan di cache. Gunakan `no-store` ketika data harus selalu fresh pada setiap request.
 
-## Revalidate dengan Fetch
+## 🔄 Revalidate dengan Fetch
 
 Kamu juga bisa memberi umur cache dengan `next.revalidate`.
 
@@ -104,7 +108,25 @@ await fetch("https://example.com/api/products", {
 
 Contoh di atas menyatakan data paling lama dianggap fresh selama 60 detik.
 
-## Ringkasan
+## 🧪 Studi Kasus: Daftar User
+
+Bayangkan kamu membuat halaman `/users` yang menampilkan data dari API. Alur sehatnya:
+
+1. Buat fungsi `getUsers`.
+2. Panggil `fetch()` di server.
+3. Cek `response.ok`.
+4. Return data yang sudah bertipe.
+5. Render daftar user.
+
+<Callout type="warn" title="Jangan abaikan response.ok">
+Request jaringan bisa gagal. Selalu cek status response sebelum memakai data agar error lebih mudah ditangani.
+</Callout>
+
+## 📝 Latihan
+
+Buat fungsi `getProducts()` yang mengambil data produk, mengecek `response.ok`, lalu dipakai di `ProductsPage`.
+
+## ✅ Ringkasan
 
 - `fetch()` bisa dipakai langsung di Server Component.
 - Selalu cek `response.ok` untuk request yang bisa gagal.

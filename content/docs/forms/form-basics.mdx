@@ -3,9 +3,13 @@ title: Form Basics
 description: Memahami form HTML sebagai dasar Server Actions.
 ---
 
+<Callout type="info" title="Mulai dari HTML form">
+Server Actions tetap dibangun di atas konsep form HTML. Pahami `name`, submit, dan FormData sebelum masuk ke mutation server.
+</Callout>
+
 Sebelum memakai Server Actions, pahami dulu form HTML biasa. Next.js tidak mengganti konsep dasar form. Next.js menambahkan cara agar form dapat memanggil function server dengan lebih langsung.
 
-## Form HTML Biasa
+## 📝 Form HTML Biasa
 
 Form HTML mengirim data berdasarkan atribut `name`.
 
@@ -31,7 +35,7 @@ Yang penting:
 - `type="submit"` mengirim form.
 - `required`, `type="email"`, dan atribut HTML lain membantu validasi awal di browser.
 
-## Form dengan Server Action
+## ⚙️ Form dengan Server Action
 
 Pada React dan Next.js, prop `action` pada `<form>` bisa menerima function server.
 
@@ -59,13 +63,13 @@ export default function ContactPage() {
 
 Ketika form disubmit, Next.js mengirim `FormData` ke action `sendMessage`.
 
-## Progressive Enhancement
+## 🚀 Progressive Enhancement
 
 Form dengan Server Action dapat tetap bekerja saat JavaScript belum selesai dimuat. Setelah hydration, submit bisa berjalan tanpa full page refresh.
 
 Ini berguna karena form tetap punya fondasi HTML yang kuat.
 
-## Kapan Pakai next/form?
+## 🔎 Kapan Pakai next/form?
 
 Next.js juga menyediakan komponen `Form` dari `next/form`. Komponen ini berguna saat form dipakai untuk navigasi berbasis URL, misalnya search form yang mengubah query string.
 
@@ -84,6 +88,6 @@ export function SearchForm() {
 
 Jika `action` berupa string, form akan melakukan navigasi GET ke URL tersebut. Jika `action` berupa function, form akan memanggil Server Action.
 
-## Ringkasan
+## ✅ Ringkasan
 
 Form di Next.js tetap berangkat dari HTML form. Gunakan `<form action={serverAction}>` untuk mutation, dan pertimbangkan `next/form` untuk search atau navigasi berbasis query string.

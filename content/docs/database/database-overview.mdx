@@ -3,17 +3,21 @@ title: Database Overview
 description: Memahami posisi database dalam aplikasi Next.js.
 ---
 
+<Callout type="info" title="Definisi singkat">
+Database menyimpan data secara permanen. Di Next.js, akses database sebaiknya selalu dilakukan dari server, bukan dari Client Component.
+</Callout>
+
 Database digunakan agar data aplikasi bertahan secara permanen. Tanpa database, data hanya hidup di memory, file lokal, atau service sementara.
 
 Di aplikasi Next.js, database biasanya diakses dari server, bukan dari browser.
 
-## Kenapa Harus dari Server?
+## 🔐 Kenapa Harus dari Server?
 
 Koneksi database membutuhkan credential seperti connection string, username, password, atau token. Credential seperti ini tidak boleh dikirim ke browser.
 
 Server Component, Route Handler, dan Server Action berjalan di server. Karena itu, ketiganya bisa memanggil database client selama module database tidak diimpor ke Client Component.
 
-## Tempat Database Dipakai
+## 📍 Tempat Database Dipakai
 
 Database biasanya dipakai di:
 
@@ -22,7 +26,7 @@ Database biasanya dipakai di:
 - Route Handler untuk endpoint API, webhook, atau client eksternal.
 - Data Access Layer untuk membungkus query dan aturan akses data.
 
-## Alur Read
+## 📖 Alur Read
 
 ```text
 User membuka halaman
@@ -32,7 +36,7 @@ DTO dikembalikan ke halaman
 HTML dan RSC payload dikirim ke client
 ```
 
-## Alur Mutation
+## ✏️ Alur Mutation
 
 ```text
 User submit form
@@ -43,7 +47,7 @@ Cache atau route direvalidasi
 User melihat data terbaru
 ```
 
-## Jangan Query dari Client Component
+## 🚫 Jangan Query dari Client Component
 
 Client Component berjalan dengan asumsi browser. Jangan import database client di file `"use client"`.
 
@@ -72,6 +76,6 @@ export default async function UsersPage() {
 }
 ```
 
-## Ringkasan
+## ✅ Ringkasan
 
 Database harus diakses dari server. Gunakan Server Component untuk read, Server Action untuk mutation, dan Data Access Layer untuk menjaga query tetap rapi serta aman.

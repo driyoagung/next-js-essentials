@@ -7,7 +7,7 @@ Setelah read memakai database, langkah berikutnya adalah mutation. Mutation form
 
 Server Action sebaiknya tipis: validasi input, panggil DAL, revalidate, lalu redirect jika perlu.
 
-## Create
+## ➕ Create
 
 ```ts filename="app/employees/actions.ts"
 "use server";
@@ -40,7 +40,7 @@ export async function createEmployee(input: EmployeeInput) {
 }
 ```
 
-## Update
+## ✏️ Update
 
 ```ts filename="app/employees/actions.ts"
 "use server";
@@ -78,7 +78,7 @@ export async function updateEmployee(
 }
 ```
 
-## Delete
+## 🗑️ Delete
 
 ```ts filename="app/employees/actions.ts"
 "use server";
@@ -111,12 +111,12 @@ export async function deleteEmployee(id: string) {
 }
 ```
 
-## Error dari Database
+## 🚨 Error dari Database
 
 Database bisa gagal karena constraint, koneksi, atau data tidak ditemukan.
 
 Untuk expected error seperti email duplikat, return state ke form. Untuk error tidak terduga, biarkan `error.tsx` menangani.
 
-## Ringkasan
+## ✅ Ringkasan
 
 Mutation database sebaiknya melalui Server Action yang memanggil DAL. Setelah mutation, panggil `revalidatePath()` sebelum `redirect()`.

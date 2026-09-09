@@ -3,9 +3,48 @@ title: Server Component
 description: Memahami komponen server sebagai default di Next.js App Router.
 ---
 
+<Callout type="info" title="Definisi singkat">
+Server Component adalah komponen React yang dirender di server. Di Next.js App Router, page dan layout adalah Server Component secara default selama tidak diberi directive `"use client"`.
+</Callout>
+
 Server Component adalah komponen React yang berjalan di server. Di Next.js App Router, file `page.tsx` dan `layout.tsx` adalah Server Component secara default selama file tersebut tidak diberi directive `"use client"`.
 
-## Contoh Server Component
+## 🧭 Apa Itu Server Component?
+
+Server Component adalah komponen yang proses render-nya terjadi di server. Hasilnya kemudian dikirim ke browser sebagai output yang dapat ditampilkan.
+
+Karena berjalan di server, Server Component cocok untuk pekerjaan seperti:
+
+- Mengambil data awal
+- Membaca database
+- Membaca file server
+- Menggunakan environment variable rahasia
+- Menyusun konten statis
+- Membuat layout yang tidak membutuhkan interaksi browser
+
+Server Component membantu mengurangi jumlah JavaScript yang perlu dikirim ke browser karena kode komponen tersebut tidak harus menjadi bagian dari client bundle.
+
+## 🧠 Mental Model Server Component
+
+Pikirkan Server Component sebagai bagian UI yang bisa disiapkan sebelum sampai ke browser.
+
+```text
+Request user
+    ↓
+Server menjalankan Server Component
+    ↓
+Server mengambil data jika perlu
+    ↓
+Server menghasilkan UI
+    ↓
+Browser menerima hasil render
+```
+
+<Callout type="idea" title="Aturan praktis">
+Jika komponen hanya membaca data dan menampilkan UI, mulai dari Server Component.
+</Callout>
+
+## 💻 Contoh Server Component
 
 ```tsx filename="app/products/page.tsx"
 type Product = {
@@ -15,8 +54,8 @@ type Product = {
 
 async function getProducts(): Promise<Product[]> {
   return [
-    { id: 1, name: "Keyboard" },
-    { id: 2, name: "Mouse" },
+    { id: 1, name: 'Keyboard' },
+    { id: 2, name: 'Mouse' },
   ];
 }
 
@@ -38,21 +77,85 @@ export default async function ProductsPage() {
 
 Komponen di atas dapat memakai `async` karena berjalan di server. Ini cocok untuk mengambil data sebelum UI dikirim ke browser.
 
-## Kelebihan Server Component
+## 📦 Mengambil Data di Server
 
-- Bisa mengambil data dari database atau API di server.
-- Bisa membaca secret seperti API key tanpa mengirimkannya ke browser.
-- Mengurangi ukuran JavaScript client bundle.
-- Cocok untuk konten yang tidak membutuhkan interaksi browser.
+Salah satu keuntungan besar Server Component adalah kemampuannya mengambil data langsung di server.
 
-## Batasan Server Component
+Contoh pola sederhana:
+
+```tsx filename="app/users/page.tsx"
+type User = {
+  id: number;
+  name: string;
+};
+
+async function getUsers(): Promise<User[]> {
+  return [
+    { id: 1, name: 'Alya' },
+    { id: 2, name: 'Bima' },
+  ];
+}
+
+export default async function UsersPage() {
+  const users = await getUsers();
+
+  return (
+    <main>
+      <h1>Users</h1>
+      <ul>
+        {users.map((user) => (
+          <li key={user.id}>{user.name}</li>
+        ))}
+      </ul>
+    </main>
+  );
+}
+```
+
+Pada aplikasi nyata, fungsi `getUsers` bisa membaca database atau API server-side.
+
+## 🔐 Server Component dan Secret
+
+Karena berjalan di server, Server Component dapat membaca data yang tidak boleh dikirim ke browser.
+
+Contoh data sensitif:
+
+- Database URL
+- API key rahasia
+- Token service internal
+- Konfigurasi server
+
+<Callout type="warn" title="Jangan kirim secret ke client">
+Secret boleh dibaca di server, tetapi jangan dikirim sebagai props ke Client Component atau ditampilkan di HTML.
+</Callout>
+
+## ✅ Kelebihan Server Component
+
+Server Component punya beberapa kelebihan penting:
+
+<Cards>
+  <Card title="Lebih Aman" description="Data sensitif tetap berada di server." />
+  <Card title="Bundle Lebih Kecil" description="Kode server tidak perlu dikirim sebagai JavaScript client." />
+  <Card title="Dekat dengan Data" description="Cocok untuk query database atau API server-side." />
+  <Card title="Default App Router" description="Page dan layout sudah menjadi Server Component secara default." />
+</Cards>
+
+Daftar ringkas:
+
+- Bisa mengambil data dari database atau API di server
+- Bisa membaca secret seperti API key tanpa mengirimkannya ke browser
+- Mengurangi ukuran JavaScript client bundle
+- Cocok untuk konten yang tidak membutuhkan interaksi browser
+- Cocok untuk render awal halaman
+
+## 🚫 Batasan Server Component
 
 Server Component tidak bisa memakai fitur yang membutuhkan browser runtime.
 
 Contoh yang tidak bisa dilakukan langsung di Server Component:
 
 ```tsx
-import { useState } from "react";
+import { useState } from 'react';
 
 export default function Page() {
   const [count, setCount] = useState(0);
@@ -63,16 +166,122 @@ export default function Page() {
 
 Kode di atas membutuhkan state dan event handler, jadi harus dipindahkan ke Client Component.
 
-## Kapan Menggunakan Server Component?
+Server Component tidak cocok untuk:
+
+- `useState`
+- `useEffect`
+- Event handler seperti `onClick`
+- Browser API seperti `window`
+- Controlled input yang berubah di browser
+- Hook client dari `next/navigation`
+
+## 🧩 Kapan Menggunakan Server Component?
 
 Gunakan Server Component untuk:
 
-- Halaman yang hanya menampilkan konten.
-- Komponen yang mengambil data awal.
-- Komponen yang membaca file, database, atau secret.
-- Layout statis seperti wrapper halaman.
-- Komponen yang tidak membutuhkan `useState`, `useEffect`, atau event handler.
+- Halaman yang hanya menampilkan konten
+- Komponen yang mengambil data awal
+- Komponen yang membaca file, database, atau secret
+- Layout statis seperti wrapper halaman
+- Komponen yang tidak membutuhkan `useState`, `useEffect`, atau event handler
 
-## Ringkasan
+Contoh keputusan:
 
-Server Component adalah pilihan default di App Router. Mulai dari Server Component, lalu pindahkan bagian interaktif ke Client Component hanya saat dibutuhkan.
+```text
+ArticlePage: Server Component
+ArticleContent: Server Component
+AuthorInfo: Server Component
+LikeButton: Client Component
+CommentForm: Client Component
+```
+
+Artikel, konten, dan info author hanya ditampilkan. Like button dan comment form membutuhkan interaksi.
+
+## 🧪 Studi Kasus: Halaman Produk
+
+Bayangkan halaman `/products` menampilkan daftar produk dari database.
+
+Kebutuhan:
+
+- Ambil data produk
+- Tampilkan nama produk
+- Tampilkan harga
+- Link ke detail produk
+
+Semua kebutuhan tersebut bisa ditangani Server Component karena belum ada interaksi browser yang kompleks.
+
+```tsx filename="app/products/page.tsx"
+import Link from 'next/link';
+
+type Product = {
+  id: string;
+  name: string;
+  price: number;
+};
+
+async function getProducts(): Promise<Product[]> {
+  return [
+    { id: '1', name: 'Keyboard', price: 250000 },
+    { id: '2', name: 'Mouse', price: 150000 },
+  ];
+}
+
+export default async function ProductsPage() {
+  const products = await getProducts();
+
+  return (
+    <main>
+      <h1>Produk</h1>
+      <ul>
+        {products.map((product) => (
+          <li key={product.id}>
+            <Link href={`/products/${product.id}`}>
+              {product.name} - Rp{product.price}
+            </Link>
+          </li>
+        ))}
+      </ul>
+    </main>
+  );
+}
+```
+
+Walaupun memakai `Link`, komponen ini tetap bisa menjadi Server Component karena `Link` dapat digunakan untuk navigasi deklaratif.
+
+## 🚧 Kesalahan Umum
+
+### ⚠️ Mengira Semua Komponen Butuh `"use client"`
+
+Di App Router, default-nya adalah Server Component. Tambahkan `"use client"` hanya jika dibutuhkan.
+
+### ⚠️ Memakai Hook Client di Server Component
+
+Hook seperti `useState`, `useEffect`, dan `useRouter` membutuhkan Client Component.
+
+### ⚠️ Mengirim Secret ke Client
+
+Jangan mengirim API key, token, atau data sensitif sebagai props ke Client Component.
+
+### ⚠️ Membuat Page Menjadi Client Tanpa Alasan
+
+Jika hanya satu tombol yang interaktif, cukup tombol tersebut yang menjadi Client Component. Page tetap bisa Server Component.
+
+## 📝 Latihan
+
+Tentukan apakah komponen berikut lebih cocok Server Component atau Client Component:
+
+1. Halaman daftar artikel dari database.
+2. Tombol like yang berubah saat diklik.
+3. Layout dokumentasi statis.
+4. Form pencarian controlled input.
+5. Komponen yang membaca API key dari environment variable.
+
+Pertanyaan:
+
+- Apa keuntungan memakai Server Component untuk data fetching?
+- Kenapa secret tidak boleh dikirim ke Client Component?
+- Apa tanda bahwa sebuah komponen perlu menjadi Client Component?
+
+## ✅ Ringkasan
+
+Server Component adalah pilihan default di App Router. Gunakan Server Component untuk data, konten, layout statis, dan logic yang tidak membutuhkan browser. Mulai dari Server Component, lalu pindahkan bagian interaktif ke Client Component hanya saat dibutuhkan.

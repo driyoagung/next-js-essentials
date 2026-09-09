@@ -3,6 +3,12 @@ title: Loading UI
 description: Membuat tampilan loading dengan loading.tsx dan Suspense.
 ---
 
+<Callout type="info" title="Definisi singkat">
+Loading UI memberi feedback visual saat route atau bagian halaman sedang menunggu data.
+</Callout>
+
+![Diagram loading, error, dan not found](/diagrams/loading-error-not-found.svg)
+
 Loading UI memberi sinyal bahwa aplikasi sedang memproses route atau komponen yang membutuhkan data.
 
 Next.js menyediakan dua pendekatan umum:
@@ -10,7 +16,7 @@ Next.js menyediakan dua pendekatan umum:
 - `loading.tsx` untuk route segment.
 - `<Suspense>` untuk bagian UI yang lebih kecil.
 
-## Loading Route Segment
+## ⏳ Loading Route Segment
 
 Buat file `loading.tsx` di folder route.
 
@@ -29,7 +35,7 @@ export default function Loading() {
 
 Saat user berpindah ke `/users`, Next.js dapat menampilkan loading UI sementara `page.tsx` sedang dirender.
 
-## Loading dengan Skeleton
+## 🦴 Loading dengan Skeleton
 
 Fallback yang baik biasanya memberi gambaran bentuk konten berikutnya.
 
@@ -48,7 +54,7 @@ export default function Loading() {
 }
 ```
 
-## Suspense untuk Bagian Kecil
+## 🧩 Suspense untuk Bagian Kecil
 
 Jika hanya sebagian halaman yang lambat, bungkus bagian itu dengan `<Suspense>`.
 
@@ -77,10 +83,37 @@ async function RecentActivity() {
 }
 ```
 
-## Catatan Layout
+## 🧱 Catatan Layout
 
 `loading.tsx` membungkus page dan nested route di bawah segment yang sama, tetapi tidak membungkus `layout.tsx` pada segment tersebut. Jika data lambat berada di layout, pindahkan ke page atau bungkus bagian layout tersebut dengan `<Suspense>`.
 
-## Ringkasan
+## 🧪 Studi Kasus: Dashboard dengan Statistik Lambat
+
+Misalnya halaman dashboard punya tiga bagian:
+
+- Header cepat.
+- Ringkasan user cepat.
+- Grafik statistik lambat.
+
+Jangan membuat seluruh halaman menunggu grafik. Tampilkan shell dashboard lebih dulu, lalu bungkus grafik dengan `<Suspense>`.
+
+```tsx
+<Suspense fallback={<p>Loading chart...</p>}>
+  <Chart />
+</Suspense>
+```
+
+Dengan begitu, user tetap melihat struktur halaman sambil menunggu data lambat.
+
+## 📝 Latihan
+
+Tentukan strategi loading untuk kasus berikut:
+
+1. Seluruh halaman list produk lambat.
+2. Hanya chart dashboard yang lambat.
+3. Halaman detail user butuh fetch data awal.
+4. Sidebar cepat, konten utama lambat.
+
+## ✅ Ringkasan
 
 Gunakan `loading.tsx` untuk fallback route. Gunakan `<Suspense>` saat hanya bagian tertentu dari halaman yang perlu menunggu data.

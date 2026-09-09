@@ -3,28 +3,32 @@ title: "Bab 12: Production Essential"
 description: Menyiapkan aplikasi Next.js agar lebih siap digunakan di production.
 ---
 
+<Callout type="info" title="Fokus utama bab ini">
+Production bukan hanya build berhasil. Kamu perlu mengecek environment, security, metadata, asset, rendering, caching, error UI, observability, dan deployment.
+</Callout>
+
+![Diagram production readiness](/diagrams/production-readiness-flow.svg)
+
 Bab ini menjadi penutup seri dengan fokus pada hal-hal yang perlu diperhatikan sebelum aplikasi dipakai di environment production.
 
 Production bukan hanya menjalankan `npm run build`. Kamu perlu memastikan konfigurasi environment aman, metadata siap, image dan font optimal, strategi rendering jelas, error UI tersedia, dan deployment punya proses validasi.
 
 Bab ini merangkum checklist praktis sebelum aplikasi Next.js dipakai user sungguhan.
 
-## Alur Bab Ini
+## 🗺️ Alur Bab Ini
 
-1. Menyiapkan production checklist
-2. Mengelola environment variable
-3. Menambahkan metadata dan SEO
-4. Mengoptimalkan image
-5. Mengoptimalkan font
-6. Memilih rendering dan caching
-7. Menangani error dan observability
-8. Menjalankan build dan deployment
+<Cards>
+  <Card title="Checklist" description="Build, lint, typecheck, route, security, performance, dan SEO." />
+  <Card title="Environment" description="Secret, public env, runtime value, dan deployment config." />
+  <Card title="Optimization" description="Metadata, image, font, rendering, caching, dan streaming." />
+  <Card title="Deployment" description="Error UI, monitoring, build, start, dan strategi hosting." />
+</Cards>
 
-## Hasil yang Diharapkan
+## 🎯 Hasil yang Diharapkan
 
 Setelah bab ini selesai, kamu dapat menyiapkan konfigurasi dasar production dan memahami keputusan penting sebelum deploy aplikasi Next.js.
 
-## Mental Model
+## 🧠 Mental Model
 
 ```text
 Kode selesai
@@ -36,3 +40,19 @@ Security dicek
 Deploy dilakukan
 Monitoring berjalan
 ```
+
+## 🧪 Studi Kasus Bab Production
+
+Bayangkan aplikasi Employee Management siap dipakai internal perusahaan. Sebelum deploy, kamu perlu memastikan:
+
+- `DATABASE_URL` production sudah benar.
+- Auth secret berbeda dari local.
+- Semua halaman penting punya metadata.
+- Image dan font tidak menyebabkan layout shift.
+- Route protected tetap mengecek session di server.
+- Error UI tersedia untuk dashboard dan CRUD.
+- Monitoring aktif setelah deploy.
+
+## 📝 Latihan Pemanasan
+
+Buat checklist production untuk aplikasi CRUD sederhana yang punya auth, database, image upload, dan dashboard admin.

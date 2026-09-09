@@ -3,27 +3,32 @@ title: "Bab 11: Authentication"
 description: Memahami login, session, protected route, dan authorization.
 ---
 
+<Callout type="info" title="Fokus utama bab ini">
+Bab ini membahas authentication, session, authorization, protected route, login/register/logout, dan security check di Server Action serta Data Access Layer.
+</Callout>
+
+![Diagram alur authentication](/diagrams/auth-flow.svg)
+
 Bab ini membahas identitas user dan pembatasan akses di aplikasi Next.js.
 
 Authentication menjawab pertanyaan: siapa user ini? Setelah itu, session management menjaga status login antar request, dan authorization menentukan apa yang boleh dilakukan user tersebut.
 
 Di App Router, auth biasanya melibatkan Server Actions untuk login/register/logout, cookie untuk session, Server Component untuk membaca session, dan Data Access Layer untuk membatasi akses data.
 
-## Alur Bab Ini
+## 🗺️ Alur Bab Ini
 
-1. Memahami authentication, session, dan authorization
-2. Membuat flow register dan login
-3. Menyimpan session
-4. Melindungi route
-5. Mengecek role dan permission
-6. Membuat logout
-7. Menjaga security auth di Server Action dan DAL
+<Cards>
+  <Card title="Auth Overview" description="Membedakan authentication, session, dan authorization." />
+  <Card title="Register & Login" description="Memproses credentials di Server Action." />
+  <Card title="Protected Routes" description="Melindungi halaman dan data dengan session check." />
+  <Card title="Security" description="Cookie aman, hashing, permission, dan data minimal." />
+</Cards>
 
-## Hasil yang Diharapkan
+## 🎯 Hasil yang Diharapkan
 
 Setelah bab ini selesai, kamu dapat membangun alur authentication dasar dan melindungi halaman tertentu dari user yang belum berhak mengaksesnya.
 
-## Mental Model
+## 🧠 Mental Model
 
 ```text
 User mengirim credentials
@@ -35,3 +40,26 @@ Request berikutnya membawa cookie
 Server memverifikasi session
 Authorization menentukan akses
 ```
+
+## 🧪 Studi Kasus Bab Authentication
+
+Bayangkan aplikasi memiliki tiga area:
+
+```text
+/login              -> halaman publik
+/dashboard          -> hanya user login
+/admin              -> hanya role admin
+/tasks/[id]         -> hanya owner task
+```
+
+Dari sini terlihat bahwa login saja belum cukup. Server tetap harus mengecek session, role, permission, dan ownership data.
+
+## 📝 Latihan Pemanasan
+
+Jawab pertanyaan berikut:
+
+1. Apa beda authentication dan authorization?
+2. Kenapa cookie session harus `httpOnly`?
+3. Kenapa pesan login sebaiknya umum seperti `Invalid credentials`?
+4. Di mana sebaiknya ownership data dicek?
+5. Kenapa menyembunyikan tombol admin di UI belum cukup aman?

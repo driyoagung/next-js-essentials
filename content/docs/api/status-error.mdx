@@ -3,11 +3,15 @@ title: Status Code dan Error
 description: Mengirim status code yang tepat dan menangani error pada Route Handler.
 ---
 
+<Callout type="info" title="Definisi singkat">
+Status code memberi tahu client apakah request berhasil, input salah, user tidak punya akses, data tidak ditemukan, atau server bermasalah.
+</Callout>
+
 Endpoint API perlu mengirim status code yang jelas agar client tahu hasil request.
 
 Response sukses dan gagal sebaiknya konsisten. Ini membuat Client Component, aplikasi mobile, atau service lain lebih mudah memakai endpoint tersebut.
 
-## Status Code Dasar
+## 📊 Status Code Dasar
 
 Beberapa status code yang sering dipakai:
 
@@ -21,7 +25,7 @@ Beberapa status code yang sering dipakai:
 | `404` | Not Found | Data tidak ditemukan |
 | `500` | Internal Server Error | Error tidak terduga |
 
-## Validasi Input
+## ✅ Validasi Input
 
 ```ts filename="app/api/tasks/route.ts"
 export async function POST(request: Request) {
@@ -48,7 +52,7 @@ export async function POST(request: Request) {
 }
 ```
 
-## Data Tidak Ditemukan
+## 🔎 Data Tidak Ditemukan
 
 ```ts filename="app/api/tasks/[id]/route.ts"
 const tasks = [
@@ -75,7 +79,7 @@ export async function GET(
 }
 ```
 
-## Try Catch
+## 🧯 Try Catch
 
 Gunakan `try...catch` untuk operasi yang bisa gagal, seperti request ke service eksternal atau query database.
 
@@ -108,7 +112,7 @@ export async function GET() {
 }
 ```
 
-## Jangan Bocorkan Detail Internal
+## 🔐 Jangan Bocorkan Detail Internal
 
 Untuk response production, hindari mengirim stack trace, query database, token, atau detail secret ke client.
 
@@ -120,6 +124,6 @@ Lebih aman mengirim pesan umum:
 }
 ```
 
-## Ringkasan
+## ✅ Ringkasan
 
 Gunakan status code yang sesuai, validasi input sebelum memproses data, dan jangan membocorkan detail internal ketika terjadi error.

@@ -3,21 +3,63 @@ title: Apa Itu Next.js?
 description: Mengenal Next.js sebagai framework React untuk aplikasi web modern.
 ---
 
-Next.js adalah framework berbasis React untuk membangun aplikasi web. React berfokus pada pembuatan UI, sedangkan Next.js menyediakan struktur aplikasi yang lebih lengkap: routing, layout, rendering di server, API route, optimasi gambar, metadata, dan mekanisme build.
+<Callout type="info" title="Inti pembahasan">
+Next.js adalah framework React. Kamu tetap menulis React, tetapi berada di dalam struktur aplikasi yang sudah menyediakan routing, rendering, optimasi, dan fitur production.
+</Callout>
 
-Dengan Next.js, kamu tidak perlu menyusun semua fondasi aplikasi dari nol. Banyak kebutuhan umum sudah punya convention, sehingga kamu bisa fokus ke fitur aplikasi.
+Next.js adalah framework berbasis React untuk membangun aplikasi web modern. React berfokus pada pembuatan UI, sedangkan Next.js menyediakan struktur aplikasi yang lebih lengkap seperti routing, layout, rendering di server, API route, optimasi gambar, metadata, dan mekanisme build.
 
-## Posisi Next.js di Atas React
+Dengan Next.js, kamu tidak perlu menyusun semua fondasi aplikasi dari nol. Banyak kebutuhan umum sudah disediakan sebagai convention, sehingga kamu bisa lebih fokus ke fitur aplikasi.
+
+## 🤝 React dan Next.js Bukan Lawan
+
+Hal pertama yang perlu dipahami adalah React dan Next.js bukan dua teknologi yang saling menggantikan.
+
+React adalah library untuk membangun UI. Next.js adalah framework yang menggunakan React untuk membangun aplikasi lengkap.
+
+Perbandingan sederhananya:
+
+```text
+React:
+Membantu membuat komponen tampilan.
+
+Next.js:
+Membantu menyusun komponen React menjadi aplikasi dengan halaman, route, layout, rendering, dan optimasi.
+```
+
+Jadi saat kamu belajar Next.js, kamu tetap perlu memahami React. Komponen, props, state, event, dan JSX tetap menjadi bagian penting. Next.js hanya menambahkan lapisan aplikasi di atasnya.
+
+## 🧩 Masalah yang Diselesaikan Next.js
+
+Jika memakai React saja, kamu bisa membuat UI dengan sangat fleksibel. Namun, ketika aplikasi mulai berkembang, kamu biasanya membutuhkan banyak hal tambahan:
+
+- Routing untuk berpindah halaman
+- Layout yang dipakai bersama
+- Pengaturan metadata untuk SEO
+- Pengambilan data dari server
+- Loading dan error handling
+- Optimasi gambar dan font
+- API endpoint sederhana
+- Build production
+- Deployment
+
+Semua hal tersebut bisa dibuat sendiri, tetapi membutuhkan keputusan teknis tambahan. Next.js hadir untuk menyediakan convention dan fitur bawaan agar fondasi aplikasi lebih siap dari awal.
+
+## 🧱 Posisi Next.js di Atas React
+
+![Diagram React dan Next.js](/diagrams/react-nextjs-role.svg)
 
 React membantu kita membuat komponen:
 
 ```tsx
 export function Greeting() {
-  return <h1>Hello Next.js</h1>;
+  return <h1>Hello React</h1>;
 }
 ```
 
-Next.js menentukan bagaimana komponen itu menjadi halaman yang dapat dibuka lewat URL:
+Komponen tersebut hanya sebuah bagian UI. Agar menjadi halaman yang bisa dibuka lewat URL, kamu perlu sistem routing.
+
+Di Next.js, sebuah file dapat langsung menjadi halaman:
 
 ```tsx filename="app/page.tsx"
 export default function Page() {
@@ -25,28 +67,224 @@ export default function Page() {
 }
 ```
 
-File `app/page.tsx` membuat route `/`. Jadi, perbedaan besarnya bukan hanya di sintaks komponen, tetapi di cara project diorganisasi menjadi aplikasi.
+File `app/page.tsx` membuat route `/`. Artinya, lokasi file punya makna khusus. Ini adalah salah satu convention paling penting di Next.js.
 
-## Kapan Next.js Cocok Dipakai?
+Contoh lain:
 
-Next.js cocok saat aplikasi membutuhkan routing, SEO, rendering awal yang baik, pengambilan data di server, API sederhana, atau struktur project yang lebih siap berkembang.
+```text
+app/
++-- page.tsx
++-- about/
+    +-- page.tsx
+```
+
+Struktur di atas menghasilkan route:
+
+```text
+/
+/about
+```
+
+Kamu tidak perlu mendefinisikan route secara manual seperti daftar konfigurasi panjang. Next.js membaca struktur folder di dalam `app`.
+
+## 🏗️ Apa Itu Framework?
+
+Framework adalah alat yang tidak hanya menyediakan fungsi, tetapi juga memberikan cara kerja dan struktur.
+
+Library biasanya memberi kebebasan penuh. Kamu memanggil library saat dibutuhkan. Framework biasanya memberi aturan lebih jelas tentang bagaimana project disusun.
+
+React lebih dekat disebut library karena fokus utamanya adalah UI. Next.js disebut framework karena ia mengatur banyak aspek aplikasi.
+
+Analogi sederhananya:
+
+```text
+Library seperti kotak alat.
+Framework seperti rancangan kerja plus kotak alat.
+```
+
+Dengan kotak alat, kamu bebas membangun apa pun, tetapi harus menentukan banyak hal sendiri. Dengan framework, sebagian keputusan sudah diarahkan agar pembangunan lebih konsisten.
+
+## ⚙️ Fitur Utama Next.js
+
+Berikut beberapa fitur penting Next.js yang akan sering kamu temui:
+
+<Cards>
+  <Card title="Routing" description="URL aplikasi dibentuk dari struktur folder di dalam app." />
+  <Card title="Rendering" description="UI dapat dirender di server atau client sesuai kebutuhan." />
+  <Card title="API" description="Endpoint sederhana dapat dibuat langsung di project Next.js." />
+</Cards>
+
+### 🗺️ 1. File-based Routing
+
+Route dibuat berdasarkan struktur folder. File `page.tsx` menjadi halaman.
+
+```text
+app/contact/page.tsx -> /contact
+```
+
+### 🧱 2. Layout
+
+File `layout.tsx` digunakan untuk membungkus halaman. Ini berguna untuk navbar, sidebar, footer, atau struktur halaman yang berulang.
+
+### 🖥️ 3. Server Component
+
+Di App Router, komponen secara default dirender sebagai Server Component. Ini memungkinkan sebagian pekerjaan dilakukan di server sebelum hasilnya dikirim ke browser.
+
+### 🖱️ 4. Client Component
+
+Jika membutuhkan interaksi seperti state, event handler, atau akses browser API, kamu bisa memakai Client Component dengan directive `"use client"`.
+
+### 📦 5. Data Fetching
+
+Next.js mendukung pengambilan data langsung di Server Component. Ini membuat pola membaca data menjadi lebih sederhana untuk banyak kasus.
+
+### 🔌 6. Route Handler
+
+Next.js dapat membuat endpoint API menggunakan file `route.ts`. Ini berguna untuk API sederhana dalam project yang sama.
+
+### 🔎 7. Metadata dan SEO
+
+Next.js menyediakan Metadata API untuk mengatur title, description, open graph, dan kebutuhan SEO lainnya.
+
+### 🖼️ 8. Optimasi Asset
+
+Next.js menyediakan fitur untuk optimasi gambar, font, dan proses build agar aplikasi lebih siap production.
+
+## ✅ Kapan Next.js Cocok Dipakai?
+
+Next.js cocok digunakan saat aplikasi membutuhkan struktur yang jelas dan fitur web modern sejak awal.
 
 Contoh use case:
 
-- Dokumentasi
-- Dashboard
+- Website dokumentasi
+- Blog
+- Website company profile
+- Landing page marketing
+- Dashboard admin
 - Aplikasi CRUD
-- Website marketing
 - E-commerce
 - Aplikasi dengan halaman publik dan halaman protected
+- Aplikasi yang butuh SEO
+- Aplikasi yang butuh server rendering
 
-## Mental Model
+Misalnya kamu membuat halaman produk e-commerce. Halaman tersebut butuh URL unik, metadata SEO, gambar yang optimal, dan data dari database. Next.js menyediakan banyak fondasi untuk kebutuhan tersebut.
 
-Pikirkan Next.js sebagai lapisan aplikasi di atas React:
+## ⚖️ Kapan Next.js Mungkin Berlebihan?
+
+Next.js tidak selalu wajib dipakai. Untuk aplikasi yang sangat sederhana dan hanya berjalan di browser, React + Vite bisa cukup.
+
+Contoh:
+
+- Widget kecil
+- Prototype internal sederhana
+- Aplikasi eksperimen satu halaman
+- UI yang sepenuhnya client-side dan tidak butuh SEO
+
+Namun, jika aplikasi diperkirakan akan tumbuh menjadi banyak halaman dan membutuhkan struktur yang lebih matang, Next.js biasanya lebih nyaman sejak awal.
+
+## 🧭 Contoh Alur Berpikir Next.js
+
+Misalnya kamu ingin membuat halaman profil user dengan URL:
 
 ```text
-React: membuat komponen UI
-Next.js: mengatur route, render, data, build, dan deployment
+/users/1
 ```
 
-Saat belajar Next.js, jangan hanya menghafal nama file. Pahami juga alasan convention-nya: folder menjadi route, `page.tsx` membuka URL, dan `layout.tsx` membungkus halaman.
+Di Next.js, kamu mulai berpikir dari route:
+
+```text
+app/users/[id]/page.tsx
+```
+
+Lalu halaman tersebut membaca parameter `id`, mengambil data user, dan menampilkan UI.
+
+Inilah pola penting Next.js:
+
+```text
+URL -> struktur folder -> page -> data -> UI
+```
+
+Pola ini akan sering dipakai di bab routing, data fetching, dan CRUD.
+
+## 🚧 Kesalahan Umum Pemula
+
+Beberapa kesalahan yang sering terjadi saat baru belajar Next.js:
+
+### ⚠️ Menganggap Next.js Menggantikan React
+
+Next.js tetap memakai React. Jika belum paham komponen, props, state, dan JSX, kamu akan tetap kesulitan.
+
+### ⚠️ Menghafal Nama File Tanpa Memahami Fungsinya
+
+Nama seperti `page.tsx`, `layout.tsx`, dan `route.ts` bukan sekadar nama bebas. File tersebut punya peran khusus.
+
+### ⚠️ Membuat Folder dan Mengira Otomatis Jadi Halaman
+
+Folder di dalam `app` belum tentu menjadi halaman. Route bisa diakses jika ada file `page.tsx` atau endpoint `route.ts`.
+
+### ⚠️ Menaruh Semua File di Dalam `app`
+
+Tidak semua file harus berada di `app`. Helper, utility, atau komponen umum bisa disimpan di folder seperti `lib` atau `components`.
+
+## 🧪 Studi Kasus: Website Profil Sekolah
+
+Bayangkan kamu diminta membuat website profil sekolah dengan halaman berikut:
+
+```text
+/
+/tentang
+/guru
+/kontak
+```
+
+Dengan Next.js, kamu bisa membuat struktur:
+
+```text
+app/
++-- page.tsx
++-- tentang/
+|   +-- page.tsx
++-- guru/
+|   +-- page.tsx
++-- kontak/
+    +-- page.tsx
+```
+
+Setiap `page.tsx` berisi UI untuk halaman tersebut. Jika semua halaman memakai navbar yang sama, kamu bisa menaruhnya di `app/layout.tsx`.
+
+Contoh sederhana:
+
+```tsx filename="app/layout.tsx"
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return (
+    <html lang="id">
+      <body>
+        <nav>Profil Sekolah</nav>
+        <main>{children}</main>
+      </body>
+    </html>
+  );
+}
+```
+
+Dengan pola ini, kamu tidak perlu menulis navbar berulang di setiap halaman.
+
+## 📝 Latihan
+
+Coba kerjakan latihan berikut untuk menguji pemahaman:
+
+1. Jelaskan dengan kalimat sendiri apa itu Next.js.
+2. Sebutkan tiga fitur Next.js yang tidak disediakan langsung oleh React.
+3. Buat rancangan struktur folder untuk halaman `/produk`, `/produk/sepatu`, dan `/kontak`.
+4. Jelaskan kenapa `layout.tsx` berguna pada aplikasi banyak halaman.
+5. Berikan contoh aplikasi yang cocok dibuat dengan Next.js.
+
+## ✅ Ringkasan
+
+Next.js adalah framework React untuk membangun aplikasi web modern. React berperan membuat UI, sedangkan Next.js menyediakan struktur aplikasi seperti routing, layout, rendering, API, metadata, optimasi, build, dan deployment.
+
+Jika React membantu kamu membuat komponen, maka Next.js membantu kamu menyusun komponen tersebut menjadi aplikasi lengkap yang siap dikembangkan lebih jauh.

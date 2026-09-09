@@ -3,9 +3,13 @@ title: Loading dan Error State CRUD
 description: Menyiapkan loading, not found, dan error boundary untuk alur CRUD.
 ---
 
+<Callout type="info" title="UX CRUD">
+CRUD yang baik tidak hanya punya create, read, update, dan delete. User juga perlu tahu saat data loading, gagal, kosong, atau tidak ditemukan.
+</Callout>
+
 CRUD yang baik tidak hanya berjalan saat semua lancar. User juga perlu melihat UI yang jelas saat data sedang dimuat, tidak ditemukan, atau gagal diproses.
 
-## Loading List
+## ⏳ Loading List
 
 Buat `loading.tsx` di segment `/employees`.
 
@@ -22,7 +26,7 @@ export default function EmployeesLoading() {
 
 File ini otomatis dipakai saat route segment sedang menunggu data.
 
-## Error Boundary
+## 🧯 Error Boundary
 
 Buat `error.tsx` untuk error yang tidak tertangani.
 
@@ -56,7 +60,7 @@ export default function EmployeesError({
 
 Di Next.js 16, error boundary menerima prop `retry` untuk mencoba render segment lagi.
 
-## Not Found Detail
+## 🚫 Not Found Detail
 
 Jika employee tidak ada, gunakan `notFound()`.
 
@@ -95,7 +99,7 @@ export default function EmployeeNotFound() {
 }
 ```
 
-## Pending State Form
+## ⏱️ Pending State Form
 
 Untuk pending state form yang lebih detail, gunakan Client Component kecil dengan `useFormStatus`.
 
@@ -126,10 +130,10 @@ Lalu pakai di form:
 
 Client Component hanya dipakai untuk tombol pending, bukan seluruh halaman.
 
-## Error pada Action
+## ⚠️ Error pada Action
 
 Untuk pembelajaran awal, error bisa dilempar dan ditangani oleh `error.tsx`. Namun untuk validasi form yang expected, lebih baik mengembalikan state error ke form. Pola ini akan dibahas lebih lengkap pada Bab 9.
 
-## Ringkasan
+## ✅ Ringkasan
 
 Tambahkan `loading.tsx`, `error.tsx`, dan `not-found.tsx` agar CRUD punya pengalaman gagal dan menunggu yang jelas. Gunakan Client Component kecil untuk pending state form ketika dibutuhkan.

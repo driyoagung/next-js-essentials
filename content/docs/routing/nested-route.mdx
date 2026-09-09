@@ -3,9 +3,39 @@ title: Nested Route
 description: Membuat route bertingkat dari struktur folder bertingkat.
 ---
 
+<Callout type="info" title="Definisi singkat">
+Nested route adalah route bertingkat yang dibuat dengan menaruh folder di dalam folder lain. Struktur folder akan mengikuti struktur URL.
+</Callout>
+
 Nested route dibuat dengan menaruh folder di dalam folder lain. Struktur folder akan mengikuti struktur URL.
 
-## Contoh Struktur
+## 🧭 Apa Itu Nested Route?
+
+Nested route adalah route yang memiliki lebih dari satu segment URL.
+
+Contoh:
+
+```text
+/products/categories
+/dashboard/settings
+/admin/users/create
+```
+
+URL `/dashboard/settings` memiliki dua segment:
+
+```text
+dashboard -> settings
+```
+
+Di Next.js, segment tersebut diterjemahkan menjadi folder bertingkat:
+
+```text
+app/dashboard/settings/page.tsx
+```
+
+## 🗂️ Contoh Struktur
+
+Contoh struktur nested route:
 
 ```text
 app/
@@ -22,7 +52,18 @@ Route yang terbentuk:
 /products/categories
 ```
 
-## Contoh Halaman
+Penjelasannya:
+
+- `app/products/page.tsx` membuat route `/products`
+- `app/products/categories/page.tsx` membuat route `/products/categories`
+
+<Callout type="idea" title="Cara membaca nested route">
+Baca folder dari atas ke bawah. Setiap folder menjadi bagian URL, dan `page.tsx` menjadi halaman pada posisi tersebut.
+</Callout>
+
+## 📄 Contoh Halaman
+
+Halaman daftar produk:
 
 ```tsx filename="app/products/page.tsx"
 export default function ProductsPage() {
@@ -30,13 +71,46 @@ export default function ProductsPage() {
 }
 ```
 
+Halaman kategori produk:
+
 ```tsx filename="app/products/categories/page.tsx"
 export default function ProductCategoriesPage() {
   return <h1>Product Categories</h1>;
 }
 ```
 
-## Kapan Nested Route Dipakai?
+Dengan struktur ini, user dapat membuka dua URL berbeda:
+
+```text
+/products
+/products/categories
+```
+
+Kedua route tersebut masih berada dalam konteks yang sama, yaitu `products`.
+
+## 🧠 Hubungan URL dan Folder
+
+Nested route membantu kamu menjaga hubungan antara URL dan struktur project.
+
+Jika URL-nya:
+
+```text
+/dashboard/settings/profile
+```
+
+Maka struktur foldernya:
+
+```text
+app/
++-- dashboard/
+    +-- settings/
+        +-- profile/
+            +-- page.tsx
+```
+
+Setiap slash `/` pada URL biasanya menjadi folder baru di dalam `app`.
+
+## 🧩 Kapan Nested Route Dipakai?
 
 Nested route cocok ketika sebuah halaman punya konteks induk yang jelas.
 
@@ -50,6 +124,157 @@ Contoh:
 
 Ketiga route tersebut berada dalam area `dashboard`, jadi secara struktur folder juga masuk akal jika dikelompokkan di bawah `app/dashboard`.
 
-## Catatan
+Contoh lain:
+
+```text
+/products
+/products/categories
+/products/featured
+```
+
+Semua route tersebut masih berada di konteks `products`.
+
+<Cards>
+  <Card title="Dashboard" description="Cocok untuk /dashboard, /dashboard/users, dan /dashboard/settings." />
+  <Card title="Produk" description="Cocok untuk /products, /products/categories, dan /products/featured." />
+  <Card title="Admin" description="Cocok untuk /admin/users, /admin/roles, dan /admin/reports." />
+</Cards>
+
+## 🪆 Nested Route dan Nested Layout
 
 Nested route sering dipasangkan dengan nested layout. Dengan begitu, route seperti `/dashboard/settings` dapat memakai sidebar dashboard yang sama tanpa menulis ulang UI di setiap halaman.
+
+Contoh struktur:
+
+```text
+app/
++-- dashboard/
+    +-- layout.tsx
+    +-- page.tsx
+    +-- settings/
+        +-- page.tsx
+```
+
+`app/dashboard/layout.tsx` akan membungkus:
+
+```text
+/dashboard
+/dashboard/settings
+```
+
+Contoh layout dashboard:
+
+```tsx filename="app/dashboard/layout.tsx"
+export default function DashboardLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return (
+    <section>
+      <aside>Sidebar Dashboard</aside>
+      <main>{children}</main>
+    </section>
+  );
+}
+```
+
+Dengan pola ini, sidebar dashboard tidak perlu ditulis ulang di setiap halaman dashboard.
+
+## 🧪 Studi Kasus: Area Dashboard Admin
+
+Bayangkan kamu membuat dashboard admin dengan halaman:
+
+```text
+/dashboard
+/dashboard/users
+/dashboard/users/create
+/dashboard/settings
+```
+
+Struktur foldernya:
+
+```text
+app/
++-- dashboard/
+    +-- layout.tsx
+    +-- page.tsx
+    +-- users/
+    |   +-- page.tsx
+    |   +-- create/
+    |       +-- page.tsx
+    +-- settings/
+        +-- page.tsx
+```
+
+Route yang terbentuk:
+
+```text
+/dashboard
+/dashboard/users
+/dashboard/users/create
+/dashboard/settings
+```
+
+Jika semua halaman dashboard memakai sidebar yang sama, kamu bisa menaruh sidebar di `app/dashboard/layout.tsx`.
+
+## 🚧 Kesalahan Umum
+
+### ⚠️ Terlalu Banyak Nested Route Tanpa Alasan
+
+Nested route sebaiknya dipakai jika ada hubungan konteks yang jelas. Jangan membuat URL terlalu panjang jika tidak perlu.
+
+Kurang ideal:
+
+```text
+/company/profile/about/detail/info
+```
+
+Lebih sederhana:
+
+```text
+/about
+```
+
+### ⚠️ Bingung Antara Nested Route dan Dynamic Route
+
+Nested route memakai nama folder biasa seperti `settings` atau `categories`. Dynamic route memakai bracket seperti `[id]`.
+
+Contoh nested route:
+
+```text
+app/products/categories/page.tsx
+```
+
+Contoh dynamic route:
+
+```text
+app/products/[id]/page.tsx
+```
+
+### ⚠️ Mengulang UI yang Seharusnya Masuk Layout
+
+Jika beberapa nested route memakai navbar, sidebar, atau wrapper yang sama, pertimbangkan memakai `layout.tsx` di folder induknya.
+
+## 📝 Latihan
+
+Buat struktur folder untuk route berikut:
+
+```text
+/admin
+/admin/users
+/admin/users/create
+/admin/reports
+/admin/settings/profile
+```
+
+Pertanyaan:
+
+1. Berapa level nested route pada `/admin/settings/profile`?
+2. Di mana kamu akan menaruh layout khusus admin?
+3. File apa yang membuat route `/admin/users/create`?
+4. Apa perbedaan `/admin/users` dan `/admin/users/create` dari sisi struktur folder?
+
+## ✅ Ringkasan
+
+Nested route dibuat dengan folder bertingkat di dalam `app`. Struktur folder mengikuti struktur URL. Nested route cocok untuk halaman yang punya konteks induk seperti dashboard, admin, produk, atau dokumentasi. Jika beberapa nested route punya UI yang sama, gunakan nested layout agar kode lebih rapi.

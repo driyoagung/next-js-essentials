@@ -3,11 +3,17 @@ title: Data Access Layer
 description: Membungkus query database agar akses data lebih aman dan rapi.
 ---
 
+<Callout type="info" title="Definisi singkat">
+Data Access Layer adalah lapisan yang membungkus query database agar page, Server Action, dan Route Handler tidak langsung bergantung pada detail database.
+</Callout>
+
+![Diagram Data Access Layer](/diagrams/data-access-layer.svg)
+
 Data Access Layer atau DAL adalah tempat khusus untuk membaca dan menulis data. Di Next.js, DAL membantu menjaga database client dan secret tetap berada di server.
 
 DAL juga menjadi tempat yang baik untuk authorization dan pembentukan DTO.
 
-## Struktur Folder
+## 🗂️ Struktur Folder
 
 Contoh struktur:
 
@@ -20,7 +26,7 @@ lib/
 
 `lib/db.ts` berisi database client. `data/employees.ts` berisi function untuk kebutuhan domain employee.
 
-## Server Only
+## 🔐 Server Only
 
 Tambahkan `import "server-only"` pada module DAL.
 
@@ -32,7 +38,7 @@ import { db } from "@/lib/db";
 
 Ini membantu mencegah module database tidak sengaja diimpor ke Client Component.
 
-## DTO
+## 📦 DTO
 
 DTO atau Data Transfer Object adalah bentuk data yang aman dikirim ke UI.
 
@@ -48,7 +54,7 @@ export type EmployeeDTO = {
 
 Jangan selalu mengirim raw database record. Pilih field yang memang diperlukan UI.
 
-## Function Read
+## 📖 Function Read
 
 ```ts filename="data/employees.ts"
 export async function getEmployees(): Promise<EmployeeDTO[]> {
@@ -69,7 +75,7 @@ export async function getEmployees(): Promise<EmployeeDTO[]> {
 }
 ```
 
-## Function Detail
+## 🔎 Function Detail
 
 ```ts filename="data/employees.ts"
 export async function getEmployeeById(
@@ -90,7 +96,7 @@ export async function getEmployeeById(
 }
 ```
 
-## Function Mutation
+## ✏️ Function Mutation
 
 Mutation juga bisa diletakkan di DAL agar Server Action tetap tipis.
 
@@ -109,6 +115,6 @@ export async function createEmployee(input: EmployeeInput) {
 }
 ```
 
-## Ringkasan
+## ✅ Ringkasan
 
 Gunakan Data Access Layer untuk membungkus query, membatasi data yang dikirim ke UI, dan menjaga aturan akses data tetap konsisten.

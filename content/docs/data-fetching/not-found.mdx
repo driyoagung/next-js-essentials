@@ -3,9 +3,13 @@ title: Not Found
 description: Menampilkan UI 404 ketika data atau route tidak ditemukan.
 ---
 
+<Callout type="info" title="Definisi singkat">
+`notFound()` digunakan saat data memang tidak ditemukan, bukan saat sistem gagal. Ini membantu user dan mesin pencari memahami bahwa resource tidak ada.
+</Callout>
+
 Tidak semua kegagalan data adalah error sistem. Jika data memang tidak ada, gunakan `notFound()` agar user mendapatkan UI 404 yang tepat.
 
-## Contoh Detail Page
+## 💻 Contoh Detail Page
 
 ```tsx filename="app/posts/[id]/page.tsx"
 import { notFound } from "next/navigation";
@@ -53,7 +57,7 @@ export default async function PostDetailPage({
 }
 ```
 
-## File not-found.tsx
+## 🧭 File not-found.tsx
 
 Buat file `not-found.tsx` pada segment yang ingin punya UI 404 khusus.
 
@@ -73,7 +77,7 @@ export default function NotFound() {
 
 Jika `notFound()` dipanggil di `app/posts/[id]/page.tsx`, maka Next.js akan menampilkan `not-found.tsx` terdekat.
 
-## Not Found vs Error
+## ⚖️ Not Found vs Error
 
 | Kondisi | Gunakan |
 | --- | --- |
@@ -81,6 +85,35 @@ Jika `notFound()` dipanggil di `app/posts/[id]/page.tsx`, maka Next.js akan mena
 | Request gagal karena server/API bermasalah | `throw new Error()` |
 | Validasi input gagal | Return value atau pesan validasi |
 
-## Ringkasan
+## 🧪 Studi Kasus: Detail Produk Tidak Ada
+
+User membuka:
+
+```text
+/products/999
+```
+
+Jika produk dengan ID tersebut tidak ada, tampilkan `not-found.tsx`, bukan error 500. Ini memberi pesan yang lebih tepat: sistem tidak rusak, resource memang tidak ditemukan.
+
+Flow:
+
+```text
+Baca params id
+Query produk
+Jika null -> notFound()
+Jika ada -> render detail
+```
+
+## 📝 Latihan
+
+Tentukan apakah kasus berikut memakai `notFound()`, error UI, atau empty state:
+
+1. Produk dengan ID tertentu tidak ada.
+2. Database tidak bisa dihubungi.
+3. Search produk tidak menghasilkan data.
+4. Artikel dengan slug salah.
+5. User tidak punya akses ke halaman admin.
+
+## ✅ Ringkasan
 
 Gunakan `notFound()` untuk kasus data tidak ditemukan. Jangan mencampurnya dengan error sistem, karena keduanya memberi makna berbeda pada user dan mesin pencari.

@@ -3,11 +3,15 @@ title: Authorization
 description: Mengecek role, permission, dan ownership data.
 ---
 
+<Callout type="warn" title="Login bukan izin penuh">
+User yang sudah login belum tentu boleh melihat, mengubah, atau menghapus semua data. Authorization tetap harus dicek di server.
+</Callout>
+
 Authorization menentukan apa yang boleh dilakukan user setelah mereka login.
 
 Contoh sederhana: semua user boleh melihat profile sendiri, tetapi hanya admin yang boleh menghapus user lain.
 
-## Role Based Access
+## 👑 Role Based Access
 
 Role adalah label besar seperti `admin`, `editor`, atau `user`.
 
@@ -35,7 +39,7 @@ export default async function AdminPage() {
 }
 ```
 
-## Permission Based Access
+## 🧾 Permission Based Access
 
 Permission lebih spesifik daripada role.
 
@@ -52,7 +56,7 @@ export function hasPermission(
 
 Permission cocok ketika aplikasi mulai punya banyak aturan akses.
 
-## Ownership Check
+## 🧑‍💼 Ownership Check
 
 Ownership memastikan user hanya mengakses data miliknya.
 
@@ -75,7 +79,7 @@ export async function getTaskById(taskId: string) {
 
 Jika query tidak menemukan data, user tidak berhak melihat task tersebut atau task memang tidak ada.
 
-## Authorization di Server Action
+## ⚙️ Authorization di Server Action
 
 Server Action tetap bisa dipanggil langsung. Cek permission di dalam action atau DAL.
 
@@ -106,6 +110,6 @@ export async function deleteEmployeeAction(formData: FormData) {
 }
 ```
 
-## Ringkasan
+## ✅ Ringkasan
 
 Authorization bisa berbasis role, permission, atau ownership. Lakukan pengecekan di server, sedekat mungkin dengan data dan mutation.

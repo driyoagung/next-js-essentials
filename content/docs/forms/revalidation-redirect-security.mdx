@@ -3,11 +3,15 @@ title: Revalidation, Redirect, dan Security
 description: Menyegarkan data setelah mutation dan mengamankan Server Action.
 ---
 
+<Callout type="info" title="Setelah mutation">
+Setelah data berubah, pikirkan tiga hal: cache mana yang perlu disegarkan, user harus diarahkan ke mana, dan apakah action sudah aman.
+</Callout>
+
 Setelah Server Action mengubah data, UI perlu menampilkan data terbaru. Next.js menyediakan beberapa API untuk menyegarkan route atau cache.
 
 Bagian ini juga penting untuk security, karena Server Action tetap bisa dipanggil melalui request langsung.
 
-## Revalidate Path
+## 🔄 Revalidate Path
 
 Gunakan `revalidatePath` ketika mutation memengaruhi satu route tertentu.
 
@@ -33,7 +37,7 @@ export async function createTask(formData: FormData) {
 
 Ketika action memanggil `revalidatePath`, Next.js dapat mengirim hasil action dan render UI terbaru dalam satu response.
 
-## Redirect Setelah Mutation
+## 🧭 Redirect Setelah Mutation
 
 Gunakan `redirect` ketika user perlu dipindah setelah mutation.
 
@@ -56,7 +60,7 @@ export async function createTask(formData: FormData) {
 
 `redirect()` menghentikan alur function. Letakkan `revalidatePath()` sebelum `redirect()` jika halaman tujuan membutuhkan data terbaru.
 
-## Refresh Current Route
+## ♻️ Refresh Current Route
 
 Jika kamu hanya perlu memuat ulang current route tanpa mengubah cache tag atau path, gunakan `refresh` dari `next/cache`.
 
@@ -73,7 +77,7 @@ export async function updatePreference(formData: FormData) {
 
 `refresh()` hanya bisa dipanggil dari Server Action.
 
-## Update Tag dan Revalidate Tag
+## 🏷️ Update Tag dan Revalidate Tag
 
 Jika data memakai cache tag, pilih API berdasarkan kebutuhan.
 
@@ -84,7 +88,7 @@ Jika data memakai cache tag, pilih API berdasarkan kebutuhan.
 | `revalidatePath` | Server Action dan Route Handler | Invalidate berdasarkan path |
 | `refresh` | Server Action | Refetch current route |
 
-## Security Checklist
+## 🔐 Security Checklist
 
 Server Action bukan hanya function lokal. Action bisa dipanggil melalui request `POST`.
 
@@ -97,7 +101,7 @@ Checklist dasar:
 - Jangan return raw database record jika berisi data sensitif.
 - Batasi ukuran payload jika form menerima file besar.
 
-## Contoh Authorization
+## 🛡️ Contoh Authorization
 
 ```ts filename="app/tasks/actions.ts"
 "use server";
@@ -126,6 +130,6 @@ export async function completeTask(taskId: string) {
 
 Client boleh mengirim `taskId`, tetapi server tetap harus memastikan task tersebut memang milik user yang sedang login.
 
-## Ringkasan
+## ✅ Ringkasan
 
 Setelah mutation, panggil revalidation atau redirect sesuai flow. Di setiap Server Action, validasi input dan lakukan authorization karena action bisa dipanggil langsung dari luar UI.

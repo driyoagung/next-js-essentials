@@ -3,6 +3,10 @@ title: Error Handling
 description: Menangani expected error dan unexpected error pada route.
 ---
 
+<Callout type="info" title="Definisi singkat">
+Error handling membantu aplikasi tetap menampilkan UI yang jelas ketika request gagal, render bermasalah, atau terjadi kondisi yang tidak terduga.
+</Callout>
+
 Error handling membantu aplikasi tetap memberi UI yang jelas ketika request gagal atau terjadi bug saat render.
 
 Secara sederhana:
@@ -10,7 +14,7 @@ Secara sederhana:
 - Expected error ditangani sebagai return value atau kondisi UI.
 - Unexpected error bisa dilempar dengan `throw` dan ditangkap oleh `error.tsx`.
 
-## Expected Error
+## ✅ Expected Error
 
 Expected error adalah error yang memang mungkin terjadi, misalnya response API gagal.
 
@@ -49,7 +53,7 @@ export default async function UsersPage() {
 
 Pola ini cocok ketika error adalah bagian normal dari alur aplikasi.
 
-## Unexpected Error
+## 🚨 Unexpected Error
 
 Untuk error yang tidak bisa dipulihkan di tempat tersebut, lempar error.
 
@@ -67,7 +71,7 @@ async function getUsers() {
 
 Next.js akan mencari `error.tsx` terdekat di route hierarchy.
 
-## File error.tsx
+## 🧯 File error.tsx
 
 `error.tsx` harus menjadi Client Component karena error boundary membutuhkan interaksi client untuk recovery.
 
@@ -101,7 +105,7 @@ export default function Error({
 
 Di Next.js 16, prop untuk mencoba ulang render segment adalah `retry`.
 
-## Error Boundary Tidak Menangkap Semua Hal
+## ⚠️ Error Boundary Tidak Menangkap Semua Hal
 
 Error boundary menangkap error saat rendering. Error di event handler perlu ditangani manual.
 
@@ -133,6 +137,27 @@ export function SaveButton() {
 }
 ```
 
-## Ringkasan
+## 🧪 Studi Kasus: API Produk Gagal
+
+Jika API produk mengembalikan 500, halaman tidak bisa menampilkan data dengan benar. Untuk kasus seperti ini, kamu bisa melempar error dan membiarkan `error.tsx` memberi fallback UI.
+
+Jika API hanya mengembalikan hasil kosong karena filter tidak cocok, itu bukan error sistem. Tampilkan empty state.
+
+<Cards>
+  <Card title="Expected Error" description="Input salah, data kosong, validasi gagal, atau kondisi yang bisa diprediksi." />
+  <Card title="Unexpected Error" description="API down, database error, bug render, atau kondisi yang membuat segment gagal." />
+</Cards>
+
+## 📝 Latihan
+
+Tentukan penanganan yang tepat:
+
+1. Email form tidak valid.
+2. API produk down.
+3. List search kosong.
+4. Database connection gagal.
+5. User klik tombol save lalu request gagal.
+
+## ✅ Ringkasan
 
 Gunakan return value untuk expected error. Gunakan `throw` dan `error.tsx` untuk error yang membuat segment tidak bisa dirender dengan benar.

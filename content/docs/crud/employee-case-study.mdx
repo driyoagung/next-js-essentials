@@ -3,9 +3,13 @@ title: Studi Kasus Employee Management
 description: Menentukan fitur dan bentuk data untuk CRUD employee.
 ---
 
+<Callout type="info" title="Studi kasus utama">
+Employee Management dipakai karena sederhana, tetapi sudah mewakili pola CRUD yang sering muncul di aplikasi admin, HR, dashboard, dan backoffice.
+</Callout>
+
 Studi kasus pada bab ini adalah Employee Management. Aplikasi kecil ini cukup sederhana untuk dipahami, tetapi sudah mewakili alur CRUD yang umum ditemukan di aplikasi nyata.
 
-## Fitur Utama
+## ✨ Fitur Utama
 
 Fitur yang akan dibangun:
 
@@ -17,7 +21,7 @@ Fitur yang akan dibangun:
 - Menampilkan loading state.
 - Menangani data tidak ditemukan dan error.
 
-## Bentuk Data
+## 🧩 Bentuk Data
 
 Kita mulai dari type sederhana.
 
@@ -41,7 +45,7 @@ Field yang dipakai:
 | `position` | Jabatan |
 | `department` | Divisi |
 
-## Alur User
+## 🧭 Alur User
 
 Alur user yang ingin didukung:
 
@@ -55,7 +59,7 @@ Menghapus employee dari detail atau list
 Kembali melihat data terbaru
 ```
 
-## Batasan Bab Ini
+## 📌 Batasan Bab Ini
 
 Bab ini fokus pada pola CRUD di Next.js. Karena database dibahas pada Bab 10, contoh data layer akan dibuat sederhana dan bisa diganti dengan database nanti.
 
@@ -66,6 +70,6 @@ Pola yang penting:
 - Setelah mutation, halaman yang menampilkan data direvalidasi.
 - Setelah create atau update, user diarahkan ke halaman yang relevan.
 
-## Ringkasan
+## ✅ Ringkasan
 
 Studi kasus Employee Management membantu menyatukan routing, data fetching, form, mutation, loading, dan error handling dalam satu alur kecil yang realistis.

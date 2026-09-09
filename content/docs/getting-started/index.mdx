@@ -3,20 +3,143 @@ title: "Bab 1: Pengenalan Next.js"
 description: Memahami peran Next.js di atas React dan struktur awal project.
 ---
 
-Bab ini menjadi pintu masuk sebelum masuk ke routing, layout, rendering, dan fitur framework lainnya.
+<Callout type="info" title="Tujuan bab ini">
+Bab ini membantu kamu membangun mental model sebelum masuk ke routing, layout, rendering, data fetching, API, form, database, authentication, dan deployment.
+</Callout>
 
-Next.js bukan pengganti React. Next.js adalah framework yang memakai React sebagai fondasi UI, lalu menambahkan routing, rendering, data fetching, optimasi asset, dan kemampuan backend yang sering dibutuhkan aplikasi web modern.
+Bab ini menjadi pintu masuk sebelum masuk ke routing, layout, rendering, data fetching, API, form, database, authentication, dan deployment.
 
-## Kenapa Mulai dari Struktur?
+Sebelum belajar fitur yang lebih kompleks, kamu perlu memahami satu hal penting: Next.js bukan sekadar cara lain untuk menulis React. Next.js adalah framework yang memberi aturan, struktur, dan fitur bawaan agar aplikasi React bisa berkembang menjadi aplikasi web production.
 
-Sebelum menulis fitur, kamu perlu tahu file mana yang membuat route, file mana yang membungkus tampilan, dan file mana yang hanya menjadi pendukung. Pemahaman ini membuat bab routing dan layout terasa jauh lebih natural.
+React membantu kita membuat antarmuka. Next.js membantu kita mengubah antarmuka itu menjadi aplikasi yang punya halaman, URL, layout, rendering, metadata, optimasi asset, dan sebagian kemampuan backend.
 
-## Alur Bab Ini
+## 🧭 Gambaran Besar Bab Ini
 
-1. Memahami apa itu Next.js
-2. Membandingkan Next.js dengan React + Vite
-3. Membaca struktur project App Router
+Pada bab ini, fokus utama kita adalah membangun pondasi berpikir. Kamu belum perlu menghafal semua fitur Next.js, tetapi kamu perlu memahami kenapa Next.js ada, kapan dipakai, dan bagaimana membaca struktur project-nya.
 
-## Hasil yang Diharapkan
+Materi Bab 1 terdiri dari tiga bagian utama:
 
-Setelah bab ini selesai, kamu dapat menjelaskan mengapa Next.js dipakai, membaca struktur project awal, dan memahami file mana yang bertanggung jawab terhadap halaman serta layout aplikasi.
+<Cards>
+  <Card title="Apa itu Next.js" description="Memahami Next.js sebagai framework React untuk aplikasi web modern." />
+  <Card title="Next.js vs React + Vite" description="Membandingkan pendekatan library, build tool, dan framework." />
+  <Card title="Struktur Project" description="Membaca folder app, page, layout, dan file pendukung." />
+</Cards>
+
+Ketiganya saling berkaitan. Jika kamu paham posisi Next.js di atas React, kamu akan lebih mudah memahami kenapa folder `app` bisa menjadi route, kenapa ada file `page.tsx`, dan kenapa layout punya peran penting di Next.js.
+
+## 🧱 Kenapa Harus Memahami Fondasi?
+
+Banyak pemula langsung masuk ke coding tanpa memahami struktur. Akibatnya, saat project mulai berkembang, mereka bingung menjawab pertanyaan seperti:
+
+- File mana yang membuat halaman `/about`?
+- Kenapa komponen tertentu muncul di semua halaman?
+- Kenapa route tidak bisa dibuka walaupun foldernya sudah dibuat?
+- Kapan harus membuat component biasa dan kapan harus membuat page?
+- Apa bedanya folder `app`, `lib`, `components`, dan `public`?
+
+Pertanyaan seperti itu akan sering muncul saat belajar Next.js. Karena itu, bab pertama ini sengaja berfokus pada pemahaman struktur, bukan hanya sintaks.
+
+## 🧠 Mental Model Awal
+
+Bayangkan kamu sedang membangun sebuah gedung.
+
+React adalah bahan dan alat untuk membuat bagian-bagian gedung seperti pintu, jendela, meja, dan ruangan. Next.js adalah denah, aturan lantai, jalur masuk, sistem pencahayaan awal, dan cara gedung itu siap digunakan oleh pengunjung.
+
+Dalam aplikasi web, gambaran sederhananya seperti ini:
+
+```text
+React
+- Membuat komponen UI
+- Mengelola interaksi
+- Menyusun tampilan dari komponen kecil
+
+Next.js
+- Mengatur routing
+- Mengatur layout
+- Mengatur rendering
+- Mengatur metadata
+- Mengatur optimasi asset
+- Mengatur build dan deployment
+```
+
+Jadi saat memakai Next.js, kamu tetap menulis React. Bedanya, React tersebut ditempatkan di dalam struktur aplikasi yang sudah punya convention.
+
+## 💻 Contoh Sederhana
+
+Di React biasa, sebuah komponen hanya menjadi fungsi yang menghasilkan UI:
+
+```tsx
+export function Welcome() {
+  return <h1>Selamat datang</h1>;
+}
+```
+
+Komponen di atas belum otomatis menjadi halaman yang bisa dibuka dari browser. Kamu masih perlu routing, konfigurasi, dan struktur aplikasi.
+
+Di Next.js, file berikut langsung membuat halaman `/`:
+
+```tsx filename="app/page.tsx"
+export default function HomePage() {
+  return <h1>Selamat datang</h1>;
+}
+```
+
+Convention inilah yang membuat Next.js terasa berbeda. Nama file dan lokasi folder memiliki arti.
+
+## 🎯 Apa yang Perlu Kamu Kuasai Setelah Bab Ini?
+
+Setelah menyelesaikan Bab 1, kamu diharapkan mampu:
+
+- Menjelaskan apa itu Next.js dengan bahasa sederhana
+- Membedakan peran React dan Next.js
+- Menentukan kapan Next.js lebih cocok daripada React + Vite
+- Membaca struktur project Next.js dasar
+- Menjelaskan fungsi `app/page.tsx`
+- Menjelaskan fungsi `app/layout.tsx`
+- Membedakan folder route dan folder pendukung
+
+## 🧪 Studi Kasus Bab 1
+
+Bayangkan kamu diminta membuat website sederhana untuk profil sekolah. Website tersebut punya halaman:
+
+```text
+/
+/tentang
+/program
+/kontak
+```
+
+Dengan Next.js App Router, kamu dapat mulai berpikir dari URL terlebih dahulu. Jika URL yang dibutuhkan adalah `/tentang`, maka struktur foldernya mengarah ke:
+
+```text
+app/
++-- tentang/
+    +-- page.tsx
+```
+
+Jika semua halaman harus punya navbar dan footer yang sama, maka kamu tidak perlu menulis navbar di setiap halaman. Kamu bisa menaruhnya di `layout.tsx`.
+
+Dari studi kasus sederhana ini, kamu mulai melihat pola penting Next.js:
+
+1. URL dibentuk dari folder
+2. Halaman dibuat dengan `page.tsx`
+3. Tampilan bersama dibuat dengan `layout.tsx`
+4. File pendukung disimpan di luar struktur route jika tidak ingin menjadi URL
+
+## 📝 Latihan Pemahaman
+
+Sebelum lanjut ke subbab berikutnya, coba jawab pertanyaan berikut:
+
+1. Apa perbedaan React dan Next.js?
+2. Kenapa Next.js disebut framework React?
+3. Apa fungsi folder `app`?
+4. Apa yang terjadi jika membuat folder `about` tanpa `page.tsx`?
+5. Kapan kita membutuhkan `layout.tsx`?
+
+Jika kamu bisa menjawab pertanyaan tersebut, kamu sudah punya bekal kuat untuk memahami routing dan layout di bab berikutnya.
+
+## ✅ Ringkasan
+
+Bab ini adalah pondasi. Next.js memakai React sebagai dasar UI, lalu menambahkan struktur aplikasi yang lebih lengkap. Dengan memahami peran Next.js sejak awal, kamu tidak hanya bisa mengikuti contoh kode, tetapi juga memahami alasan di balik convention yang digunakan.
+
+Pada subbab berikutnya, kita akan membahas lebih detail apa itu Next.js dan bagaimana posisinya dalam ekosistem React.

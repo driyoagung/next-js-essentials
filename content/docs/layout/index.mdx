@@ -3,16 +3,146 @@ title: "Bab 3: Layout"
 description: Mempelajari root layout, nested layout, shared layout, dan children.
 ---
 
+<Callout type="info" title="Fokus utama bab ini">
+Layout adalah cara Next.js membungkus halaman dengan struktur UI yang dapat digunakan ulang, seperti navbar, sidebar, provider, font, dan wrapper utama.
+</Callout>
+
 Bab ini membahas cara Next.js membungkus halaman dengan layout yang dapat digunakan ulang.
 
 Layout membantu kita menjaga struktur UI tetap konsisten. Navbar, sidebar, wrapper, provider, dan elemen global lain bisa diletakkan di layout agar tidak ditulis ulang di setiap page.
 
-## Alur Bab Ini
+## 🧭 Kenapa Layout Penting?
 
-1. Root layout
-2. Nested layout
-3. Shared layout dengan navbar dan sidebar
+Dalam aplikasi web, banyak halaman biasanya memiliki bagian UI yang sama.
 
-## Hasil yang Diharapkan
+Contoh bagian yang sering berulang:
 
-Setelah bab ini selesai, kamu dapat menyusun UI bersama untuk beberapa halaman tanpa menyalin struktur yang sama berulang kali.
+- Navbar
+- Footer
+- Sidebar
+- Container utama
+- Theme provider
+- Authentication provider
+- Font global
+- Struktur dashboard
+
+Jika semua bagian tersebut ditulis ulang di setiap page, kode akan cepat berantakan. Perubahan kecil seperti mengganti menu navbar harus dilakukan di banyak file.
+
+Layout menyelesaikan masalah itu dengan menyediakan tempat khusus untuk UI bersama.
+
+## 🧠 Mental Model Layout
+
+Pikirkan layout seperti bingkai halaman.
+
+Page adalah isi utama. Layout adalah struktur yang membungkus isi tersebut.
+
+```text
+Layout
++-- Navbar
++-- Main
+    +-- Page aktif
++-- Footer
+```
+
+Dalam kode Next.js, isi page aktif masuk ke properti `children`.
+
+```tsx
+export default function Layout({ children }: { children: React.ReactNode }) {
+  return <main>{children}</main>;
+}
+```
+
+<Callout type="idea" title="Cara mudah memahami children">
+`children` adalah slot tempat halaman aktif dirender. Jika user membuka `/about`, maka isi `app/about/page.tsx` masuk ke posisi `{children}`.
+</Callout>
+
+## 🗺️ Alur Bab Ini
+
+<Cards>
+  <Card title="Root Layout" description="Layout utama yang wajib ada dan membungkus seluruh aplikasi." />
+  <Card title="Nested Layout" description="Layout khusus untuk segment route tertentu seperti dashboard atau docs." />
+  <Card title="Shared Layout" description="Pola menyusun navbar, sidebar, route group, dan active link." />
+</Cards>
+
+## 🎯 Hasil yang Diharapkan
+
+Setelah bab ini selesai, kamu dapat:
+
+- Menjelaskan fungsi root layout
+- Memahami peran `children`
+- Menaruh provider dan CSS global di tempat yang tepat
+- Membuat nested layout untuk area tertentu
+- Membuat shared layout dengan navbar atau sidebar
+- Memahami route group seperti `(site)`
+- Menentukan kapan UI harus masuk layout dan kapan cukup di page
+
+## 🧪 Studi Kasus Bab 3
+
+Bayangkan kamu membuat aplikasi dengan dua area:
+
+```text
+Website publik:
+/
+/about
+/contact
+
+Dashboard admin:
+/dashboard
+/dashboard/users
+/dashboard/settings
+```
+
+Website publik membutuhkan navbar dan footer. Dashboard membutuhkan sidebar.
+
+Struktur layout yang masuk akal:
+
+```text
+app/
++-- layout.tsx
++-- (site)/
+|   +-- layout.tsx
+|   +-- page.tsx
+|   +-- about/
+|   |   +-- page.tsx
+|   +-- contact/
+|       +-- page.tsx
++-- dashboard/
+    +-- layout.tsx
+    +-- page.tsx
+    +-- users/
+    |   +-- page.tsx
+    +-- settings/
+        +-- page.tsx
+```
+
+Dengan struktur ini:
+
+- Root layout membungkus seluruh aplikasi
+- Site layout membungkus halaman publik
+- Dashboard layout membungkus halaman dashboard
+- Navbar publik tidak muncul di dashboard
+- Sidebar dashboard tidak muncul di halaman publik
+
+## 📋 Prinsip Umum Layout
+
+Gunakan prinsip berikut saat menyusun layout:
+
+1. UI yang dipakai seluruh aplikasi masuk root layout.
+2. UI yang hanya dipakai area tertentu masuk nested layout.
+3. UI yang hanya dipakai satu halaman tetap berada di page.
+4. Logic interaktif dipindahkan ke Client Component.
+5. Jangan membuat root layout terlalu penuh.
+
+## 📝 Latihan Pemanasan
+
+Coba jawab pertanyaan berikut:
+
+1. Apa fungsi `children` dalam layout?
+2. Kenapa navbar sebaiknya ditaruh di layout jika dipakai banyak halaman?
+3. Apa bedanya root layout dan nested layout?
+4. Di mana sebaiknya sidebar dashboard diletakkan?
+5. Kapan route group seperti `(site)` berguna?
+
+## ✅ Ringkasan
+
+Layout membantu menyusun UI bersama tanpa menyalin kode berulang. Root layout membungkus seluruh aplikasi, sedangkan nested layout membungkus segment tertentu. Dengan layout yang tepat, struktur aplikasi menjadi lebih bersih, konsisten, dan mudah dikembangkan.

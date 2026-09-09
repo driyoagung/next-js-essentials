@@ -3,11 +3,17 @@ title: Metadata dan SEO
 description: Menambahkan title, description, Open Graph, robots, dan sitemap.
 ---
 
+<Callout type="info" title="Definisi singkat">
+Metadata membantu browser, search engine, dan social platform memahami isi halaman sebelum user membukanya.
+</Callout>
+
+![Diagram metadata dan SEO](/diagrams/seo-metadata.svg)
+
 Metadata membantu browser, search engine, dan social platform memahami halaman.
 
 Di App Router, metadata dibuat dengan export `metadata` atau function `generateMetadata`.
 
-## Static Metadata
+## 🧾 Static Metadata
 
 ```tsx filename="app/layout.tsx"
 import type { Metadata } from "next";
@@ -21,7 +27,7 @@ export const metadata: Metadata = {
 };
 ```
 
-## Page Metadata
+## 📄 Page Metadata
 
 ```tsx filename="app/docs/page.tsx"
 import type { Metadata } from "next";
@@ -36,7 +42,7 @@ export default function DocsPage() {
 }
 ```
 
-## Dynamic Metadata
+## ⚙️ Dynamic Metadata
 
 Pada dynamic route, `params` adalah Promise di Next.js 16.
 
@@ -59,7 +65,7 @@ export async function generateMetadata({
 }
 ```
 
-## Open Graph Image
+## 🖼️ Open Graph Image
 
 Tambahkan `opengraph-image.jpg` di folder `app` atau route tertentu.
 
@@ -72,7 +78,7 @@ app/
 
 Image yang lebih dekat dengan route akan dipakai untuk route tersebut.
 
-## Robots dan Sitemap
+## 🗺️ Robots dan Sitemap
 
 Untuk SEO, siapkan:
 
@@ -97,6 +103,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
 }
 ```
 
-## Ringkasan
+## ✅ Ringkasan
 
 Gunakan Metadata API untuk title, description, dan social preview. Tambahkan Open Graph image, robots, dan sitemap untuk halaman publik yang perlu SEO.

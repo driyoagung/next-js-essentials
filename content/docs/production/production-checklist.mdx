@@ -3,9 +3,13 @@ title: Production Checklist
 description: Daftar pemeriksaan sebelum aplikasi Next.js dirilis.
 ---
 
+<Callout type="info" title="Kenapa checklist penting?">
+Checklist membantu memastikan build, route, data, security, performance, SEO, dan monitoring tidak terlewat sebelum aplikasi dirilis.
+</Callout>
+
 Checklist membantu memastikan hal penting tidak terlewat sebelum deploy.
 
-## Build dan Type Safety
+## 🧪 Build dan Type Safety
 
 Jalankan:
 
@@ -17,7 +21,7 @@ npm run build
 
 Jika salah satu gagal, selesaikan sebelum deploy.
 
-## Routing dan UI
+## 🧭 Routing dan UI
 
 Pastikan:
 
@@ -27,7 +31,7 @@ Pastikan:
 - `error.tsx` tersedia untuk segment penting.
 - Navigasi memakai `Link` untuk route internal.
 
-## Data dan Security
+## 🔐 Data dan Security
 
 Pastikan:
 
@@ -37,7 +41,7 @@ Pastikan:
 - DAL memakai `server-only`.
 - Data yang dikirim ke Client Component sudah minimal.
 
-## Performance
+## ⚡ Performance
 
 Pastikan:
 
@@ -47,7 +51,7 @@ Pastikan:
 - Font memakai `next/font`.
 - Data yang stabil punya strategi cache.
 
-## Metadata dan SEO
+## 🔎 Metadata dan SEO
 
 Pastikan:
 
@@ -55,6 +59,6 @@ Pastikan:
 - Open Graph image tersedia untuk halaman publik.
 - Sitemap dan robots disiapkan jika aplikasi perlu SEO.
 
-## Ringkasan
+## ✅ Ringkasan
 
 Production checklist membantu memeriksa build, route, data, security, performance, dan SEO sebelum aplikasi dirilis.

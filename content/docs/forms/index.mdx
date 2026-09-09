@@ -3,28 +3,32 @@ title: "Bab 9: Form dan Server Actions"
 description: Menangani form dengan Server Actions dan pending state.
 ---
 
+<Callout type="info" title="Fokus utama bab ini">
+Bab ini membahas form HTML, Server Actions, validasi server, pending state, useActionState, revalidation, redirect, dan security check.
+</Callout>
+
+![Diagram form dan Server Action](/diagrams/form-server-action-flow.svg)
+
 Bab ini membahas cara mengirim data dari form ke server tanpa membuat endpoint API manual untuk setiap aksi.
 
 Di App Router, form bisa memanggil Server Action langsung melalui prop `action`. Pola ini cocok untuk mutation seperti create, update, delete, login, signup, dan submit data sederhana.
 
 Server Action tetap berjalan sebagai request `POST` ke server. Karena itu, setiap action harus dianggap sebagai entry point yang bisa dipanggil langsung, bukan hanya dari UI yang kamu render.
 
-## Alur Bab Ini
+## 🗺️ Alur Bab Ini
 
-1. Memahami form HTML di Next.js
-2. Membuat Server Action
-3. Memahami directive `"use server"`
-4. Membaca `FormData`
-5. Melakukan validasi input
-6. Menampilkan pending state
-7. Mengembalikan error dengan `useActionState`
-8. Melakukan revalidation, redirect, dan security check
+<Cards>
+  <Card title="Form Basics" description="Memahami HTML form, name attribute, dan FormData." />
+  <Card title="Server Actions" description="Menangani mutation langsung dari form." />
+  <Card title="Validation & Pending" description="Memvalidasi input dan memberi feedback saat submit." />
+  <Card title="Security" description="Revalidation, redirect, auth check, dan authorization." />
+</Cards>
 
-## Hasil yang Diharapkan
+## 🎯 Hasil yang Diharapkan
 
 Setelah bab ini selesai, kamu dapat membuat form yang memanggil aksi server, menampilkan pending state, dan menangani validasi input.
 
-## Mental Model
+## 🧠 Mental Model
 
 ```text
 User submit form

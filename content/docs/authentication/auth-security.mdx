@@ -3,11 +3,15 @@ title: Auth Security
 description: Checklist keamanan untuk authentication di Next.js.
 ---
 
+<Callout type="warn" title="Auth adalah area sensitif">
+Kesalahan kecil pada authentication bisa membuka data private. Gunakan checklist ini sebagai baseline keamanan.
+</Callout>
+
 Authentication adalah area sensitif. Kesalahan kecil bisa membuat data private terbuka.
 
 Gunakan checklist ini sebagai baseline.
 
-## Gunakan Library Jika Memungkinkan
+## 🧰 Gunakan Library Jika Memungkinkan
 
 Auth custom membutuhkan banyak keputusan security:
 
@@ -21,7 +25,7 @@ Auth custom membutuhkan banyak keputusan security:
 
 Untuk production, pertimbangkan auth library atau provider yang sudah matang.
 
-## Validasi Input di Server
+## ✅ Validasi Input di Server
 
 Jangan percaya data dari form.
 
@@ -35,7 +39,7 @@ if (typeof email !== "string" || !email.includes("@")) {
 }
 ```
 
-## Hash Password
+## 🔐 Hash Password
 
 Jangan menyimpan plain text password.
 
@@ -45,7 +49,7 @@ const passwordHash = await hashPassword(password);
 
 Gunakan library hashing yang dirancang untuk password.
 
-## Cookie Aman
+## 🍪 Cookie Aman
 
 Cookie session sebaiknya memakai:
 
@@ -63,7 +67,7 @@ cookieStore.set("session", token, {
 });
 ```
 
-## Jangan Bocorkan Pesan Login
+## 🕵️ Jangan Bocorkan Pesan Login
 
 Pesan seperti `Email not found` bisa membantu attacker. Gunakan pesan umum.
 
@@ -71,7 +75,7 @@ Pesan seperti `Email not found` bisa membantu attacker. Gunakan pesan umum.
 Invalid credentials
 ```
 
-## Cek Auth di Action dan Route Handler
+## 🛡️ Cek Auth di Action dan Route Handler
 
 Server Action dan Route Handler harus mengecek auth sendiri.
 
@@ -85,7 +89,7 @@ if (!session) {
 
 UI check saja tidak cukup.
 
-## Return Data Minimal
+## 📦 Return Data Minimal
 
 Jangan return field sensitif dari Server Action atau DAL.
 
@@ -96,6 +100,6 @@ Hindari mengirim:
 - Secret key.
 - Internal role detail yang tidak perlu.
 
-## Ringkasan
+## ✅ Ringkasan
 
 Auth yang aman membutuhkan validasi server, cookie aman, password hashing, authorization dekat data, dan return value yang minimal.

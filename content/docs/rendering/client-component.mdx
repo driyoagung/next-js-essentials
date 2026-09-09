@@ -3,14 +3,35 @@ title: Client Component
 description: Memahami komponen client untuk state, event, effect, dan browser API.
 ---
 
+<Callout type="info" title="Definisi singkat">
+Client Component adalah komponen yang kodenya juga dikirim ke browser agar React dapat menjalankan interaksi seperti state, event handler, effect, dan akses browser API.
+</Callout>
+
 Client Component adalah komponen yang dapat berjalan di browser. Komponen ini dibutuhkan ketika UI harus merespons interaksi user setelah halaman tampil.
 
 Untuk membuat Client Component, tambahkan directive `"use client"` di baris paling atas file.
 
-```tsx filename="app/components/counter.tsx"
-"use client";
+## 🧭 Apa Itu Client Component?
 
-import { useState } from "react";
+Client Component adalah komponen React yang dapat di-hydrate dan dijalankan di browser. Istilah client bukan berarti komponen tidak pernah dirender awal. Artinya, kode komponen tersebut juga dikirim ke browser agar bisa menangani interaksi.
+
+Contoh interaksi browser:
+
+- Klik tombol
+- Mengubah nilai input
+- Membuka modal
+- Menyimpan data ke localStorage
+- Membaca ukuran window
+- Mengubah state setelah user berinteraksi
+
+Jika sebuah komponen membutuhkan hal-hal tersebut, komponen itu perlu menjadi Client Component.
+
+## 💻 Contoh Counter
+
+```tsx filename="app/components/counter.tsx"
+'use client';
+
+import { useState } from 'react';
 
 export function Counter() {
   const [count, setCount] = useState(0);
@@ -23,9 +44,28 @@ export function Counter() {
 }
 ```
 
-## Kapan Client Component Dibutuhkan?
+Kode di atas harus menjadi Client Component karena memakai:
+
+- `useState`
+- `onClick`
+- perubahan UI setelah user klik
+
+<Callout type="idea" title="Tanda paling mudah">
+Jika komponen memiliki event handler seperti `onClick` atau state seperti `useState`, hampir pasti komponen tersebut perlu menjadi Client Component.
+</Callout>
+
+## 🧩 Kapan Client Component Dibutuhkan?
 
 Gunakan Client Component ketika komponen membutuhkan:
+
+<Cards>
+  <Card title="State" description="Misalnya useState untuk counter, tab, modal, atau input." />
+  <Card title="Effect" description="Misalnya useEffect untuk sinkronisasi setelah render browser." />
+  <Card title="Event" description="Misalnya onClick, onChange, onSubmit, atau keyboard event." />
+  <Card title="Browser API" description="Misalnya window, document, localStorage, atau media query." />
+</Cards>
+
+Daftar praktis:
 
 - `useState`
 - `useEffect`
@@ -34,18 +74,18 @@ Gunakan Client Component ketika komponen membutuhkan:
 - Hook navigasi client seperti `useRouter`, `useParams`, atau `useSearchParams`
 - Controlled input
 
-## Contoh Browser API
+## 🌐 Contoh Browser API
 
 ```tsx filename="app/components/theme-toggle.tsx"
-"use client";
+'use client';
 
-import { useEffect, useState } from "react";
+import { useEffect, useState } from 'react';
 
 export function ThemeToggle() {
-  const [theme, setTheme] = useState("light");
+  const [theme, setTheme] = useState('light');
 
   useEffect(() => {
-    const savedTheme = window.localStorage.getItem("theme");
+    const savedTheme = window.localStorage.getItem('theme');
 
     if (savedTheme) {
       setTheme(savedTheme);
@@ -53,9 +93,9 @@ export function ThemeToggle() {
   }, []);
 
   function toggleTheme() {
-    const nextTheme = theme === "light" ? "dark" : "light";
+    const nextTheme = theme === 'light' ? 'dark' : 'light';
     setTheme(nextTheme);
-    window.localStorage.setItem("theme", nextTheme);
+    window.localStorage.setItem('theme', nextTheme);
   }
 
   return (
@@ -68,10 +108,178 @@ export function ThemeToggle() {
 
 Kode ini harus menjadi Client Component karena memakai `useState`, `useEffect`, dan `window.localStorage`.
 
-## Catatan Penting
+## 🔄 Apa Itu Hydration?
+
+Hydration adalah proses ketika React di browser mengambil HTML awal yang sudah dikirim, lalu menghubungkannya dengan JavaScript agar UI menjadi interaktif.
+
+Gambaran sederhana:
+
+```text
+Server mengirim HTML awal
+        ↓
+Browser menampilkan halaman
+        ↓
+JavaScript client dimuat
+        ↓
+React melakukan hydration
+        ↓
+Tombol, input, modal, dan event menjadi aktif
+```
 
 Client Component tetap dapat dirender menjadi HTML pada request awal. Namun, kode Client Component juga dikirim ke browser agar React bisa melakukan hydration dan membuat UI interaktif.
 
-## Ringkasan
+## ⚖️ Client Component Bukan Berarti Seluruh Page Client
 
-Client Component bukan berarti semua render hanya terjadi di browser. Istilah client berarti kode komponen juga dikirim dan dijalankan di browser untuk interaksi.
+Kesalahan umum adalah membuat seluruh page menjadi Client Component hanya karena ada satu tombol kecil.
+
+Kurang ideal:
+
+```tsx filename="app/products/page.tsx"
+'use client';
+
+import { useState } from 'react';
+
+export default function ProductsPage() {
+  const [open, setOpen] = useState(false);
+
+  return (
+    <main>
+      <h1>Produk</h1>
+      <button type="button" onClick={() => setOpen(true)}>
+        Buka Filter
+      </button>
+      {open ? <p>Filter terbuka</p> : null}
+    </main>
+  );
+}
+```
+
+Lebih baik, pisahkan bagian interaktif:
+
+```tsx filename="app/products/page.tsx"
+import { FilterButton } from './filter-button';
+
+export default function ProductsPage() {
+  return (
+    <main>
+      <h1>Produk</h1>
+      <FilterButton />
+    </main>
+  );
+}
+```
+
+```tsx filename="app/products/filter-button.tsx"
+'use client';
+
+import { useState } from 'react';
+
+export function FilterButton() {
+  const [open, setOpen] = useState(false);
+
+  return (
+    <section>
+      <button type="button" onClick={() => setOpen((value) => !value)}>
+        Toggle Filter
+      </button>
+      {open ? <p>Filter terbuka</p> : null}
+    </section>
+  );
+}
+```
+
+Dengan pola ini, hanya `FilterButton` yang menjadi Client Component. Page tetap Server Component.
+
+<Callout type="warn" title="Jaga ukuran client bundle">
+Semakin banyak komponen yang diberi `"use client"`, semakin banyak JavaScript yang berpotensi dikirim ke browser. Letakkan boundary client sesempit mungkin.
+</Callout>
+
+## 🧪 Studi Kasus: Quantity Selector
+
+Pada halaman produk, informasi produk dapat ditampilkan di server. Namun quantity selector membutuhkan state karena user bisa menambah atau mengurangi jumlah item.
+
+```tsx filename="app/products/[id]/quantity-selector.tsx"
+'use client';
+
+import { useState } from 'react';
+
+export function QuantitySelector() {
+  const [quantity, setQuantity] = useState(1);
+
+  return (
+    <div>
+      <button type="button" onClick={() => setQuantity((value) => Math.max(1, value - 1))}>
+        -
+      </button>
+      <span>{quantity}</span>
+      <button type="button" onClick={() => setQuantity((value) => value + 1)}>
+        +
+      </button>
+    </div>
+  );
+}
+```
+
+Komponen ini cocok menjadi Client Component karena state berubah berdasarkan klik user.
+
+## 🧪 Studi Kasus: Search Input
+
+Search input controlled juga membutuhkan Client Component.
+
+```tsx filename="app/products/search-box.tsx"
+'use client';
+
+import { useState } from 'react';
+
+export function SearchBox() {
+  const [keyword, setKeyword] = useState('');
+
+  return (
+    <input
+      value={keyword}
+      onChange={(event) => setKeyword(event.target.value)}
+      placeholder="Cari produk"
+    />
+  );
+}
+```
+
+Karena nilai input dikontrol oleh state React, komponen ini berjalan di client.
+
+## 🚧 Kesalahan Umum
+
+### ⚠️ Menambahkan `"use client"` Tanpa Alasan
+
+Jangan menambahkan `"use client"` hanya untuk berjaga-jaga. Tambahkan saat ada kebutuhan browser yang jelas.
+
+### ⚠️ Mengakses `window` di Server Component
+
+`window` hanya tersedia di browser. Jika perlu `window`, gunakan Client Component.
+
+### ⚠️ Membuat Layout Besar Menjadi Client Component
+
+Jika hanya active link yang butuh `usePathname`, cukup active link yang dibuat Client Component.
+
+### ⚠️ Mengirim Data Terlalu Besar ke Client
+
+Client Component menerima props dari server. Jangan mengirim data berlebihan jika hanya sebagian kecil yang dibutuhkan.
+
+## 📝 Latihan
+
+Tentukan apakah komponen berikut membutuhkan Client Component:
+
+1. Tombol buka tutup modal.
+2. Daftar artikel statis.
+3. Form input pencarian controlled.
+4. Komponen yang membaca `localStorage`.
+5. Komponen heading halaman.
+
+Pertanyaan:
+
+- Kenapa `useState` membutuhkan Client Component?
+- Apa itu hydration?
+- Kenapa sebaiknya boundary client dibuat kecil?
+
+## ✅ Ringkasan
+
+Client Component bukan berarti semua render hanya terjadi di browser. Istilah client berarti kode komponen juga dikirim dan dijalankan di browser untuk interaksi. Gunakan Client Component hanya untuk bagian yang membutuhkan state, event, effect, browser API, atau hook client.

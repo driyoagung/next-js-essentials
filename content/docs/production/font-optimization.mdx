@@ -3,9 +3,13 @@ title: Font Optimization
 description: Mengoptimalkan font dengan next/font.
 ---
 
+<Callout type="info" title="Kenapa font perlu dioptimalkan?">
+Font yang lambat bisa menyebabkan layout shift dan teks terlambat tampil. `next/font` membantu mengoptimalkan loading font.
+</Callout>
+
 Font dapat memengaruhi performa dan layout shift. Next.js menyediakan `next/font` untuk mengoptimalkan font dan self-host asset font.
 
-## Google Font
+## 🔤 Google Font
 
 ```tsx filename="app/layout.tsx"
 import type { ReactNode } from "react";
@@ -31,7 +35,7 @@ export default function RootLayout({
 
 Google Fonts diunduh saat build dan di-self-host bersama asset aplikasi. Browser tidak perlu request langsung ke Google.
 
-## Local Font
+## 📁 Local Font
 
 ```tsx filename="app/layout.tsx"
 import localFont from "next/font/local";
@@ -44,7 +48,7 @@ const brandFont = localFont({
 
 Local font cocok jika kamu punya file font sendiri atau ingin build tidak bergantung pada network untuk mengunduh Google Fonts.
 
-## Variable CSS
+## 🎨 Variable CSS
 
 ```tsx
 const geist = Geist({
@@ -61,7 +65,7 @@ body {
 }
 ```
 
-## Catatan Build
+## ⚠️ Catatan Build
 
 Jika build production tidak punya akses ke Google Fonts, `next/font/google` bisa gagal saat build. Solusinya:
 
@@ -69,6 +73,6 @@ Jika build production tidak punya akses ke Google Fonts, `next/font/google` bisa
 - Gunakan proxy jika environment membutuhkannya.
 - Gunakan `next/font/local` untuk self-host font sepenuhnya dari repository.
 
-## Ringkasan
+## ✅ Ringkasan
 
 Gunakan `next/font` untuk mengurangi layout shift dan menghindari request font dari browser. Pertimbangkan local font jika build environment sering offline.

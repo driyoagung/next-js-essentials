@@ -3,28 +3,32 @@ title: "Bab 8: CRUD"
 description: Membangun studi kasus Employee Management secara bertahap.
 ---
 
+<Callout type="info" title="Fokus utama bab ini">
+Bab ini menyatukan routing, data layer, form, mutation, revalidation, redirect, loading, error, dan not found ke dalam studi kasus Employee Management.
+</Callout>
+
+![Diagram alur CRUD Employee](/diagrams/crud-flow.svg)
+
 Bab ini menggabungkan routing, data, API, form, loading, dan error handling ke dalam studi kasus Employee Management.
 
 CRUD adalah pola dasar aplikasi data: membuat, membaca, memperbarui, dan menghapus record. Di Next.js, CRUD tidak hanya soal function database, tetapi juga bagaimana route, komponen, validasi, loading, dan error disusun agar alurnya jelas.
 
 Pada bab ini, kita memakai studi kasus Employee Management. Data masih dibuat sederhana agar fokusnya tetap pada alur aplikasi. Integrasi database yang sebenarnya akan dibahas di bab berikutnya.
 
-## Alur Bab Ini
+## 🗺️ Alur Bab Ini
 
-1. Menentukan kebutuhan studi kasus Employee Management
-2. Merancang route untuk list, detail, create, dan edit
-3. Membuat data layer sementara
-4. Menampilkan daftar dan detail employee
-5. Membuat form tambah employee
-6. Membuat form edit employee
-7. Membuat aksi delete employee
-8. Menyiapkan loading dan error state
+<Cards>
+  <Card title="Case Study" description="Menentukan fitur dan bentuk data Employee Management." />
+  <Card title="Route Design" description="Merancang list, detail, create, dan edit route." />
+  <Card title="Data Layer" description="Memisahkan akses data dari halaman UI." />
+  <Card title="Mutation" description="Create, update, delete, revalidation, dan redirect." />
+</Cards>
 
-## Hasil yang Diharapkan
+## 🎯 Hasil yang Diharapkan
 
 Setelah bab ini selesai, kamu dapat membangun alur CRUD sederhana dengan route dan komponen yang tersusun rapi.
 
-## Mental Model
+## 🧠 Mental Model
 
 ```text
 Route menentukan halaman

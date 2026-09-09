@@ -3,9 +3,13 @@ title: Rendering dan Caching
 description: Memilih static, dynamic, streaming, dan cache strategy.
 ---
 
+<Callout type="info" title="Pilih dengan sadar">
+Strategi rendering dan caching harus mengikuti karakter data: publik atau personal, stabil atau sering berubah, murah atau mahal diambil.
+</Callout>
+
 Next.js dapat merender halaman secara static atau dynamic. Pilihan ini dipengaruhi oleh data, request-time API, dan strategi cache.
 
-## Static Rendering
+## 🧊 Static Rendering
 
 Static rendering cocok untuk halaman yang sama untuk semua user.
 
@@ -17,7 +21,7 @@ Contoh:
 
 Data yang stabil bisa di-cache agar request lebih cepat.
 
-## Dynamic Rendering
+## ⚡ Dynamic Rendering
 
 Dynamic rendering dibutuhkan ketika hasil halaman bergantung pada request user.
 
@@ -30,7 +34,7 @@ Contoh:
 
 Request-time API membuat route perlu dirender sesuai request.
 
-## Streaming
+## 🌊 Streaming
 
 Jika ada bagian lambat, gunakan `loading.tsx` atau `Suspense`.
 
@@ -51,7 +55,7 @@ export default function DashboardPage() {
 
 Streaming membantu UI awal muncul lebih cepat.
 
-## Cache dengan Niat
+## 📦 Cache dengan Niat
 
 Cache cocok untuk data stabil. Hindari cache untuk data personal atau data yang harus selalu fresh.
 
@@ -65,7 +69,7 @@ const response = await fetch("https://example.com/api/posts", {
 
 Jika memakai Cache Components, gunakan `"use cache"` dan `cacheLife()` sesuai kebutuhan.
 
-## Revalidation Setelah Mutation
+## 🔄 Revalidation Setelah Mutation
 
 Setelah Server Action mengubah data, panggil revalidation.
 
@@ -75,6 +79,6 @@ import { revalidatePath } from "next/cache";
 revalidatePath("/employees");
 ```
 
-## Ringkasan
+## ✅ Ringkasan
 
 Gunakan static rendering untuk data publik yang stabil, dynamic rendering untuk data request-specific, streaming untuk bagian lambat, dan cache hanya ketika data aman disimpan.

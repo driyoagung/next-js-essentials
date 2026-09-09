@@ -3,11 +3,15 @@ title: Protected Routes
 description: Melindungi halaman dari user yang belum login.
 ---
 
+<Callout type="info" title="Definisi singkat">
+Protected route adalah route yang hanya boleh diakses user yang sudah login atau memiliki izin tertentu.
+</Callout>
+
 Protected route adalah route yang hanya boleh diakses user tertentu.
 
 Di App Router, pengecekan auth bisa dilakukan di Server Component, DAL, Route Handler, dan Server Action. Untuk halaman, cara paling langsung adalah memanggil `verifySession()` sebelum render konten protected.
 
-## Protected Page
+## 🔒 Protected Page
 
 ```tsx filename="app/dashboard/page.tsx"
 import { verifySession } from "@/auth/dal";
@@ -26,7 +30,7 @@ export default async function DashboardPage() {
 
 Jika tidak ada session, `verifySession()` melakukan redirect ke `/login`.
 
-## Protected Data
+## 🛡️ Protected Data
 
 Lebih aman lagi, lakukan auth check dekat dengan data.
 
@@ -53,13 +57,13 @@ export async function getProfile() {
 
 Dengan pola ini, data profile tidak bisa dibaca tanpa session walaupun dipanggil dari halaman lain.
 
-## Hati-Hati Auth di Layout
+## ⚠️ Hati-Hati Auth di Layout
 
 Layout tidak selalu re-render pada setiap navigasi client. Karena itu, jangan hanya mengandalkan layout untuk semua auth check.
 
 Gunakan layout untuk shell UI, tetapi tetap cek session di halaman, DAL, Server Action, atau Route Handler yang membutuhkan data protected.
 
-## Proxy untuk Optimistic Check
+## 🚦 Proxy untuk Optimistic Check
 
 Proxy bisa dipakai untuk redirect awal berdasarkan cookie, tetapi jangan jadikan satu-satunya lapisan security.
 
@@ -79,6 +83,6 @@ export function proxy(request: NextRequest) {
 
 Security utama tetap harus berada dekat dengan data dan mutation.
 
-## Ringkasan
+## ✅ Ringkasan
 
 Protected route membutuhkan session check di server. Jangan hanya menyembunyikan UI; lindungi data dan action yang sebenarnya.

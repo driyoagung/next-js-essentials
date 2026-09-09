@@ -3,9 +3,13 @@ title: Delete Employee
 description: Menghapus employee dengan Server Action dan form kecil.
 ---
 
+<Callout type="warn" title="Delete adalah aksi sensitif">
+Delete mengubah data secara permanen. Validasi `id`, jalankan di server, revalidate halaman list, dan pertimbangkan konfirmasi jika dibutuhkan.
+</Callout>
+
 Delete adalah mutation yang menghapus data. Walaupun terlihat seperti tombol biasa, aksi delete tetap sebaiknya dikirim sebagai request server.
 
-## Server Action Delete
+## ⚙️ Server Action Delete
 
 ```ts filename="app/employees/actions.ts"
 "use server";
@@ -29,7 +33,7 @@ export async function deleteEmployee(formData: FormData) {
 
 Action ini membaca `id` dari hidden input.
 
-## Form Delete
+## 📝 Form Delete
 
 ```tsx filename="app/employees/[id]/delete-button.tsx"
 import { deleteEmployee } from "../actions";
@@ -50,7 +54,7 @@ export function DeleteEmployeeButton({
 
 Komponen ini tidak perlu menjadi Client Component selama tidak membutuhkan dialog konfirmasi custom.
 
-## Menampilkan di Detail Page
+## 🔎 Menampilkan di Detail Page
 
 ```tsx filename="app/employees/[id]/page.tsx"
 import { DeleteEmployeeButton } from "./delete-button";
@@ -76,7 +80,7 @@ export default async function EmployeeDetailPage({
 }
 ```
 
-## Dengan Konfirmasi
+## ⚠️ Dengan Konfirmasi
 
 Jika butuh konfirmasi sebelum delete, buat tombol sebagai Client Component.
 
@@ -110,6 +114,6 @@ export function DeleteEmployeeButton({
 
 Pindahkan ke Client Component hanya saat interaksi browser memang dibutuhkan.
 
-## Ringkasan
+## ✅ Ringkasan
 
 Delete flow membutuhkan `id`, Server Action, revalidation list, lalu redirect. Tambahkan Client Component hanya jika butuh konfirmasi atau interaksi client lain.

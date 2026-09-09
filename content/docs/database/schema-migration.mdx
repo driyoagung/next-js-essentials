@@ -3,11 +3,15 @@ title: Schema dan Migration
 description: Mendesain model data dan mengubah struktur database secara bertahap.
 ---
 
+<Callout type="info" title="Definisi singkat">
+Schema mendeskripsikan bentuk tabel dan field. Migration mencatat perubahan struktur database agar konsisten di local, staging, dan production.
+</Callout>
+
 Schema mendeskripsikan bentuk data. Migration mencatat perubahan struktur database dari waktu ke waktu.
 
 Tanpa migration, perubahan tabel mudah tidak sinkron antara local, staging, dan production.
 
-## Model Employee
+## 🧩 Model Employee
 
 Untuk melanjutkan studi kasus CRUD, kita buat model `Employee`.
 
@@ -23,7 +27,7 @@ Field yang dibutuhkan:
 | `createdAt` | date | Waktu dibuat |
 | `updatedAt` | date | Waktu diperbarui |
 
-## Contoh Prisma Schema
+## 🔷 Contoh Prisma Schema
 
 ```prisma filename="prisma/schema.prisma"
 model Employee {
@@ -43,7 +47,7 @@ Migration:
 npx prisma migrate dev --name create_employee
 ```
 
-## Contoh Drizzle Schema
+## 🟢 Contoh Drizzle Schema
 
 ```ts filename="db/schema.ts"
 import { pgTable, text, timestamp } from "drizzle-orm/pg-core";
@@ -71,7 +75,7 @@ Jalankan migration:
 npx drizzle-kit migrate
 ```
 
-## Migration Harus Direview
+## 🔎 Migration Harus Direview
 
 Sebelum menjalankan migration ke production, review SQL yang dihasilkan.
 
@@ -82,6 +86,6 @@ Perhatikan:
 - Apakah ada data lama yang perlu dipindahkan?
 - Apakah index unik bisa gagal karena data duplikat?
 
-## Ringkasan
+## ✅ Ringkasan
 
 Schema mendefinisikan struktur data. Migration menjaga perubahan database tetap tercatat dan bisa dijalankan konsisten di banyak environment.

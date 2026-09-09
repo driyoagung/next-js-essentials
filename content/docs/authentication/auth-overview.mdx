@@ -3,9 +3,15 @@ title: Authentication Overview
 description: Memahami perbedaan authentication, session, dan authorization.
 ---
 
+<Callout type="info" title="Jangan samakan semuanya">
+Authentication, session management, dan authorization adalah tiga konsep berbeda. Login hanya salah satu bagian dari auth flow.
+</Callout>
+
+![Diagram authentication vs authorization](/diagrams/auth-vs-authorization.svg)
+
 Authentication sering dianggap hanya login. Padahal auth terdiri dari beberapa bagian yang saling terkait.
 
-## Tiga Konsep Utama
+## 🧩 Tiga Konsep Utama
 
 | Konsep | Pertanyaan | Contoh |
 | --- | --- | --- |
@@ -13,7 +19,7 @@ Authentication sering dianggap hanya login. Padahal auth terdiri dari beberapa b
 | Session management | Apakah user masih login? | Cookie session pada setiap request |
 | Authorization | Apa yang boleh dilakukan user? | Admin boleh menghapus user |
 
-## Authentication
+## 🔐 Authentication
 
 Authentication memverifikasi identitas user. Contoh paling umum adalah email dan password.
 
@@ -28,7 +34,7 @@ Jika valid, server membuat session
 
 Untuk aplikasi production, pertimbangkan auth library seperti Auth.js, Better Auth, Clerk, Supabase Auth, atau provider lain. Implementasi custom auth cepat menjadi kompleks karena harus menangani password hashing, session, CSRF, reset password, MFA, dan edge case keamanan lain.
 
-## Session Management
+## 🍪 Session Management
 
 Session membuat server bisa mengenali user pada request berikutnya.
 
@@ -39,7 +45,7 @@ Strategi umum:
 
 Database session biasanya lebih mudah dicabut dari server, sedangkan stateless session lebih sederhana.
 
-## Authorization
+## 🛡️ Authorization
 
 Authorization dilakukan setelah user diketahui.
 
@@ -54,6 +60,6 @@ Jika bukan admin, tolak akses
 
 Authorization harus dicek dekat dengan data atau action yang dilindungi. Menyembunyikan tombol di UI bukan security boundary.
 
-## Ringkasan
+## ✅ Ringkasan
 
 Authentication memverifikasi identitas, session menjaga status login, dan authorization menentukan akses. Ketiganya dibutuhkan untuk auth yang benar.
